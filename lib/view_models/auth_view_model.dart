@@ -23,11 +23,15 @@ class AuthViewModel implements IAuthViewModel {
   @override
   Future<void> login(String document, String password) async {
     try {
-      appState = AppStateLoading();
+      changeState(AppStateLoading());
       authModel = await authRepository(document, password);
-      appState = AppStateDone();
+      changeState(AppStateDone());
     } catch (e) {
-      appState = AppStateError(e.toString());
+      changeState(AppStateError(e.toString()));
     }
+  }
+
+  void changeState(AppState appState) {
+    this.appState = appState;
   }
 }

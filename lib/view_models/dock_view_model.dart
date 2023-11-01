@@ -22,24 +22,28 @@ class DockViewModel implements IDockViewModel {
   Future<void> create(
       {required String code, required DockType dockType}) async {
     try {
-      appState = AppStateEmpity();
+      changeState(AppStateLoading());
       final dockModel =
           await createDockRepository(code: code, dockType: dockType);
       docks.add(dockModel);
-      appState = AppStateDone();
+      changeState(AppStateDone());
     } catch (e) {
-      appState = AppStateError(e.toString());
+      changeState(AppStateError(e.toString()));
     }
   }
 
   @override
   Future<void> getAll() async {
     try {
-      appState = AppStateEmpity();
+      changeState(AppStateLoading());
       docks = await getDocksRepository();
-      appState = AppStateDone();
+      changeState(AppStateDone());
     } catch (e) {
-      appState = AppStateError(e.toString());
+      changeState(AppStateError(e.toString()));
     }
+  }
+
+  void changeState(AppState appState) {
+    this.appState = appState;
   }
 }
