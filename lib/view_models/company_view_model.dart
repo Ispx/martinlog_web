@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/repositories/get_companies_repository.dart';
 import 'package:martinlog_web/repositories/get_company_repositoy.dart';
@@ -9,7 +10,7 @@ abstract class ICompanyViewModel {
   Future<void> createCompany();
 }
 
-class CompanyViewModel implements ICompanyViewModel {
+class CompanyViewModel extends ChangeNotifier implements ICompanyViewModel {
   AppState appState = AppStateEmpity();
   CompanyModel? companyModel;
   List<CompanyModel> companies = [];
@@ -38,6 +39,7 @@ class CompanyViewModel implements ICompanyViewModel {
 
   void changeState(AppState appState) {
     this.appState = appState;
+    notifyListeners();
   }
 
   @override

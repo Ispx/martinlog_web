@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/repositories/create_dock_repositoy.dart';
@@ -9,7 +10,7 @@ abstract interface class IDockViewModel {
   Future<void> getAll();
 }
 
-class DockViewModel implements IDockViewModel {
+class DockViewModel extends ChangeNotifier implements IDockViewModel {
   List<DockModel> docks = [];
   AppState appState = AppStateEmpity();
   final IGetDocksRepository getDocksRepository;
@@ -45,5 +46,6 @@ class DockViewModel implements IDockViewModel {
 
   void changeState(AppState appState) {
     this.appState = appState;
+    notifyListeners();
   }
 }

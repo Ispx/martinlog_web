@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:martinlog_web/models/operation_model.dart';
 import 'package:martinlog_web/repositories/cancel_operation_repository.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
@@ -29,7 +30,7 @@ abstract interface class IOperationViewModel {
   });
 }
 
-class OperationViewModel implements IOperationViewModel {
+class OperationViewModel extends ChangeNotifier implements IOperationViewModel {
   AppState appState = AppStateEmpity();
   OperationModel? operationModel;
   List<OperationModel> operations = [];
@@ -112,5 +113,6 @@ class OperationViewModel implements IOperationViewModel {
 
   void changeState(AppState appState) {
     this.appState = appState;
+    notifyListeners();
   }
 }

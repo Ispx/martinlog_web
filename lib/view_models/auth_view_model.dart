@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:martinlog_web/models/auth_model.dart';
 import 'package:martinlog_web/repositories/auth_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
@@ -9,7 +10,7 @@ abstract interface class IAuthViewModel {
   Future<void> loggout();
 }
 
-class AuthViewModel implements IAuthViewModel {
+class AuthViewModel extends ChangeNotifier implements IAuthViewModel {
   final IAuthRepository authRepository;
   AppState appState = AppStateEmpity();
   AuthModel? authModel;
@@ -33,5 +34,6 @@ class AuthViewModel implements IAuthViewModel {
 
   void changeState(AppState appState) {
     this.appState = appState;
+    notifyListeners();
   }
 }
