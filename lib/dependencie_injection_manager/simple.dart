@@ -1,10 +1,18 @@
 typedef InstanceOf = Object Function();
+typedef Bind = Simple Function(Simple i);
+
+Simple simple = Simple();
 
 class Simple {
-  static final Simple _i = Simple._();
+  static Simple _i = Simple._();
   factory Simple() => _i;
   Simple._();
   final Map<Type, Props> _instances = {};
+  static Simple Function(Simple i)? statup;
+  void startUp(Bind b) {
+    statup = b;
+    _i = statup!(this);
+  }
 
   void add<T>(InstanceOf instance, {bool isSingleton = false}) {
     if (_instances[T] != null) {
@@ -33,6 +41,12 @@ class Simple {
         isSingleton: value.isSingleton,
       );
     });
+  }
+
+  void reset() {
+    clear();
+    if (statup == null) return;
+    statup!(this);
   }
 
   void clear() {
