@@ -11,7 +11,7 @@ final class EnvConfig implements IEnvConfig {
   EnvConfig._();
   factory EnvConfig() => _i;
   String get urlBase => _getValue<String>("URL_BASE");
-  String get enviroment => _getValue<String>("ENVIROMENT");
+  String get environment => _getValue<String>("ENVIRONMENT");
 
   var _data = {};
   T _getValue<T>(String key) => _data[key].toString().parseToType<T>();
