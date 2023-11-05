@@ -1,11 +1,11 @@
 class AuthModel {
-  int idUser;
+  final int idUser;
   int idCompany;
-  int idProfile;
-  String document;
-  String fullname;
-  String email;
-  String accessToken;
+  final int idProfile;
+  final String document;
+  final String fullname;
+  final String email;
+  final String accessToken;
   AuthModel({
     required this.idUser,
     required this.idCompany,
@@ -15,6 +15,8 @@ class AuthModel {
     required this.email,
     required this.accessToken,
   });
+
+  void switchCompany(int idCompany) => this.idCompany = idCompany;
 
   factory AuthModel.fromJson(Map data) {
     return AuthModel(

@@ -1,5 +1,5 @@
-import 'package:martinlog_web/consts/endpoints.dart';
-import 'package:martinlog_web/http/http.dart';
+import 'package:martinlog_web/core/consts/endpoints.dart';
+import 'package:martinlog_web/services/http/http.dart';
 
 abstract interface class ICancelOperationRepository {
   Future<void> call(String operationKey);

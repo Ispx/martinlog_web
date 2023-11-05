@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart';
-import 'package:martinlog_web/consts/endpoints.dart';
-import 'package:martinlog_web/http/http.dart';
+import 'package:martinlog_web/core/consts/endpoints.dart';
+import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/models/company_model.dart';
 
 abstract interface class IGetCompanyRepository {

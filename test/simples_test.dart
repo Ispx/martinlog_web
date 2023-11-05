@@ -1,16 +1,19 @@
-import 'package:martinlog_web/dependencie_injection_manager/simple.dart';
+import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 
 void main() {
   final simple = Simple();
 
   simple.startUp((i) {
-    i.add<MockTest1>(() => MockTest1("PRIMEIRA INSTANCIA DE MOCKTEST"),
-        isSingleton: true);
+    i.addSingleton<MockTest1>(
+      () => MockTest1("PRIMEIRA INSTANCIA DE MOCKTEST"),
+    );
 
     return i;
   });
 
-  simple.add<MockTest>(() => MockTest("SEGUNDA INSTANCIA DE MOCKTEST"));
+  simple.addFactory<MockTest>(() => MockTest("SEGUNDA INSTANCIA DE MOCKTEST"));
+  MockTest mockTestInstance = simple.get();
+  print(mockTestInstance.toString());
   print(simple.get<MockTest>().toString());
   final instalce = simple.get<MockTest1>();
   print(instalce.toString());

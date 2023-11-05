@@ -1,5 +1,5 @@
-import 'package:martinlog_web/consts/endpoints.dart';
-import '../http/http.dart';
+import 'package:martinlog_web/core/consts/endpoints.dart';
+import '../services/http/http.dart';
 
 abstract interface class IUpdateProgressOperationRepository {
   Future<void> call({required String operationKey, required int progress});
