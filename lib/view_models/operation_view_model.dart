@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:martinlog_web/enums/operation_status_enum.dart';
+import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/models/operation_model.dart';
 import 'package:martinlog_web/repositories/cancel_operation_repository.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
@@ -32,8 +34,8 @@ abstract interface class IOperationViewModel {
 
 class OperationViewModel extends ChangeNotifier implements IOperationViewModel {
   AppState appState = AppStateEmpity();
-  OperationModel? operationModel;
-  List<OperationModel> operations = [];
+  OperationModel? _operationModel;
+  List<OperationModel> _operations = [];
   final ICancelOperationRepository cancelOperationRepository;
   final ICreateOperationRepository createOperationRepository;
   final IGetOperationsRepository getOperationsRepository;
@@ -46,6 +48,18 @@ class OperationViewModel extends ChangeNotifier implements IOperationViewModel {
     required this.getOperationsRepository,
     required this.updateProgressOperationRepository,
   });
+  OperationModel? get operationModel => _operationModel;
+  List<OperationStatusEnum> get operationStatus => OperationStatusEnum.values;
+
+  List<OperationModel> getOperationsByStatus(
+          OperationStatusEnum? operationStatusEnum) =>
+      _operations
+          .where((element) => operationStatusEnum == null
+              ? true
+              : element.idOperationStatus ==
+                  operationStatusEnum.idOperationStatus)
+          .toList();
+
   @override
   Future<void> cancel({required operationKey}) async {
     try {
@@ -79,7 +93,7 @@ class OperationViewModel extends ChangeNotifier implements IOperationViewModel {
       {DateTime? dateFrom, DateTime? dateUntil, List<int>? status}) async {
     try {
       changeState(AppStateLoading());
-      operations = await getOperationsRepository(
+      _operations = await getOperationsRepository(
           dateFrom: dateFrom, dateUntil: dateUntil, status: status);
       changeState(AppStateDone());
     } catch (e) {
@@ -91,7 +105,7 @@ class OperationViewModel extends ChangeNotifier implements IOperationViewModel {
   Future<void> getOperation({required operationKey}) async {
     try {
       changeState(AppStateLoading());
-      operationModel = await getOperationRepository(operationKey);
+      _operationModel = await getOperationRepository(operationKey);
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));

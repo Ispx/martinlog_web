@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
+import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/repositories/create_dock_repositoy.dart';
 import 'package:martinlog_web/repositories/get_docks_repository.dart';
@@ -11,7 +12,7 @@ abstract interface class IDockViewModel {
 }
 
 class DockViewModel extends ChangeNotifier implements IDockViewModel {
-  List<DockModel> docks = [];
+  List<DockModel> _docks = [];
   AppState appState = AppStateEmpity();
   final IGetDocksRepository getDocksRepository;
   final ICreateDockRepository createDockRepository;
@@ -19,6 +20,16 @@ class DockViewModel extends ChangeNotifier implements IDockViewModel {
     required this.getDocksRepository,
     required this.createDockRepository,
   });
+
+  List<DockModel> get docks => _docks;
+
+  List<DockModel> getDocksByDockType(DockType? dockType) => _docks
+      .where(
+          (e) => dockType == null ? true : e.idDockType == dockType.idDockType)
+      .toList();
+
+  List<DockType> get docksType => DockType.values;
+
   @override
   Future<void> create(
       {required String code, required DockType dockType}) async {
@@ -26,7 +37,7 @@ class DockViewModel extends ChangeNotifier implements IDockViewModel {
       changeState(AppStateLoading());
       final dockModel =
           await createDockRepository(code: code, dockType: dockType);
-      docks.add(dockModel);
+      _docks.add(dockModel);
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -37,7 +48,7 @@ class DockViewModel extends ChangeNotifier implements IDockViewModel {
   Future<void> getAll() async {
     try {
       changeState(AppStateLoading());
-      docks = await getDocksRepository();
+      _docks = await getDocksRepository();
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));

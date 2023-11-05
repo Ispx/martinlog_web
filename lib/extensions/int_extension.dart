@@ -1,9 +1,9 @@
 import '../enums/profile_type_enum.dart';
 
 extension IntExt on int {
-  ProfileTypeEnum? getProfile() => switch (this) {
+  ProfileTypeEnum getProfile() => switch (this) {
         1 => ProfileTypeEnum.ADM,
         2 => ProfileTypeEnum.MASTER,
-        _ => null
+        _ => throw Exception("$this is invalid profile")
       };
 }
