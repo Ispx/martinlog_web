@@ -17,18 +17,18 @@ class CompanyViewModel extends ChangeNotifier implements ICompanyViewModel {
   Set<CompanyModel> companies = {};
   final IGetCompaniesRepository getCompaniesRepository;
   final IGetCompanyRepository getCompanyRepository;
-  final ICreateCompanyRepository companyRepository;
+  final ICreateCompanyRepository createCompanyRepository;
 
   CompanyViewModel({
     required this.getCompaniesRepository,
     required this.getCompanyRepository,
-    required this.companyRepository,
+    required this.createCompanyRepository,
   });
   @override
   Future<void> createCompany(CompanyModel companyModel) async {
     try {
       changeState(AppStateLoading());
-      final company = await companyRepository(companyModel);
+      final company = await createCompanyRepository(companyModel);
       companies.add(company);
       changeState(AppStateDone());
     } catch (e) {

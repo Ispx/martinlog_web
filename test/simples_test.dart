@@ -7,12 +7,12 @@ void main() {
     i.addSingleton<MockTest1>(
       () => MockTest1("PRIMEIRA INSTANCIA DE MOCKTEST"),
     );
+    i.addFactory<MockTest>(() => MockTest("SEGUNDA INSTANCIA DE MOCKTEST"));
 
     return i;
   });
 
-  simple.addFactory<MockTest>(() => MockTest("SEGUNDA INSTANCIA DE MOCKTEST"));
-  MockTest mockTestInstance = simple.get();
+  MockTest mockTestInstance = simple.get<MockTest>();
   print(mockTestInstance.toString());
   print(simple.get<MockTest>().toString());
   final instalce = simple.get<MockTest1>();
