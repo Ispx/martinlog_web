@@ -14,3 +14,12 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+# Deploy
+2
+curl -sL https://firebase.tools | bash &&  firebase experiments:enable webframeworks &&  firebase init &&  firebase deploy
+
+
+1
+curl -sL https://firebase.tools | bash &&  firebase loggout && firebase login && firebase experiments:enable webframeworks &&  firebase deploy
