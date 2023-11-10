@@ -44,6 +44,10 @@ dependencies:
   scaffold_responsive: ^1.1.1
   gap: ^3.0.1
   responsive_sizer: ^3.2.0
+  easy_mask: ^2.0.1
+  get: ^4.6.6
+  rxdart: ^0.27.7
+  dio: ^5.3.3
 
 dev_dependencies:
   flutter_test:
