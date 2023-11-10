@@ -1,0 +1,4 @@
+enum ProfileTypeEnum {
+  MASTER,
+  ADM,
+}
