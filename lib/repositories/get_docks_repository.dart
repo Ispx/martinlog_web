@@ -1,6 +1,4 @@
-import 'dart:convert';
-
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/models/dock_model.dart';
@@ -20,9 +18,10 @@ class GetDocksRepository implements IGetDocksRepository {
         url: urlBase + Endpoints.dockAll,
         method: HttpMethod.GET,
       );
-      return jsonDecode(response.body)
-          .map((e) => DockModel.fromJson(e))
-          .toList();
+
+      var result = List<DockModel>.from(
+          response.data.map((e) => DockModel.fromJson(e)).toList());
+      return result;
     } catch (e) {
       throw Exception(e.toString());
     }

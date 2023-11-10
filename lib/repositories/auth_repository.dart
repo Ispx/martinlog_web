@@ -1,6 +1,4 @@
-import 'dart:convert';
-
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/models/auth_model.dart';
@@ -24,7 +22,8 @@ class AuthRepository implements IAuthRepository {
           "password": password,
         },
       );
-      return AuthModel.fromJson(jsonDecode(response.body));
+
+      return AuthModel.fromJson(Map.castFrom(response.data));
     } catch (e) {
       throw Exception(e.toString());
     }

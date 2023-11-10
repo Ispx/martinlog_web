@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/models/company_model.dart';
@@ -19,7 +18,7 @@ class GetCompanyRepository implements IGetCompanyRepository {
         url: urlBase + Endpoints.company,
         method: HttpMethod.GET,
       );
-      return CompanyModel.fromJson(jsonDecode(response.body));
+      return CompanyModel.fromJson(response.data);
     } catch (e) {
       throw Exception(e.toString());
     }

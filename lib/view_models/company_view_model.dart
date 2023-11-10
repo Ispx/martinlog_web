@@ -39,6 +39,7 @@ class CompanyViewModel extends ChangeNotifier implements ICompanyViewModel {
   @override
   Future<void> getAllCompanies() async {
     try {
+      if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
       companies.addAll(await getCompaniesRepository());
       changeState(AppStateDone());
@@ -55,6 +56,7 @@ class CompanyViewModel extends ChangeNotifier implements ICompanyViewModel {
   @override
   Future<void> getCompany() async {
     try {
+      if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
       companyModel = await getCompanyRepository();
       changeState(AppStateDone());

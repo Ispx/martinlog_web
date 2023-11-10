@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/models/operation_model.dart';
@@ -20,7 +19,7 @@ class GetOperationRepository implements IGetOperationRepository {
             Endpoints.operation.replaceAll('<operationKey>', operationKey),
         method: HttpMethod.GET,
       );
-      return OperationModel.fromJson(jsonDecode(response.body));
+      return OperationModel.fromJson(response.data);
     } catch (e) {
       throw Exception(e.toString());
     }

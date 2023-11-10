@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
@@ -28,7 +28,7 @@ class CreateDockRepository implements ICreateDockRepository {
           "isActive": true,
         },
       );
-      return DockModel.fromJson(jsonDecode(response.body));
+      return DockModel.fromJson(jsonDecode(response.data));
     } catch (e) {
       throw Exception(e.toString());
     }

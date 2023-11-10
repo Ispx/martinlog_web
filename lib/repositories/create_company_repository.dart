@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/models/company_model.dart';
@@ -17,7 +17,7 @@ class CreateCompanyRepository implements ICreateCompanyRepository {
     try {
       final response = await http.request<Response>(
           url: Endpoints.company, method: HttpMethod.PUT);
-      return CompanyModel.fromJson(jsonDecode(response.body));
+      return CompanyModel.fromJson(jsonDecode(response.data));
     } catch (e) {
       throw Exception(e.toString());
     }

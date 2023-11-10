@@ -1,25 +1,29 @@
-import 'package:http_interceptor/http_interceptor.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:martinlog_web/components/banner_component.dart';
+import 'package:martinlog_web/core/consts/routes.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
-import 'package:martinlog_web/view_models/auth_view_model.dart';
+import 'package:martinlog_web/navigator/go_to.dart';
 
-class UnauthorizedInterceptor implements InterceptorContract {
+class UnauthorizedInterceptor extends Interceptor {
   @override
-  Future<BaseRequest> interceptRequest({required BaseRequest request}) async =>
-      request;
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    if ((err.response?.statusCode) == 401) {
+      BannerComponent(
+        message: "Sua sessão expirou!",
+        duration: const Duration(
+          seconds: 3,
+        ),
+        backgroundColor: Colors.red,
+      );
+      simple.reset();
 
-  @override
-  Future<BaseResponse> interceptResponse(
-      {required BaseResponse response}) async {
-    if (response.statusCode == 401) {
-      await simple.get<AuthViewModel>().loggout();
-      return response;
+      GoTo.removeAllAndGoTo(
+        Routes.auth,
+      );
+      return;
     }
-    return response;
+
+    super.onError(err, handler);
   }
-
-  @override
-  Future<bool> shouldInterceptRequest() async => false;
-
-  @override
-  Future<bool> shouldInterceptResponse() async => true;
 }

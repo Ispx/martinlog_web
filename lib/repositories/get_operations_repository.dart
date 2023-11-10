@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/services/http/http.dart';
@@ -21,9 +20,9 @@ class GetOperationsRepository implements IGetOperationsRepository {
     try {
       final params = <String, dynamic>{};
       if (dateFrom != null) {
-        params.addAll({"dateFrom": dateFrom.yyyyMMdd()});
+        params.addAll({"dateFrom": dateFrom.yyyyMMdd});
         if (dateUntil == null) throw Exception("dateUntil is required");
-        params.addAll({"dateUntil": dateUntil.yyyyMMdd()});
+        params.addAll({"dateUntil": dateUntil.yyyyMMdd});
       }
       if (status != null) {
         params.addAll({for (int st in status) "status": st});
@@ -33,9 +32,9 @@ class GetOperationsRepository implements IGetOperationsRepository {
         method: HttpMethod.GET,
         params: params,
       );
-      return jsonDecode(response.body)
-          .map((e) => OperationModel.fromJson(e))
-          .toList();
+      var result = List<OperationModel>.from(
+          response.data.map((e) => OperationModel.fromJson(e)).toList());
+      return result;
     } catch (e) {
       throw Exception(e.toString());
     }

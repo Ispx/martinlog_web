@@ -1,4 +1,7 @@
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:martinlog_web/services/http_interceptor/access_token_interceptor.dart';
+import 'package:martinlog_web/services/http_interceptor/switch_company_interceptor.dart';
+import 'package:martinlog_web/services/http_interceptor/unauthorized_interceptor.dart';
 
 enum HttpMethod { GET, POST, PUT }
 
@@ -13,6 +16,13 @@ abstract interface class IHttp {
 }
 
 class Http implements IHttp {
+  final dio = Dio()
+    ..interceptors.addAll([
+      AccessTokenInterceptor(),
+      SwitchCompanyInterceptor(),
+      UnauthorizedInterceptor(),
+    ]);
+
   @override
   Future<T> request<T>(
       {required String url,
@@ -20,11 +30,15 @@ class Http implements IHttp {
       Map<String, String>? headers,
       Map<String, dynamic>? body,
       Map<String, dynamic>? params}) async {
-    final Uri uri = Uri(scheme: url);
-    return switch (method) {
-      HttpMethod.GET => await http.get(uri, headers: headers),
-      HttpMethod.POST => await http.post(uri, headers: headers, body: body),
-      HttpMethod.PUT => await http.post(uri, headers: headers, body: body)
-    } as T;
+    dio.options.headers = headers ?? {};
+    try {
+      return switch (method) {
+        HttpMethod.GET => await dio.get(url),
+        HttpMethod.POST => await dio.post(url, data: body),
+        HttpMethod.PUT => await dio.post(url, data: body)
+      } as T;
+    } on DioException catch (e) {
+      throw e.response?.data ?? "Falha inesperada";
+    }
   }
 }

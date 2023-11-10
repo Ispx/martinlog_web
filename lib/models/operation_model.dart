@@ -3,7 +3,6 @@ import 'package:martinlog_web/models/dock_model.dart';
 
 class OperationModel {
   String operationKey;
-  int idDock;
   DockModel? dockModel;
   int idCompany;
   int idUser;
@@ -15,7 +14,6 @@ class OperationModel {
   String? description;
   OperationModel({
     required this.operationKey,
-    required this.idDock,
     this.dockModel,
     required this.idCompany,
     required this.idUser,
@@ -45,14 +43,16 @@ class OperationModel {
   factory OperationModel.fromJson(Map data) {
     return OperationModel(
       operationKey: data['operationKey'],
-      idDock: data['idDock'],
       idCompany: data['idCompany'],
       idUser: data['idUser'],
       liscensePlate: data['liscensePlate'],
+      dockModel: data['dock'] != null ? DockModel.fromJson(data['dock']) : null,
       progress: data['progress'],
       idOperationStatus: data['idOperationStatus'],
-      createdAt: data['createdAt'],
-      finishedAt: data['finishedAt'],
+      createdAt: data['createdAt'].toString().parseToDateTime()!,
+      finishedAt: data['finishedAt'] != null
+          ? data['finishedAt'].toString().parseToDateTime()!
+          : null,
       description: data['description'],
     );
   }
@@ -73,7 +73,6 @@ class OperationModel {
       idOperationStatus: idOperationStatus ?? this.idOperationStatus,
       createdAt: createdAt,
       finishedAt: finishedAt ?? this.finishedAt,
-      idDock: idDock,
       description: description,
     );
   }

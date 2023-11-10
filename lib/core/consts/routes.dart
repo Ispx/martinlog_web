@@ -6,4 +6,5 @@ class Routes {
   static const company = "/company";
   static const dock = "/dock";
   static const operation = "/operation";
+  static const dashboard = "/dashboard";
 }

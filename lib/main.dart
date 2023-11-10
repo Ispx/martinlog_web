@@ -98,27 +98,32 @@ void main() async {
       );
 
       i.addSingleton<AuthViewModel>(
-        () => AuthViewModel(authRepository: i.get<AuthRepository>()),
+        () => AuthViewModel(
+          authRepository: i.get<AuthRepository>(),
+        ),
       );
       i.addSingleton<CompanyViewModel>(
         () => CompanyViewModel(
-            getCompaniesRepository: i.get<GetCompaniesRepository>(),
-            getCompanyRepository: i.get<GetCompanyRepository>(),
-            createCompanyRepository: i.get<CreateCompanyRepository>()),
+          getCompaniesRepository: i.get<GetCompaniesRepository>(),
+          getCompanyRepository: i.get<GetCompanyRepository>(),
+          createCompanyRepository: i.get<CreateCompanyRepository>(),
+        ),
       );
       i.addSingleton<DockViewModel>(
         () => DockViewModel(
-            getDocksRepository: i.get<GetDocksRepository>(),
-            createDockRepository: i.get<CreateDockRepository>()),
+          getDocksRepository: i.get<GetDocksRepository>(),
+          createDockRepository: i.get<CreateDockRepository>(),
+        ),
       );
       i.addSingleton<OperationViewModel>(
         () => OperationViewModel(
-            cancelOperationRepository: i.get<CancelOperationRepository>(),
-            createOperationRepository: i.get<CreateOperationRepository>(),
-            getOperationsRepository: i.get<GetOperationsRepository>(),
-            getOperationRepository: i.get<GetOperationRepository>(),
-            updateProgressOperationRepository:
-                i.get<UpdateProgressOperationRepository>()),
+          cancelOperationRepository: i.get<CancelOperationRepository>(),
+          createOperationRepository: i.get<CreateOperationRepository>(),
+          getOperationsRepository: i.get<GetOperationsRepository>(),
+          getOperationRepository: i.get<GetOperationRepository>(),
+          updateProgressOperationRepository:
+              i.get<UpdateProgressOperationRepository>(),
+        ),
       );
 
       return i;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:martinlog_web/style/text/app_text_style.dart';
 
 @immutable
 class AppThemeData {
@@ -52,7 +53,7 @@ class AppThemeData {
     ),
     appBarTheme: AppBarTheme(
       color: primaryColor,
-      centerTitle: true,
+      centerTitle: false,
       elevation: 8.0,
       titleTextStyle: appBarTextStyle,
     ),

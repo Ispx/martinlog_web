@@ -1,25 +1,15 @@
-import 'package:http_interceptor/http_interceptor.dart';
+import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 
-class AccessTokenInterceptor implements InterceptorContract {
+class AccessTokenInterceptor extends Interceptor {
   @override
-  Future<BaseRequest> interceptRequest({required BaseRequest request}) async {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final authModel = simple.get<AuthViewModel>().authModel;
+
     if (authModel != null) {
-      request.headers['Authorization'] = "Bearer $authModel.accessToken";
+      options.headers['Authorization'] = 'Bearer ${authModel.accessToken}';
     }
-    return request;
+    super.onRequest(options, handler);
   }
-
-  @override
-  Future<BaseResponse> interceptResponse(
-          {required BaseResponse response}) async =>
-      response;
-
-  @override
-  Future<bool> shouldInterceptRequest() async => true;
-
-  @override
-  Future<bool> shouldInterceptResponse() async => false;
 }

@@ -7,7 +7,7 @@ class Endpoints {
   static const companyAll = "$company/all";
   static const dock = "/dock";
   static const dockAll = "$dock/all";
-  static const operation = "/operation/<operationKey>";
+  static const operation = "/operation";
   static const operationAll = "$operation/all";
   static const operationCancel = "$operation/cancel/<operationKey>";
   static const operationProgress = "$operation/progress/<operationKey>";

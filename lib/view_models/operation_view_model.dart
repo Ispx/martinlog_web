@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/enums/operation_status_enum.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/models/operation_model.dart';
@@ -32,10 +34,10 @@ abstract interface class IOperationViewModel {
   });
 }
 
-class OperationViewModel extends ChangeNotifier implements IOperationViewModel {
-  AppState appState = AppStateEmpity();
+class OperationViewModel extends GetxController implements IOperationViewModel {
+  var appState = AppState().obs;
   OperationModel? _operationModel;
-  List<OperationModel> _operations = [];
+  var operations = <OperationModel>[].obs;
   final ICancelOperationRepository cancelOperationRepository;
   final ICreateOperationRepository createOperationRepository;
   final IGetOperationsRepository getOperationsRepository;
@@ -51,9 +53,9 @@ class OperationViewModel extends ChangeNotifier implements IOperationViewModel {
   OperationModel? get operationModel => _operationModel;
   List<OperationStatusEnum> get operationStatus => OperationStatusEnum.values;
 
-  List<OperationModel> getOperationsByStatus(
+  List<OperationModel> filterByStatus(
           OperationStatusEnum? operationStatusEnum) =>
-      _operations
+      operations
           .where((element) => operationStatusEnum == null
               ? true
               : element.idOperationStatus ==
@@ -82,6 +84,10 @@ class OperationViewModel extends ChangeNotifier implements IOperationViewModel {
           dockCode: dockCode,
           liscensePlate: liscensePlate,
           description: description);
+      BannerComponent(
+        message: "Operação criada com sucesso",
+        backgroundColor: Colors.green,
+      );
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -92,8 +98,9 @@ class OperationViewModel extends ChangeNotifier implements IOperationViewModel {
   Future<void> getAll(
       {DateTime? dateFrom, DateTime? dateUntil, List<int>? status}) async {
     try {
+      if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
-      _operations = await getOperationsRepository(
+      operations.value = await getOperationsRepository(
           dateFrom: dateFrom, dateUntil: dateUntil, status: status);
       changeState(AppStateDone());
     } catch (e) {
@@ -126,7 +133,6 @@ class OperationViewModel extends ChangeNotifier implements IOperationViewModel {
   }
 
   void changeState(AppState appState) {
-    this.appState = appState;
-    notifyListeners();
+    this.appState.value = appState;
   }
 }

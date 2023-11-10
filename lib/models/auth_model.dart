@@ -26,7 +26,7 @@ class AuthModel {
       document: data['document'],
       email: data['email'],
       fullname: data['fullname'],
-      accessToken: data['accessToken'],
+      accessToken: data['access_token'],
     );
   }
 
