@@ -30,7 +30,7 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
   late final Worker worker;
   var _password = '';
   var _cpf = '';
-
+  var isVisiblePassword = false.obs;
   set cpf(String cpf) => _cpf = cpf;
   set password(String password) => _password = password;
   @override
@@ -132,12 +132,27 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
                             ],
                           ),
                           const Gap(20),
-                          TextFormFieldWidget<OutlineInputBorder>(
-                            label: "Senha",
-                            validator: isNotEmpity,
-                            onSaved: (e) {
-                              password = e;
-                            },
+                          Obx(
+                            () => TextFormFieldWidget<OutlineInputBorder>(
+                              label: "Senha",
+                              validator: isNotEmpity,
+                              obscure: !isVisiblePassword.value,
+                              maxLines: 1,
+                              sufix: GestureDetector(
+                                onTap: () {
+                                  isVisiblePassword.value =
+                                      !isVisiblePassword.value;
+                                },
+                                child: Icon(
+                                  isVisiblePassword.value
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                              ),
+                              onSaved: (e) {
+                                password = e;
+                              },
+                            ),
                           ),
                           const Gap(30),
                           Obx(() {

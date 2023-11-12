@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:get/get.dart';
 import 'package:martinlog_web/services/http_interceptor/access_token_interceptor.dart';
 import 'package:martinlog_web/services/http_interceptor/switch_company_interceptor.dart';
 import 'package:martinlog_web/services/http_interceptor/unauthorized_interceptor.dart';
@@ -31,11 +32,12 @@ class Http implements IHttp {
       Map<String, dynamic>? body,
       Map<String, dynamic>? params}) async {
     dio.options.headers = headers ?? {};
+    dio.options.sendTimeout = 10.seconds;
     try {
       return switch (method) {
         HttpMethod.GET => await dio.get(url),
         HttpMethod.POST => await dio.post(url, data: body),
-        HttpMethod.PUT => await dio.post(url, data: body)
+        HttpMethod.PUT => await dio.put(url, data: body)
       } as T;
     } on DioException catch (e) {
       throw e.response?.data ?? "Falha inesperada";

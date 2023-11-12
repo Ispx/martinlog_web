@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
-import 'package:martinlog_web/extensions/date_time_extension.dart';
+import 'package:martinlog_web/enums/operation_status_enum.dart';
+import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/functions/futures.dart';
 import 'package:martinlog_web/input_formaters/liscense_plate_input_formatter.dart';
 import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
@@ -45,6 +47,12 @@ class _OperationViewState extends State<OperationView> {
           backgroundColor: Colors.red,
         );
         return;
+      }
+      if (appState is AppStateDone && appState.result is String) {
+        BannerComponent(
+          message: appState.result,
+          backgroundColor: Colors.green,
+        );
       }
     });
     super.initState();
@@ -93,19 +101,18 @@ class _OperationViewState extends State<OperationView> {
                               return PageWidget(
                                 itens: controller.operations.value
                                     .map(
-                                      (e) => Padding(
+                                      (operationModel) => Padding(
                                         padding: EdgeInsets.symmetric(
                                           vertical: AppSize.padding / 2,
                                         ),
                                         child: OperationWidget(
-                                          operationModel: e,
+                                          operationModel: operationModel,
                                         ),
                                       ),
                                     )
                                     .toList(),
-                                onRefresh: () async {
-                                  await Future.wait([getAccountInfo]);
-                                },
+                                onRefresh: () async =>
+                                    await controller.getAll(),
                                 limitByPage: 10,
                               );
                             }),
@@ -173,24 +180,6 @@ class _PageWidgetState extends State<PageWidget> {
                 icon: const Icon(Icons.refresh),
               ),
             ),
-            /*s
-            Align(
-              alignment: Alignment.topRight,
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.arrow_back),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.arrow_forward),
-                  )
-                ],
-              ),
-            ),
-            */
-
             Expanded(
               child: ListView.builder(
                 itemCount: widget.itens.length,
@@ -413,60 +402,48 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
   }
 }
 
-class ListOperationsWidget extends StatelessWidget {
-  const ListOperationsWidget({super.key});
+class OperationWidget extends StatefulWidget {
+  final OperationModel operationModel;
+
+  const OperationWidget({
+    super.key,
+    required this.operationModel,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      color: Colors.white,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: AppSize.padding,
-          horizontal: AppSize.padding / 2,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              ...List.generate(
-                10,
-                (index) => Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: AppSize.padding / 2,
-                  ),
-                  child: OperationWidget(
-                    operationModel: OperationModel(
-                      operationKey: "121421fdspkjnf;sdsadadasdas",
-                      idCompany: 1,
-                      idUser: 1,
-                      liscensePlate: "LNS4I49",
-                      progress: index,
-                      idOperationStatus: 2,
-                      dockModel: DockModel(
-                        code: "001",
-                        idDockType: 1,
-                        createdAt: DateTime.now(),
-                      ),
-                      createdAt: DateTime.now(),
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  State<OperationWidget> createState() => _OperationWidgetState();
 }
 
-class OperationWidget extends StatelessWidget {
-  final OperationModel operationModel;
-  const OperationWidget({super.key, required this.operationModel});
+class _OperationWidgetState extends State<OperationWidget>
+    with SingleTickerProviderStateMixin {
+  late final TextEditingController progressEditingController;
+  late final AnimationController animationController;
+  late final Animation<double> animation;
+  final controller = simple.get<OperationViewModel>();
+  @override
+  void initState() {
+    animationController = AnimationController(vsync: this, duration: 2.seconds);
+    animation = Tween<double>(
+            begin: 0.0, end: widget.operationModel.progress.toDouble() / 100)
+        .animate(animationController);
+
+    animationController.addListener(() {
+      setState(() {});
+    });
+
+    WidgetsBinding.instance.addPersistentFrameCallback((timeStamp) {
+      animationController.forward();
+    });
+    progressEditingController =
+        TextEditingController(text: widget.operationModel.progress.toString());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -484,55 +461,115 @@ class OperationWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             TextActionButtom(
-              title: operationModel.operationKey.substring(0, 8),
+              title: widget.operationModel.operationKey.substring(0, 8),
               backgroundColor: Colors.grey,
               onAction: () {},
             ),
-            Text(
-              operationModel.createdAt.ddMMyyyyHHmmss,
-              style: AppTextStyle.displayMedium(context).copyWith(
-                fontWeight: FontWeight.w600,
+            SizedBox(
+              width: 8.w,
+              child: Text(
+                widget.operationModel.dockModel!.idDockType
+                    .getDockType()
+                    .description,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.displayMedium(context).copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            Text(
-              operationModel.dockModel!.idDockType.getDockType().description,
-              style: AppTextStyle.displayMedium(context).copyWith(
-                fontWeight: FontWeight.w600,
+            SizedBox(
+              width: 8.w,
+              child: Text(
+                widget.operationModel.dockModel?.code ?? '',
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.displayMedium(context).copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            Text(
-              operationModel.dockModel?.code ?? '',
-              style: AppTextStyle.displayMedium(context).copyWith(
-                fontWeight: FontWeight.w600,
+            SizedBox(
+              width: 8.w,
+              child: Text(
+                widget.operationModel.liscensePlate,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.displayMedium(context).copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            Text(
-              operationModel.liscensePlate,
-              style: AppTextStyle.displayMedium(context).copyWith(
-                fontWeight: FontWeight.w600,
+            SizedBox(
+              width: 8.w,
+              child: Text(
+                widget.operationModel.idOperationStatus
+                    .getOperationStatus()
+                    .description,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.displayMedium(context).copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Text(
-                  "${operationModel.progress}%",
-                  style: AppTextStyle.displaySmall(context).copyWith(
-                    fontWeight: FontWeight.w600,
+            SizedBox(
+              width: 8.w,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Text(
+                    "${widget.operationModel.progress}%",
+                    style: AppTextStyle.displaySmall(context).copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                CircularProgressIndicator(
-                  value: operationModel.progress.toDouble() / 100,
-                  color: context.appTheme.primaryColor,
-                  backgroundColor: Colors.grey.shade200,
-                  semanticsValue: operationModel.progress.toString(),
-                ),
-              ],
+                  CircularProgressIndicator(
+                    value: animation.value,
+                    color: widget.operationModel.idOperationStatus ==
+                            OperationStatusEnum.IN_PROGRESS.idOperationStatus
+                        ? context.appTheme.primaryColor
+                        : Colors.grey,
+                    backgroundColor: Colors.grey.shade200,
+                    semanticsValue: widget.operationModel.progress.toString(),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 8.w,
+              child: TextFormFieldWidget<UnderlineInputBorder>(
+                controller: progressEditingController,
+                enable: controller.appState.value is! AppStateLoading &&
+                    widget.operationModel.idOperationStatus ==
+                        OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                maxLength: 3,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                ],
+              ),
             ),
             TextActionButtom(
-              title: "Acessar",
-              backgroundColor: context.appTheme.primaryColor,
-              onAction: () {},
+              title: "Atualizar",
+              isEnable: widget.operationModel.idOperationStatus ==
+                  OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+              backgroundColor: Colors.blue,
+              onAction: () async {
+                if (controller.appState.value is AppStateLoading) return;
+                await controller.updateProgress(
+                    operationKey: widget.operationModel.operationKey,
+                    progress: int.parse(progressEditingController.text));
+                await controller.getAll();
+              },
+            ),
+            TextActionButtom(
+              title: "Cancelar",
+              isEnable: widget.operationModel.idOperationStatus
+                      .getOperationStatus() ==
+                  OperationStatusEnum.IN_PROGRESS,
+              backgroundColor: Colors.orange,
+              onAction: () async {
+                if (controller.appState.value is AppStateLoading) return;
+                await controller.cancel(
+                    operationKey: widget.operationModel.operationKey);
+                await controller.getAll();
+              },
             ),
           ],
         ),
@@ -546,6 +583,7 @@ class TextActionButtom extends StatelessWidget {
   final VoidCallback onAction;
   final Color? backgroundColor;
   final bool isLoading;
+  final bool isEnable;
 
   final EdgeInsets? padding;
   const TextActionButtom({
@@ -554,13 +592,14 @@ class TextActionButtom extends StatelessWidget {
     required this.onAction,
     this.padding,
     this.isLoading = false,
+    this.isEnable = true,
     this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: isLoading ? null : () => onAction(),
+      onPressed: isLoading || !isEnable ? null : () => onAction(),
       style: ButtonStyle(
         shape: MaterialStateProperty.resolveWith<OutlinedBorder>(
           (states) => RoundedRectangleBorder(
@@ -568,8 +607,9 @@ class TextActionButtom extends StatelessWidget {
           ),
         ),
         backgroundColor: MaterialStateProperty.resolveWith(
-          (states) =>
-              isLoading ? Colors.grey : backgroundColor ?? Colors.transparent,
+          (states) => isLoading || !isEnable
+              ? Colors.grey
+              : backgroundColor ?? Colors.transparent,
         ),
       ),
       child: Padding(
@@ -586,6 +626,7 @@ class TextActionButtom extends StatelessWidget {
               )
             : Text(
                 title,
+                overflow: TextOverflow.ellipsis,
                 style: AppTextStyle.displayMedium(context).copyWith(
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
@@ -593,14 +634,5 @@ class TextActionButtom extends StatelessWidget {
               ),
       ),
     );
-  }
-}
-
-class MyWidget extends StatelessWidget {
-  const MyWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }

@@ -36,9 +36,11 @@ class ButtomWidget extends StatelessWidget {
       elevation: elevation ?? 6.0,
       borderRadius: BorderRadius.circular(radius!),
       type: MaterialType.button,
-      color: onTap != null
-          ? buttomEnableColor
-          : digitalAccountTheme.buttonDisableColor,
+      color: (isLoading ?? false)
+          ? digitalAccountTheme.buttonDisableColor
+          : onTap != null
+              ? buttomEnableColor
+              : digitalAccountTheme.buttonDisableColor,
       child: InkWell(
         radius: radius!,
         splashColor: digitalAccountTheme.greenColor,

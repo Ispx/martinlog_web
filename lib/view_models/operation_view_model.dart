@@ -23,14 +23,14 @@ abstract interface class IOperationViewModel {
   });
 
   Future<void> cancel({
-    required operationKey,
+    required String operationKey,
   });
 
   Future<void> getAll(
       {DateTime? dateFrom, DateTime? dateUntil, List<int>? status});
 
   Future<void> getOperation({
-    required operationKey,
+    required String operationKey,
   });
 }
 
@@ -67,7 +67,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     try {
       changeState(AppStateLoading());
       await cancelOperationRepository(operationKey);
-      changeState(AppStateDone());
+      changeState(AppStateDone("Operação cancelada com sucesso!"));
     } catch (e) {
       changeState(AppStateError(e.toString()));
     }
@@ -126,6 +126,8 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       changeState(AppStateLoading());
       await updateProgressOperationRepository(
           operationKey: operationKey, progress: progress);
+      changeState(AppStateDone("Operação atualizada com sucesso!"));
+
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
