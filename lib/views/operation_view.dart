@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/operation_status_enum.dart';
+import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/functions/futures.dart';
 import 'package:martinlog_web/input_formaters/liscense_plate_input_formatter.dart';
@@ -417,31 +418,28 @@ class OperationWidget extends StatefulWidget {
 class _OperationWidgetState extends State<OperationWidget>
     with SingleTickerProviderStateMixin {
   late final TextEditingController progressEditingController;
-  late final AnimationController animationController;
-  late final Animation<double> animation;
   final controller = simple.get<OperationViewModel>();
+  late final Worker worker;
   @override
   void initState() {
-    animationController = AnimationController(vsync: this, duration: 2.seconds);
-    animation = Tween<double>(
-            begin: 0.0, end: widget.operationModel.progress.toDouble() / 100)
-        .animate(animationController);
-
-    animationController.addListener(() {
-      setState(() {});
-    });
-
-    WidgetsBinding.instance.addPersistentFrameCallback((timeStamp) {
-      animationController.forward();
-    });
     progressEditingController =
         TextEditingController(text: widget.operationModel.progress.toString());
+    worker = ever(controller.appState, (appState) {
+      if (appState is AppStateError) {
+        progressEditingController.text =
+            widget.operationModel.progress.toString();
+        setState(() {});
+      }
+    });
+    progressEditingController.addListener(() {
+      setState(() {});
+    });
     super.initState();
   }
 
   @override
   void dispose() {
-    animationController.dispose();
+    worker.dispose();
     super.dispose();
   }
 
@@ -464,6 +462,16 @@ class _OperationWidgetState extends State<OperationWidget>
               title: widget.operationModel.operationKey.substring(0, 8),
               backgroundColor: Colors.grey,
               onAction: () {},
+            ),
+            SizedBox(
+              width: 8.w,
+              child: Text(
+                widget.operationModel.createdAt.ddMMyyyyHHmmss,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.displayMedium(context).copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
             SizedBox(
               width: 8.w,
@@ -515,25 +523,25 @@ class _OperationWidgetState extends State<OperationWidget>
                 alignment: Alignment.center,
                 children: [
                   Text(
-                    "${widget.operationModel.progress}%",
+                    "${progressEditingController.text}%",
                     style: AppTextStyle.displaySmall(context).copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   CircularProgressIndicator(
-                    value: animation.value,
+                    value: double.parse(progressEditingController.text) / 100,
                     color: widget.operationModel.idOperationStatus ==
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus
                         ? context.appTheme.primaryColor
                         : Colors.grey,
                     backgroundColor: Colors.grey.shade200,
-                    semanticsValue: widget.operationModel.progress.toString(),
+                    semanticsValue: progressEditingController.text,
                   ),
                 ],
               ),
             ),
             SizedBox(
-              width: 8.w,
+              width: 5.w,
               child: TextFormFieldWidget<UnderlineInputBorder>(
                 controller: progressEditingController,
                 enable: controller.appState.value is! AppStateLoading &&

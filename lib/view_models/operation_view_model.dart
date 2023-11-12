@@ -80,10 +80,12 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       required String description}) async {
     try {
       changeState(AppStateLoading());
-      await createOperationRepository(
+      final operationModel = await createOperationRepository(
           dockCode: dockCode,
           liscensePlate: liscensePlate,
           description: description);
+      operations.add(operationModel);
+      await getAll();
       BannerComponent(
         message: "Operação criada com sucesso",
         backgroundColor: Colors.green,
@@ -100,8 +102,11 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     try {
       if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
-      operations.value = await getOperationsRepository(
+      final operations = await getOperationsRepository(
           dateFrom: dateFrom, dateUntil: dateUntil, status: status);
+
+      this.operations.value = operations
+        ..sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 0 : 1);
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -126,8 +131,6 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       changeState(AppStateLoading());
       await updateProgressOperationRepository(
           operationKey: operationKey, progress: progress);
-      changeState(AppStateDone("Operação atualizada com sucesso!"));
-
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
