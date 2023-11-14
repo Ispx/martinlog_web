@@ -86712,7 +86712,7 @@ break
 case 3:q=2
 h=p
 l=t.z
-$.h4.T(0,A.ao(["URL_BASE","http://api-intreguei.oxpay.com.br","ENVIRONMENT","dev","APP_NAME","Plataforma Martin log"],l,l))
+$.h4.T(0,A.ao(["URL_BASE","http://18.236.162.241","ENVIRONMENT","dev","APP_NAME","Plataforma Martin log"],l,l))
 A.aw_().$1("OCORREU UM ERRO NA LEITURA DO ARQUIVO DE AMBIENTE")
 s=5
 break
@@ -86924,7 +86924,7 @@ var $async$$2=A.S(function(a1,a2){if(a1===1){o=a2
 s=p}while(true)switch(s){case 0:p=4
 k=t.z
 s=7
-return A.W(n.a.HF(0,A.ao(["document",a,"password",a0],t.N,k),B.q0,n.b+"/login/Document",t.k8),$async$$2)
+return A.W(n.a.HF(0,A.ao(["document",a,"password",a0],t.N,k),B.q0,n.b+"/login",t.k8),$async$$2)
 case 7:m=a2
 k=A.axR(m.a,k,k,k,k)
 j=k.a
