@@ -33,7 +33,7 @@ class App extends StatelessWidget {
           buttonEnableColor: Colors.green,
           disableColor: Colors.grey,
           buttonDisableColor: Colors.grey,
-          hintFieldColor: Colors.black,
+          hintFieldColor: Colors.grey.shade300,
           borderColor: Colors.black,
           titleColor: Colors.black,
           greyColor: Colors.green,

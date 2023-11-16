@@ -5,15 +5,19 @@ import 'package:get/get.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/operation_status_enum.dart';
+import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/functions/futures.dart';
 import 'package:martinlog_web/input_formaters/liscense_plate_input_formatter.dart';
 import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
+import 'package:martinlog_web/models/auth_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
+import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
+import 'package:martinlog_web/views/auth_view.dart';
 import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
 import 'package:martinlog_web/widgets/drawer_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -463,16 +467,26 @@ class _OperationWidgetState extends State<OperationWidget>
               backgroundColor: Colors.grey,
               onAction: () {},
             ),
-            SizedBox(
-              width: 8.w,
-              child: Text(
-                widget.operationModel.createdAt.ddMMyyyyHHmmss,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyle.displayMedium(context).copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+            Text(
+              widget.operationModel.createdAt.ddMMyyyyHHmmss,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyle.displayMedium(context).copyWith(
+                fontWeight: FontWeight.w600,
               ),
             ),
+            simple.get<AuthViewModel>().authModel!.idProfile.getProfile() ==
+                    ProfileTypeEnum.MASTER
+                ? SizedBox(
+                    width: 10.w,
+                    child: Text(
+                      widget.operationModel.companyModel.fantasyName,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyle.displayMedium(context).copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(),
             SizedBox(
               width: 8.w,
               child: Text(

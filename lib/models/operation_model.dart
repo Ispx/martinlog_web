@@ -1,10 +1,12 @@
 import 'package:martinlog_web/extensions/string_extension.dart';
+import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
 
 class OperationModel {
   String operationKey;
   DockModel? dockModel;
-  int idCompany;
+  CompanyModel companyModel;
+
   int idUser;
   String liscensePlate;
   int progress;
@@ -15,7 +17,7 @@ class OperationModel {
   OperationModel({
     required this.operationKey,
     this.dockModel,
-    required this.idCompany,
+    required this.companyModel,
     required this.idUser,
     required this.liscensePlate,
     required this.progress,
@@ -29,7 +31,7 @@ class OperationModel {
     return {
       'operationKey': operationKey,
       'dock': dockModel?.toJson(),
-      'idCompany': idCompany,
+      'company': companyModel.toJson(),
       'idUser': idUser,
       'liscensePlate': liscensePlate,
       'progress': progress,
@@ -43,7 +45,7 @@ class OperationModel {
   factory OperationModel.fromJson(Map data) {
     return OperationModel(
       operationKey: data['operationKey'],
-      idCompany: data['idCompany'],
+      companyModel: CompanyModel.fromJson(data['company']),
       idUser: data['idUser'],
       liscensePlate: data['liscensePlate'],
       dockModel: data['dock'] != null ? DockModel.fromJson(data['dock']) : null,
@@ -66,7 +68,7 @@ class OperationModel {
     return OperationModel(
       operationKey: operationKey,
       dockModel: dockModel ?? this.dockModel,
-      idCompany: idCompany,
+      companyModel: companyModel,
       idUser: idUser,
       liscensePlate: liscensePlate,
       progress: progress ?? this.progress,

@@ -1,10 +1,12 @@
 import 'package:easy_mask/easy_mask.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/state_manager.dart';
 import 'package:martinlog_web/core/consts/routes.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
+import 'package:martinlog_web/images/app_images.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
 import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/state/app_state.dart';
@@ -14,6 +16,7 @@ import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/widgets/buttom_widget.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:scaffold_responsive/scaffold_responsive.dart';
 
 class AuthView extends StatefulWidget {
@@ -77,11 +80,11 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
               ? Flexible(
                   flex: 4,
                   child: Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       image: DecorationImage(
                         fit: BoxFit.cover,
                         image: AssetImage(
-                          "assets/images/background.jpeg",
+                          AppImages.background,
                         ),
                       ),
                     ),
@@ -91,17 +94,14 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
           Flexible(
             flex: 3,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSize.padding),
+              padding: EdgeInsets.symmetric(horizontal: 5.w),
               child: Column(
                 children: [
-                  const Gap(30),
-                  Text(
-                    "MARTIN LOG",
-                    style: AppTextStyle.displayLarge(context).copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Gap(5.h),
+                  SvgPicture.asset(
+                    AppImages.longLogo,
+                    height: 10.w,
                   ),
-                  const Gap(30),
                   Expanded(
                     child: Form(
                       key: formState,
@@ -109,13 +109,40 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Align(
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Seja Bem-vindo!",
+                                  style: AppTextStyle.displayLarge(context)
+                                      .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16.sp,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: AppSize.padding / 2,
+                                ),
+                                Text(
+                                  "Insira seu CPF e Senha para efetuar o login.",
+                                  style: AppTextStyle.displaySmall(context)
+                                      .copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Gap(3.h),
                           Text(
                             "Login",
                             style: AppTextStyle.displayMedium(context).copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const Gap(15),
+                          Gap(3.h),
                           TextFormFieldWidget<OutlineInputBorder>(
                             label: "CPF",
                             validator: isNotCPF,
@@ -131,7 +158,7 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
                               ),
                             ],
                           ),
-                          const Gap(20),
+                          Gap(4.h),
                           Obx(
                             () => TextFormFieldWidget<OutlineInputBorder>(
                               label: "Senha",
@@ -154,7 +181,24 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
                               },
                             ),
                           ),
-                          const Gap(30),
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: Padding(
+                              padding:
+                                  EdgeInsets.only(top: AppSize.padding / 2),
+                              child: TextButton(
+                                onPressed: () {},
+                                child: Text(
+                                  "Esqueci minha senha",
+                                  style: AppTextStyle.displaySmall(context)
+                                      .copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Gap(AppSize.padding * 2),
                           Obx(() {
                             return ButtomWidget(
                               title: "Acessar",
@@ -174,9 +218,7 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: AppSize.padding * 10,
-                  )
+                  Gap(5.h),
                 ],
               ),
             ),

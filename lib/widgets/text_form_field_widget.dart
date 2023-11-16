@@ -82,7 +82,6 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
       maxLength: maxLength,
       minLines: minLines,
       maxLines: maxLines,
-      
       onTap: onTap,
       focusNode: focusNode,
       textInputAction: textInputAction,
@@ -124,13 +123,13 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                 ? OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      width: 0.5,
+                      width: 0.1,
                       color: digitalAccountTheme.borderColor,
                     ),
                   )
                 : UnderlineInputBorder(
                     borderSide: BorderSide(
-                      width: 0.5,
+                      width: 0.1,
                       color:
                           digitalAccountTheme.hintFieldColor.withOpacity(0.1),
                     ),
@@ -141,14 +140,14 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                 ? OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      width: 0.5,
+                      width: 0.1,
                       color:
                           digitalAccountTheme.hintFieldColor.withOpacity(0.1),
                     ),
                   )
                 : UnderlineInputBorder(
                     borderSide: BorderSide(
-                      width: 0.5,
+                      width: 0.1,
                       color:
                           digitalAccountTheme.hintFieldColor.withOpacity(0.1),
                     ),
@@ -156,7 +155,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
         border: T == null
             ? UnderlineInputBorder(
                 borderSide: BorderSide(
-                  width: 0.5,
+                  width: 0.1,
                   color: digitalAccountTheme.hintFieldColor.withOpacity(0.1),
                 ),
               )
@@ -164,13 +163,13 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                 ? OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      width: 0.5,
+                      width: 0.1,
                       color: digitalAccountTheme.borderColor,
                     ),
                   )
                 : UnderlineInputBorder(
                     borderSide: BorderSide(
-                      width: 0.5,
+                      width: 0.1,
                       color:
                           digitalAccountTheme.hintFieldColor.withOpacity(0.1),
                     ),
@@ -181,13 +180,13 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                 ? OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      width: 0.5,
+                      width: 0.1,
                       color: digitalAccountTheme.borderColor,
                     ),
                   )
                 : UnderlineInputBorder(
                     borderSide: BorderSide(
-                      width: 0.5,
+                      width: 0.1,
                       color: digitalAccountTheme.borderColor,
                     ),
                   ),
@@ -197,13 +196,13 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                 ? OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      width: 0.5,
+                      width: 0.1,
                       color: digitalAccountTheme.redColor,
                     ),
                   )
                 : UnderlineInputBorder(
                     borderSide: BorderSide(
-                      width: 0.5,
+                      width: 0.1,
                       color: digitalAccountTheme.redColor,
                     ),
                   ),

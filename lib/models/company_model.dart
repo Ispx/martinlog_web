@@ -1,3 +1,5 @@
+import 'package:martinlog_web/extensions/string_extension.dart';
+
 class CompanyModel {
   String socialRason;
   String fantasyName;
@@ -49,8 +51,9 @@ class CompanyModel {
       zipcode: map['zipcode'],
       streetNumber: map['streetNumber'],
       streetComplement: map['streetComplement'],
-      createdAt:
-          map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
+      createdAt: map['createdAt'] != null
+          ? map['createdAt'].toString().parseToDateTime()!
+          : null,
     );
   }
 
