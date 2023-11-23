@@ -6,6 +6,7 @@ import 'package:gap/gap.dart';
 import 'package:get/state_manager.dart';
 import 'package:martinlog_web/core/consts/routes.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
+import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/images/app_images.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
 import 'package:martinlog_web/navigator/go_to.dart';
@@ -58,6 +59,7 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: context.appTheme.backgroundColor,
       body: _buildBody(),
     );
   }
@@ -81,6 +83,10 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
                   flex: 4,
                   child: Container(
                     decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(10),
+                        bottomRight: Radius.circular(10),
+                      ),
                       image: DecorationImage(
                         fit: BoxFit.cover,
                         image: AssetImage(
@@ -97,29 +103,27 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
               padding: EdgeInsets.symmetric(horizontal: 5.w),
               child: Column(
                 children: [
-                  Gap(5.h),
-                  SvgPicture.asset(
-                    AppImages.longLogo,
-                    height: 10.w,
+                  Gap(8.h),
+                  Image.asset(
+                    AppImages.logo,
+                    height: 8.w,
                   ),
+                  Gap(8.h),
                   Expanded(
                     child: Form(
                       key: formState,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Align(
                             alignment: Alignment.center,
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   "Seja Bem-vindo!",
                                   style: AppTextStyle.displayLarge(context)
                                       .copyWith(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16.sp,
+                                    fontSize: 18.sp,
                                   ),
                                 ),
                                 SizedBox(
@@ -136,10 +140,14 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
                             ),
                           ),
                           Gap(3.h),
-                          Text(
-                            "Login",
-                            style: AppTextStyle.displayMedium(context).copyWith(
-                              fontWeight: FontWeight.w600,
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Login",
+                              style:
+                                  AppTextStyle.displayMedium(context).copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                           Gap(3.h),
@@ -201,7 +209,7 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
                           Gap(AppSize.padding * 2),
                           Obx(() {
                             return ButtomWidget(
-                              title: "Acessar",
+                              title: "Acessar agora",
                               isLoading:
                                   controller.appState.value is AppStateLoading,
                               radius: 10,

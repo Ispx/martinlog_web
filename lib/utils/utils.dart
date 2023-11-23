@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
+import 'package:martinlog_web/extensions/string_extension.dart';
 import 'package:martinlog_web/helpers/formater_helper.dart';
 
 abstract class Utils {
@@ -38,6 +41,10 @@ abstract class Utils {
     } catch (e) {
       return false;
     }
+  }
+
+  static Color color(String hex) {
+    return Color(hex.replaceAll("#", "0xFF").parseToType<int>());
   }
 
   static bool containsChar(String source) =>

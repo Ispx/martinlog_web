@@ -100,7 +100,7 @@ class AppThemeData {
         ),
         appBarVariantTheme: const AppBarTheme(
           backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.black),
+          iconTheme: IconThemeData(color: Colors.white),
         ),
       ),
     ],

@@ -3,6 +3,7 @@ import 'package:martinlog_web/core/config/env_confg.dart';
 import 'package:martinlog_web/core/consts/routes.dart';
 import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/style/theme/app_theme.dart';
+import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/view_models/dashboard_view.dart';
 import 'package:martinlog_web/views/auth_view.dart';
 import 'package:martinlog_web/views/company_view.dart';
@@ -24,19 +25,19 @@ class App extends StatelessWidget {
         scaffoldMessengerKey: scaffoldMessengerState,
         title: EnvConfig.appName,
         theme: AppThemeData(
-          primaryColor: Colors.greenAccent,
-          primaryVariant: Colors.blueAccent,
-          secondColor: Colors.blue,
+          primaryColor: Utils.color("#D5DE23"),
+          primaryVariant: Utils.color("#CFD022"),
+          secondColor: Utils.color("#445C7E"),
           greenColor: Colors.grey,
-          backgroundColor: Colors.white,
+          backgroundColor: Utils.color("#F5F7FA"),
           iconColor: Colors.grey,
-          buttonEnableColor: Colors.green,
+          buttonEnableColor: Utils.color("#D5DE23"),
           disableColor: Colors.grey,
           buttonDisableColor: Colors.grey,
-          hintFieldColor: Colors.grey.shade300,
-          borderColor: Colors.black,
+          hintFieldColor: Utils.color("#5A789D"),
+          borderColor: Utils.color("#5A789D"),
           titleColor: Colors.black,
-          greyColor: Colors.green,
+          greyColor: Utils.color("#CCCCCC"),
           redColor: Colors.red,
         ).theme,
         initialRoute: Routes.auth,

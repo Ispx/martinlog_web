@@ -94,10 +94,12 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
       onChanged: onChange,
       textCapitalization: textCapitalization,
       decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
         helperText: helpText,
         counterText: counterText,
-        errorStyle: TextStyle(
-          color: Colors.grey[400],
+        errorStyle: const TextStyle(
+          color: Colors.red,
         ),
         labelText: label,
         prefixStyle: AppTextStyle.displayMedium(context).copyWith(
@@ -110,6 +112,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
         hintText: hint,
         hintStyle: AppTextStyle.displayMedium(context).copyWith(
           fontWeight: FontWeight.bold,
+          color: digitalAccountTheme.hintFieldColor,
         ),
         suffixIcon: sufix != null
             ? Padding(
