@@ -26,7 +26,7 @@ final class EnvConfig implements IEnvConfig {
       _data = {for (var row in rows) row.split("=").first: row.split("=").last};
     } catch (e) {
       _data.addAll({
-        "URL_BASE": "http://0.0.0.0",
+        "URL_BASE": "http://0.0.0.0:80",
         "ENVIRONMENT": "dev",
         "APP_NAME": "Plataforma Martin log"
       });

@@ -5,8 +5,8 @@ import 'package:martinlog_web/view_models/operation_view_model.dart';
 
 Future getAccountInfo = Future.sync(() async {
   await simple.get<OperationViewModel>().getAll();
-  // await simple.get<CompanyViewModel>().getCompany();
-  // await simple.get<CompanyViewModel>().getAllCompanies();
+  await simple.get<CompanyViewModel>().getCompany();
+  await simple.get<CompanyViewModel>().getAllCompanies();
   await simple.get<DockViewModel>().getAll();
   return true;
 });

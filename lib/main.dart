@@ -19,6 +19,7 @@ import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
+import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 
 void main() async {
@@ -125,7 +126,9 @@ void main() async {
               i.get<UpdateProgressOperationRepository>(),
         ),
       );
-
+      i.addSingleton<MenuViewModel>(
+        () => MenuViewModel(),
+      );
       return i;
     },
   );

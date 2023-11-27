@@ -13,11 +13,14 @@ import 'package:martinlog_web/input_formaters/liscense_plate_input_formatter.dar
 import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
 import 'package:martinlog_web/models/auth_model.dart';
+import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/views/auth_view.dart';
+import 'package:martinlog_web/widgets/app_bar_widget.dart';
+import 'package:martinlog_web/widgets/buttom_widget.dart';
 import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
 import 'package:martinlog_web/widgets/drawer_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -65,70 +68,49 @@ class _OperationViewState extends State<OperationView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Operações",
-        ),
+    return Container(
+      height: double.maxFinite,
+      width: double.maxFinite,
+      padding: EdgeInsets.symmetric(
+        vertical: AppSize.padding,
+        horizontal: AppSize.padding * 2,
       ),
-      drawer: const DrawerWidget(),
-      body: SizedBox(
-        height: double.maxFinite,
-        width: double.maxFinite,
-        child: FutureBuilder(
-            future: getAccountInfo,
-            builder: (context, snap) {
-              if (snap.hasError) {
-                return Text(snap.error.toString());
-              }
-              if (!snap.hasData) {
-                return const Center(child: CircularProgressIndicatorWidget());
-              }
-              return Column(
-                children: [
-                  Obx(() {
-                    return controller.appState.value is AppStateLoading
-                        ? const SizedBox(
-                            height: 8,
-                            child: LinearProgressIndicator(),
-                          )
-                        : const SizedBox.shrink();
-                  }),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.all(AppSize.margin),
-                      child: Column(
-                        children: [
-                          const CreateOperationWidget(),
-                          const Gap(30),
-                          Expanded(
-                            child: Obx(() {
-                              return PageWidget(
-                                itens: controller.operations.value
-                                    .map(
-                                      (operationModel) => Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: AppSize.padding / 2,
-                                        ),
-                                        child: OperationWidget(
-                                          operationModel: operationModel,
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                                onRefresh: () async =>
-                                    await controller.getAll(),
-                                limitByPage: 10,
-                              );
-                            }),
-                          ),
-                        ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Obx(() {
+              return controller.appState.value is AppStateLoading
+                  ? const SizedBox(
+                      height: 8,
+                      child: LinearProgressIndicator(),
+                    )
+                  : const SizedBox.shrink();
+            }),
+            const Gap(5),
+            const CreateOperationWidget(),
+            const Gap(5),
+            const Divider(),
+            const Gap(30),
+            Obx(() {
+              return PageWidget(
+                itens: controller.operations.value
+                    .map(
+                      (operationModel) => Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: AppSize.padding / 2,
+                        ),
+                        child: OperationWidget(
+                          operationModel: operationModel,
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                    )
+                    .toList(),
+                onRefresh: () async => await controller.getAll(),
+                limitByPage: 10,
               );
             }),
+          ],
+        ),
       ),
     );
   }
@@ -161,15 +143,12 @@ class _PageWidgetState extends State<PageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: EdgeInsets.zero,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      color: Colors.white,
+      height: double.maxFinite,
       child: Padding(
         padding: EdgeInsets.symmetric(
-          vertical: AppSize.padding,
+          vertical: AppSize.padding * 1.5,
           horizontal: AppSize.padding / 2,
         ),
         child: Column(
@@ -253,89 +232,124 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
   Widget build(BuildContext context) {
     return Obx(() {
       return SizedBox(
-        child: Card(
+        child: Container(
           margin: EdgeInsets.zero,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          color: Colors.white,
           child: Padding(
             padding: EdgeInsets.symmetric(
               vertical: AppSize.padding * 1.5,
-              horizontal: AppSize.padding * 2,
             ),
             child: Form(
               key: formState,
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      buildSelectable(
-                        context: context,
-                        title: "Tipo",
-                        child: DropBoxWidget<DockType>(
-                          controller: dockTypeEditingController,
-                          enable: controller.appState.value is! AppStateLoading,
-                          dropdownMenuEntries: DockType.values
-                              .map(
-                                (e) => DropdownMenuEntry<DockType>(
-                                  value: e,
-                                  label: e.description,
-                                ),
-                              )
-                              .toList(),
-                          onSelected: (DockType? e) {
-                            dockTypeSelected = e;
-                            dockModelSelected = null;
-                            dockCodeEditingController.clear();
-                            setState(() {});
-                          },
-                        ),
-                      ),
-                      buildSelectable(
-                        context: context,
-                        title: "Doca",
-                        child: DropBoxWidget<DockModel>(
-                          controller: dockCodeEditingController,
-                          enable: controller.appState.value is! AppStateLoading,
-                          dropdownMenuEntries: getDocksByDockType()
-                              .map(
-                                (e) => DropdownMenuEntry<DockModel>(
-                                  value: e,
-                                  label: e.code,
-                                ),
-                              )
-                              .toList(),
-                          onSelected: (DockModel? e) {
-                            dockModelSelected = e;
-                            setState(() {});
-                          },
-                        ),
-                      ),
-                      buildSelectable(
-                        context: context,
-                        title: "Placa",
-                        child: SizedBox(
-                          width: 10.w,
-                          child: TextFormFieldWidget<OutlineInputBorder>(
-                            controller: liscensePlateEditingController,
+                      Expanded(
+                        child: buildSelectable(
+                          context: context,
+                          title: "Tipo",
+                          child: DropBoxWidget<DockType>(
+                            controller: dockTypeEditingController,
                             enable:
                                 controller.appState.value is! AppStateLoading,
-                            validator: isNotLiscensePlate,
-                            inputFormatters: [
-                              UpperCaseTextFormatter(),
-                              LiscensePlateInputFormatter(),
-                            ],
+                            width: 15.w,
+                            dropdownMenuEntries: DockType.values
+                                .map(
+                                  (e) => DropdownMenuEntry<DockType>(
+                                    value: e,
+                                    label: e.description,
+                                  ),
+                                )
+                                .toList(),
+                            onSelected: (DockType? e) {
+                              dockTypeSelected = e;
+                              dockModelSelected = null;
+                              dockCodeEditingController.clear();
+                              setState(() {});
+                            },
                           ),
                         ),
                       ),
-                      buildSelectable(
-                        context: context,
-                        title: "Descrição",
-                        child: SizedBox(
-                          width: 15.w,
+                      Expanded(
+                        child: buildSelectable(
+                          context: context,
+                          title: "Doca",
+                          child: DropBoxWidget<DockModel>(
+                            controller: dockCodeEditingController,
+                            enable:
+                                controller.appState.value is! AppStateLoading,
+                            width: 15.w,
+                            dropdownMenuEntries: getDocksByDockType()
+                                .map(
+                                  (e) => DropdownMenuEntry<DockModel>(
+                                    value: e,
+                                    label: e.code,
+                                  ),
+                                )
+                                .toList(),
+                            onSelected: (DockModel? e) {
+                              dockModelSelected = e;
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: buildSelectable(
+                          context: context,
+                          title: "Placa",
+                          child: SizedBox(
+                            width: 15.w,
+                            child: TextFormFieldWidget<OutlineInputBorder>(
+                              controller: liscensePlateEditingController,
+                              enable:
+                                  controller.appState.value is! AppStateLoading,
+                              validator: isNotLiscensePlate,
+                              inputFormatters: [
+                                UpperCaseTextFormatter(),
+                                LiscensePlateInputFormatter(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: buildSelectable(
+                          context: context,
+                          title: "Transportadora",
+                          child: DropBoxWidget<DockModel>(
+                            width: 20.w,
+                            controller: dockCodeEditingController,
+                            enable:
+                                controller.appState.value is! AppStateLoading,
+                            dropdownMenuEntries: getDocksByDockType()
+                                .map(
+                                  (e) => DropdownMenuEntry<DockModel>(
+                                    value: e,
+                                    label: e.code,
+                                  ),
+                                )
+                                .toList(),
+                            onSelected: (DockModel? e) {
+                              dockModelSelected = e;
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: AppSize.padding * 2,
+                  ),
+                  Row(
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        fit: FlexFit.tight,
+                        child: buildSelectable(
+                          context: context,
+                          title: "Descrição",
                           child: TextFormFieldWidget<OutlineInputBorder>(
                             controller: descriptionEditingController,
                             enable:
@@ -343,40 +357,45 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                           ),
                         ),
                       ),
-                      buildSelectable(
-                        context: context,
-                        title: "",
-                        child: SizedBox(
-                          width: 8.w,
-                          child: Obx(() {
-                            return TextActionButtom(
-                              title: "Iniciar",
-                              isLoading: isLoading.value,
-                              backgroundColor: context.appTheme.primaryColor,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: AppSize.padding,
-                                  vertical: AppSize.padding / 2),
-                              onAction: () async {
-                                if (formState.currentState?.validate() ??
-                                    false) {
-                                  isLoading.value = true;
-                                  await controller.create(
-                                    dockCode: dockModelSelected!.code,
-                                    liscensePlate:
-                                        liscensePlateEditingController.text,
-                                    description:
-                                        descriptionEditingController.text,
-                                  );
-                                  isLoading.value = false;
-                                  clearFields();
-                                }
+                      SizedBox(
+                        width: AppSize.padding * 2,
+                      ),
+                      Flexible(
+                        child: Center(
+                          child: buildSelectable(
+                            context: context,
+                            title: "",
+                            child: Obx(
+                              () {
+                                return ButtomWidget(
+                                  isLoading: isLoading.value,
+                                  radius: 10,
+                                  backgroundColor: context.appTheme.secondColor,
+                                  textColor: Colors.white,
+                                  title: 'Iniciar operação',
+                                  onTap: () async {
+                                    if (formState.currentState?.validate() ??
+                                        false) {
+                                      isLoading.value = true;
+                                      await controller.create(
+                                        dockCode: dockModelSelected!.code,
+                                        liscensePlate:
+                                            liscensePlateEditingController.text,
+                                        description:
+                                            descriptionEditingController.text,
+                                      );
+                                      isLoading.value = false;
+                                      clearFields();
+                                    }
+                                  },
+                                );
                               },
-                            );
-                          }),
+                            ),
+                          ),
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -391,6 +410,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
       required String title,
       required Widget child}) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
@@ -421,182 +441,192 @@ class OperationWidget extends StatefulWidget {
 
 class _OperationWidgetState extends State<OperationWidget>
     with SingleTickerProviderStateMixin {
-  late final TextEditingController progressEditingController;
+  var progressObs = 0.obs;
+
   final controller = simple.get<OperationViewModel>();
-  late final Worker worker;
+
+  late final Worker workerAppState;
+  late final Worker workerProgress;
+
   @override
   void initState() {
-    progressEditingController =
-        TextEditingController(text: widget.operationModel.progress.toString());
-    worker = ever(controller.appState, (appState) {
+    progressObs.value = widget.operationModel.progress;
+    workerAppState = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
-        progressEditingController.text =
-            widget.operationModel.progress.toString();
+        progressObs.update((val) {
+          progressObs.value = widget.operationModel.progress;
+        });
         setState(() {});
       }
     });
-    progressEditingController.addListener(() {
-      setState(() {});
+
+    workerProgress = debounce(progressObs, (progressUpdated) async {
+      if (controller.appState.value is AppStateLoading) return;
+      await controller.updateProgress(
+          operationKey: widget.operationModel.operationKey,
+          progress: progressObs.value);
+      await controller.getAll();
     });
+
     super.initState();
   }
 
   @override
   void dispose() {
-    worker.dispose();
+    workerAppState.dispose();
+    workerProgress.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: AppSize.elevation,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: AppSize.padding * 1.5,
-          horizontal: AppSize.padding,
+    final appTheme = context.appTheme;
+    return Obx(() {
+      return Card(
+        elevation: 0.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            TextActionButtom(
-              title: widget.operationModel.operationKey.substring(0, 8),
-              backgroundColor: Colors.grey,
-              onAction: () {},
-            ),
-            Text(
-              widget.operationModel.createdAt.ddMMyyyyHHmmss,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyle.displayMedium(context).copyWith(
-                fontWeight: FontWeight.w600,
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: AppSize.padding * 1.5,
+            horizontal: AppSize.padding,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: TextActionButtom(
+                  title: widget.operationModel.operationKey.substring(0, 8),
+                  backgroundColor: appTheme.primaryColor,
+                  titleColor: appTheme.titleColor,
+                  onAction: () {},
+                ),
               ),
-            ),
-            simple.get<AuthViewModel>().authModel!.idProfile.getProfile() ==
-                    ProfileTypeEnum.MASTER
-                ? SizedBox(
-                    width: 10.w,
-                    child: Text(
-                      widget.operationModel.companyModel.fantasyName,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyle.displayMedium(context).copyWith(
+              Flexible(
+                flex: 2,
+                child: Text(
+                  widget.operationModel.createdAt.ddMMyyyyHHmmss,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyle.displayMedium(context).copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: appTheme.titleColor,
+                  ),
+                ),
+              ),
+              simple.get<AuthViewModel>().authModel!.idProfile.getProfile() ==
+                      ProfileTypeEnum.MASTER
+                  ? Flexible(
+                      flex: 2,
+                      child: Text(
+                        widget.operationModel.companyModel.fantasyName,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyle.displayMedium(context).copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: appTheme.titleColor,
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+              Flexible(
+                child: Text(
+                  widget.operationModel.dockModel!.idDockType
+                      .getDockType()
+                      .description,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyle.displayMedium(context).copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: appTheme.titleColor,
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Text(
+                  widget.operationModel.dockModel?.code ?? '',
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyle.displayMedium(context).copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: appTheme.titleColor,
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Text(
+                  widget.operationModel.liscensePlate,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyle.displayMedium(context).copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: appTheme.titleColor,
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Text(
+                  widget.operationModel.idOperationStatus
+                      .getOperationStatus()
+                      .description,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyle.displayMedium(context).copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: appTheme.titleColor,
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Text(
+                      "${progressObs.value}%",
+                      style: AppTextStyle.displaySmall(context).copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                  )
-                : const SizedBox.shrink(),
-            SizedBox(
-              width: 8.w,
-              child: Text(
-                widget.operationModel.dockModel!.idDockType
-                    .getDockType()
-                    .description,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyle.displayMedium(context).copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 8.w,
-              child: Text(
-                widget.operationModel.dockModel?.code ?? '',
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyle.displayMedium(context).copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 8.w,
-              child: Text(
-                widget.operationModel.liscensePlate,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyle.displayMedium(context).copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 8.w,
-              child: Text(
-                widget.operationModel.idOperationStatus
-                    .getOperationStatus()
-                    .description,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyle.displayMedium(context).copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 8.w,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Text(
-                    "${progressEditingController.text}%",
-                    style: AppTextStyle.displaySmall(context).copyWith(
-                      fontWeight: FontWeight.w600,
+                    CircularProgressIndicator(
+                      value: progressObs.value / 100,
+                      color: widget.operationModel.idOperationStatus ==
+                              OperationStatusEnum.IN_PROGRESS.idOperationStatus
+                          ? context.appTheme.primaryColor
+                          : appTheme.greyColor,
+                      backgroundColor: Colors.grey.shade200,
+                      semanticsValue: progressObs.value.toString(),
                     ),
-                  ),
-                  CircularProgressIndicator(
-                    value: double.parse(progressEditingController.text) / 100,
-                    color: widget.operationModel.idOperationStatus ==
-                            OperationStatusEnum.IN_PROGRESS.idOperationStatus
-                        ? context.appTheme.primaryColor
-                        : Colors.grey,
-                    backgroundColor: Colors.grey.shade200,
-                    semanticsValue: progressEditingController.text,
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              width: 5.w,
-              child: TextFormFieldWidget<UnderlineInputBorder>(
-                controller: progressEditingController,
-                enable: controller.appState.value is! AppStateLoading &&
-                    widget.operationModel.idOperationStatus ==
-                        OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                maxLength: 3,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                ],
+              Flexible(
+                child: TextFormFieldWidget<OutlineInputBorder>(
+                  initialValue: progressObs.value.toString(),
+                  textAlign: TextAlign.center,
+                  fillColor: appTheme.greyColor.withOpacity(.2),
+                  enable: controller.appState.value is! AppStateLoading &&
+                      widget.operationModel.idOperationStatus ==
+                          OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                  maxLength: 3,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
+                ),
               ),
-            ),
-            TextActionButtom(
-              title: "Atualizar",
-              isEnable: widget.operationModel.idOperationStatus ==
-                  OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-              backgroundColor: Colors.blue,
-              onAction: () async {
-                if (controller.appState.value is AppStateLoading) return;
-                await controller.updateProgress(
-                    operationKey: widget.operationModel.operationKey,
-                    progress: int.parse(progressEditingController.text));
-                await controller.getAll();
-              },
-            ),
-            TextActionButtom(
-              title: "Cancelar",
-              isEnable: widget.operationModel.idOperationStatus
-                      .getOperationStatus() ==
-                  OperationStatusEnum.IN_PROGRESS,
-              backgroundColor: Colors.orange,
-              onAction: () async {
-                if (controller.appState.value is AppStateLoading) return;
-                await controller.cancel(
-                    operationKey: widget.operationModel.operationKey);
-                await controller.getAll();
-              },
-            ),
-          ],
+              TextActionButtom(
+                title: "Cancelar",
+                isEnable: widget.operationModel.idOperationStatus
+                        .getOperationStatus() ==
+                    OperationStatusEnum.IN_PROGRESS,
+                backgroundColor: appTheme.redColor,
+                onAction: () async {
+                  if (controller.appState.value is AppStateLoading) return;
+                  await controller.cancel(
+                      operationKey: widget.operationModel.operationKey);
+                  await controller.getAll();
+                },
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -606,7 +636,7 @@ class TextActionButtom extends StatelessWidget {
   final Color? backgroundColor;
   final bool isLoading;
   final bool isEnable;
-
+  final Color? titleColor;
   final EdgeInsets? padding;
   const TextActionButtom({
     super.key,
@@ -616,6 +646,7 @@ class TextActionButtom extends StatelessWidget {
     this.isLoading = false,
     this.isEnable = true,
     this.backgroundColor,
+    this.titleColor,
   });
 
   @override
@@ -651,7 +682,7 @@ class TextActionButtom extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyle.displayMedium(context).copyWith(
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: titleColor ?? Colors.white,
                 ),
               ),
       ),

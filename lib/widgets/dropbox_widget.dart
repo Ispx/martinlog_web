@@ -9,21 +9,27 @@ class DropBoxWidget<T> extends StatelessWidget {
 
   final List<DropdownMenuEntry<T>> dropdownMenuEntries;
   final Function(T?) onSelected;
-  const DropBoxWidget(
-      {super.key,
-      required this.controller,
-      required this.dropdownMenuEntries,
-      this.enable = true,
-      required this.onSelected});
+  final double? width;
+
+  const DropBoxWidget({
+    super.key,
+    required this.controller,
+    required this.dropdownMenuEntries,
+    this.enable = true,
+    this.width,
+    required this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
     return DropdownMenu<T>(
       controller: controller,
       enabled: enable,
-      width: 10.w,
+      width: width ?? 10.w,
       onSelected: (value) => onSelected(value),
       inputDecorationTheme: InputDecorationTheme(
+        fillColor: Colors.white,
+        filled: true,
         hintStyle: AppTextStyle.displayMedium(context).copyWith(
           fontWeight: FontWeight.bold,
         ),
@@ -41,7 +47,7 @@ class DropBoxWidget<T> extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
             width: 0.5,
-            color: context.appTheme.hintFieldColor.withOpacity(0.1),
+            color: context.appTheme.borderColor.withOpacity(0.1),
           ),
         ),
         border: OutlineInputBorder(

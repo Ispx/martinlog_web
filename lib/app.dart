@@ -8,6 +8,7 @@ import 'package:martinlog_web/view_models/dashboard_view.dart';
 import 'package:martinlog_web/views/auth_view.dart';
 import 'package:martinlog_web/views/company_view.dart';
 import 'package:martinlog_web/views/dock_view.dart';
+import 'package:martinlog_web/views/menu_view.dart';
 import 'package:martinlog_web/views/operation_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:martinlog_web/components/banner_component.dart';
@@ -53,6 +54,7 @@ class App extends StatelessWidget {
           Routes.company: (context) => CompanyView(),
           Routes.dock: (context) => DockView(),
           Routes.dashboard: (context) => DashboardView(),
+          Routes.menu: (context) => MenuView(),
         },
       );
     });

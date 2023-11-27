@@ -32,9 +32,12 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
   final int? minLines;
   final int? maxLines;
   final String? counterText;
+  final Color? fillColor;
+
   const TextFormFieldWidget({
     super.key,
     this.initialValue,
+    this.fillColor,
     this.label = '',
     this.autofocus = false,
     this.controller,
@@ -95,7 +98,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
       textCapitalization: textCapitalization,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: fillColor ?? Colors.white,
         helperText: helpText,
         counterText: counterText,
         errorStyle: const TextStyle(
@@ -126,15 +129,14 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                 ? OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      width: 0.1,
+                      width: 0.5,
                       color: digitalAccountTheme.borderColor,
                     ),
                   )
                 : UnderlineInputBorder(
                     borderSide: BorderSide(
-                      width: 0.1,
-                      color:
-                          digitalAccountTheme.hintFieldColor.withOpacity(0.1),
+                      width: 0.5,
+                      color: digitalAccountTheme.borderColor,
                     ),
                   ),
         disabledBorder: T == null
@@ -143,39 +145,32 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                 ? OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      width: 0.1,
-                      color:
-                          digitalAccountTheme.hintFieldColor.withOpacity(0.1),
+                      width: 0.5,
+                      color: digitalAccountTheme.borderColor.withOpacity(0.1),
                     ),
                   )
                 : UnderlineInputBorder(
                     borderSide: BorderSide(
-                      width: 0.1,
-                      color:
-                          digitalAccountTheme.hintFieldColor.withOpacity(0.1),
+                      width: 0.5,
+                      color: digitalAccountTheme.borderColor.withOpacity(0.1),
                     ),
                   ),
         border: T == null
             ? UnderlineInputBorder(
                 borderSide: BorderSide(
-                  width: 0.1,
-                  color: digitalAccountTheme.hintFieldColor.withOpacity(0.1),
-                ),
+                    width: 1, color: digitalAccountTheme.borderColor),
               )
             : T == OutlineInputBorder
                 ? OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      width: 0.1,
+                      width: 0.5,
                       color: digitalAccountTheme.borderColor,
                     ),
                   )
                 : UnderlineInputBorder(
                     borderSide: BorderSide(
-                      width: 0.1,
-                      color:
-                          digitalAccountTheme.hintFieldColor.withOpacity(0.1),
-                    ),
+                        width: 0.5, color: digitalAccountTheme.borderColor),
                   ),
         focusedBorder: T == null
             ? InputBorder.none
@@ -183,13 +178,13 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                 ? OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      width: 0.1,
+                      width: 0.5,
                       color: digitalAccountTheme.borderColor,
                     ),
                   )
                 : UnderlineInputBorder(
                     borderSide: BorderSide(
-                      width: 0.1,
+                      width: 0.5,
                       color: digitalAccountTheme.borderColor,
                     ),
                   ),
@@ -199,13 +194,13 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                 ? OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      width: 0.1,
+                      width: 0.5,
                       color: digitalAccountTheme.redColor,
                     ),
                   )
                 : UnderlineInputBorder(
                     borderSide: BorderSide(
-                      width: 0.1,
+                      width: 0.5,
                       color: digitalAccountTheme.redColor,
                     ),
                   ),

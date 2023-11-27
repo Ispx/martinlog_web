@@ -1,7 +1,6 @@
 import 'package:easy_mask/easy_mask.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/state_manager.dart';
 import 'package:martinlog_web/core/consts/routes.dart';
@@ -48,7 +47,7 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
             backgroundColor: Colors.red);
       }
       if (appState is AppStateDone) {
-        GoTo.removeAllPreviousAndGoTo(Routes.operation);
+        GoTo.removeAllPreviousAndGoTo(Routes.menu);
       }
     });
     menuController = ResponsiveMenuController();
