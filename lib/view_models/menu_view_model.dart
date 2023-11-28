@@ -9,6 +9,10 @@ class MenuViewModel extends GetxController {
     this.menuState.value = menuState;
   }
 
+  void changeStatus(AppState appState) {
+    menuState.value = menuState.value.copyWith(appState: appState);
+  }
+
   Future<void> changeMenu(MenuEnum menu, {Function? clousure}) async {
     try {
       if (clousure != null) {

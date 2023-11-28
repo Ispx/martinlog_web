@@ -1,6 +1,8 @@
 import 'package:martinlog_web/extensions/string_extension.dart';
 
 class CompanyModel {
+  int idCompany;
+
   String socialRason;
   String fantasyName;
   String cnpj;
@@ -13,6 +15,7 @@ class CompanyModel {
   DateTime? createdAt;
 
   CompanyModel({
+    required this.idCompany,
     required this.socialRason,
     required this.fantasyName,
     required this.cnpj,
@@ -42,6 +45,7 @@ class CompanyModel {
 
   factory CompanyModel.fromJson(Map<String, dynamic> map) {
     return CompanyModel(
+      idCompany: map['idCompany'],
       socialRason: map['socialRason'],
       fantasyName: map['fantasyName'],
       cnpj: map['cnpj'],
@@ -81,6 +85,7 @@ class CompanyModel {
     String? streetComplement,
   }) {
     return CompanyModel(
+      idCompany: idCompany,
       socialRason: socialRason ?? this.socialRason,
       fantasyName: fantasyName ?? this.fantasyName,
       cnpj: cnpj,

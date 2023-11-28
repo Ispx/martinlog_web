@@ -8,21 +8,17 @@ import 'package:martinlog_web/enums/operation_status_enum.dart';
 import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
-import 'package:martinlog_web/functions/futures.dart';
+import 'package:martinlog_web/extensions/profile_type_extension.dart';
 import 'package:martinlog_web/input_formaters/liscense_plate_input_formatter.dart';
 import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
-import 'package:martinlog_web/models/auth_model.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
+import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
-import 'package:martinlog_web/views/auth_view.dart';
-import 'package:martinlog_web/widgets/app_bar_widget.dart';
-import 'package:martinlog_web/widgets/buttom_widget.dart';
-import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
-import 'package:martinlog_web/widgets/drawer_widget.dart';
+import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
@@ -78,14 +74,6 @@ class _OperationViewState extends State<OperationView> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Obx(() {
-              return controller.appState.value is AppStateLoading
-                  ? const SizedBox(
-                      height: 8,
-                      child: LinearProgressIndicator(),
-                    )
-                  : const SizedBox.shrink();
-            }),
             const Gap(5),
             const CreateOperationWidget(),
             const Gap(5),
@@ -100,6 +88,7 @@ class _OperationViewState extends State<OperationView> {
                           vertical: AppSize.padding / 2,
                         ),
                         child: OperationWidget(
+                          key: ObjectKey(operationModel),
                           operationModel: operationModel,
                         ),
                       ),
@@ -188,11 +177,16 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
     with ValidatorsMixin {
   DockType? dockTypeSelected = null;
   DockModel? dockModelSelected = null;
+  CompanyModel? companyModelSelected = null;
+
   var isLoading = false.obs;
+  var isOpen = false.obs;
+  late final List<CompanyModel> companies;
   late TextEditingController liscensePlateEditingController;
   late TextEditingController descriptionEditingController;
   late TextEditingController dockTypeEditingController;
   late TextEditingController dockCodeEditingController;
+  late TextEditingController companyEditingController;
 
   late final GlobalKey<FormState> formState;
   final controller = simple.get<OperationViewModel>();
@@ -203,7 +197,13 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
     descriptionEditingController = TextEditingController();
     dockCodeEditingController = TextEditingController();
     dockTypeEditingController = TextEditingController();
-
+    companyEditingController = TextEditingController();
+    companies = simple.get<AuthViewModel>().authModel?.idProfile ==
+            ProfileTypeEnum.MASTER.idProfileType
+        ? simple.get<CompanyViewModel>().companies.toList()
+        : [
+            simple.get<CompanyViewModel>().companyModel!,
+          ];
     super.initState();
   }
 
@@ -216,11 +216,42 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
       .toList();
 
   void clearFields() {
+    dockModelSelected = null;
+    companyModelSelected = null;
     liscensePlateEditingController.clear();
     descriptionEditingController.clear();
     dockCodeEditingController.clear();
     dockTypeEditingController.clear();
     setState(() {});
+  }
+
+  void open() {
+    isOpen.value = true;
+  }
+
+  void close() {
+    isOpen.value = false;
+  }
+
+  Future<void> start() async {
+    if (companyModelSelected == null || dockModelSelected == null) {
+      BannerComponent(
+        message: "Preencha todas as informações para criar uma operação",
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+    if (formState.currentState?.validate() ?? false) {
+      isLoading.value = true;
+      await controller.create(
+        companyModel: companyModelSelected!,
+        dockCode: dockModelSelected!.code,
+        liscensePlate: liscensePlateEditingController.text,
+        description: descriptionEditingController.text,
+      );
+      isLoading.value = false;
+      clearFields();
+    }
   }
 
   @override
@@ -231,177 +262,189 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return SizedBox(
-        child: Container(
-          margin: EdgeInsets.zero,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: AppSize.padding * 1.5,
-            ),
-            child: Form(
-              key: formState,
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: buildSelectable(
-                          context: context,
-                          title: "Tipo",
-                          child: DropBoxWidget<DockType>(
-                            controller: dockTypeEditingController,
-                            enable:
-                                controller.appState.value is! AppStateLoading,
-                            width: 15.w,
-                            dropdownMenuEntries: DockType.values
-                                .map(
-                                  (e) => DropdownMenuEntry<DockType>(
-                                    value: e,
-                                    label: e.description,
-                                  ),
-                                )
-                                .toList(),
-                            onSelected: (DockType? e) {
-                              dockTypeSelected = e;
-                              dockModelSelected = null;
-                              dockCodeEditingController.clear();
-                              setState(() {});
-                            },
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: buildSelectable(
-                          context: context,
-                          title: "Doca",
-                          child: DropBoxWidget<DockModel>(
-                            controller: dockCodeEditingController,
-                            enable:
-                                controller.appState.value is! AppStateLoading,
-                            width: 15.w,
-                            dropdownMenuEntries: getDocksByDockType()
-                                .map(
-                                  (e) => DropdownMenuEntry<DockModel>(
-                                    value: e,
-                                    label: e.code,
-                                  ),
-                                )
-                                .toList(),
-                            onSelected: (DockModel? e) {
-                              dockModelSelected = e;
-                              setState(() {});
-                            },
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: buildSelectable(
-                          context: context,
-                          title: "Placa",
-                          child: SizedBox(
-                            width: 15.w,
-                            child: TextFormFieldWidget<OutlineInputBorder>(
-                              controller: liscensePlateEditingController,
-                              enable:
-                                  controller.appState.value is! AppStateLoading,
-                              validator: isNotLiscensePlate,
-                              inputFormatters: [
-                                UpperCaseTextFormatter(),
-                                LiscensePlateInputFormatter(),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: buildSelectable(
-                          context: context,
-                          title: "Transportadora",
-                          child: DropBoxWidget<DockModel>(
-                            width: 20.w,
-                            controller: dockCodeEditingController,
-                            enable:
-                                controller.appState.value is! AppStateLoading,
-                            dropdownMenuEntries: getDocksByDockType()
-                                .map(
-                                  (e) => DropdownMenuEntry<DockModel>(
-                                    value: e,
-                                    label: e.code,
-                                  ),
-                                )
-                                .toList(),
-                            onSelected: (DockModel? e) {
-                              dockModelSelected = e;
-                              setState(() {});
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: AppSize.padding * 2,
-                  ),
-                  Row(
-                    children: [
-                      Flexible(
-                        flex: 2,
-                        fit: FlexFit.tight,
-                        child: buildSelectable(
-                          context: context,
-                          title: "Descrição",
-                          child: TextFormFieldWidget<OutlineInputBorder>(
-                            controller: descriptionEditingController,
-                            enable:
-                                controller.appState.value is! AppStateLoading,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: AppSize.padding * 2,
-                      ),
-                      Flexible(
-                        child: Center(
-                          child: buildSelectable(
-                            context: context,
-                            title: "",
-                            child: Obx(
-                              () {
-                                return ButtomWidget(
-                                  isLoading: isLoading.value,
-                                  radius: 10,
-                                  backgroundColor: context.appTheme.secondColor,
-                                  textColor: Colors.white,
-                                  title: 'Iniciar operação',
-                                  onTap: () async {
-                                    if (formState.currentState?.validate() ??
-                                        false) {
-                                      isLoading.value = true;
-                                      await controller.create(
-                                        dockCode: dockModelSelected!.code,
-                                        liscensePlate:
-                                            liscensePlateEditingController.text,
-                                        description:
-                                            descriptionEditingController.text,
-                                      );
-                                      isLoading.value = false;
-                                      clearFields();
-                                    }
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+      return !isOpen.value
+          ? Align(
+              alignment: Alignment.topRight,
+              child: SizedBox(
+                width: 15.w,
+                child: IconButtonWidget(
+                  onTap: open,
+                  title: 'Nova Operação',
+                  icon: const Icon(Icons.add),
+                ),
               ),
-            ),
-          ),
-        ),
-      );
+            )
+          : SizedBox(
+              child: Container(
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: AppSize.padding * 1.5,
+                  ),
+                  child: Form(
+                    key: formState,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: buildSelectable(
+                                context: context,
+                                title: "Tipo",
+                                child: DropBoxWidget<DockType>(
+                                  controller: dockTypeEditingController,
+                                  enable: controller.appState.value
+                                      is! AppStateLoading,
+                                  width: 15.w,
+                                  dropdownMenuEntries: DockType.values
+                                      .map(
+                                        (e) => DropdownMenuEntry<DockType>(
+                                          value: e,
+                                          label: e.description,
+                                        ),
+                                      )
+                                      .toList(),
+                                  onSelected: (DockType? e) {
+                                    dockTypeSelected = e;
+                                    dockModelSelected = null;
+                                    dockCodeEditingController.clear();
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: buildSelectable(
+                                context: context,
+                                title: "Doca",
+                                child: DropBoxWidget<DockModel>(
+                                  controller: dockCodeEditingController,
+                                  enable: controller.appState.value
+                                      is! AppStateLoading,
+                                  width: 15.w,
+                                  dropdownMenuEntries: getDocksByDockType()
+                                      .map(
+                                        (e) => DropdownMenuEntry<DockModel>(
+                                          value: e,
+                                          label: e.code,
+                                        ),
+                                      )
+                                      .toList(),
+                                  onSelected: (DockModel? e) {
+                                    dockModelSelected = e;
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: buildSelectable(
+                                context: context,
+                                title: "Placa",
+                                child: SizedBox(
+                                  width: 15.w,
+                                  child:
+                                      TextFormFieldWidget<OutlineInputBorder>(
+                                    controller: liscensePlateEditingController,
+                                    enable: controller.appState.value
+                                        is! AppStateLoading,
+                                    validator: isNotLiscensePlate,
+                                    inputFormatters: [
+                                      UpperCaseTextFormatter(),
+                                      LiscensePlateInputFormatter(),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: buildSelectable(
+                                context: context,
+                                title: "Transportadora",
+                                child: DropBoxWidget<CompanyModel>(
+                                  width: 20.w,
+                                  controller: companyEditingController,
+                                  enable: controller.appState.value
+                                      is! AppStateLoading,
+                                  dropdownMenuEntries: companies
+                                      .map(
+                                        (e) => DropdownMenuEntry<CompanyModel>(
+                                          value: e,
+                                          label: e.fantasyName,
+                                        ),
+                                      )
+                                      .toList(),
+                                  onSelected: (CompanyModel? e) {
+                                    companyModelSelected = e;
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: AppSize.padding * 2,
+                        ),
+                        Row(
+                          children: [
+                            Flexible(
+                              flex: 2,
+                              fit: FlexFit.tight,
+                              child: buildSelectable(
+                                context: context,
+                                title: "Descrição",
+                                child: TextFormFieldWidget<OutlineInputBorder>(
+                                  controller: descriptionEditingController,
+                                  enable: controller.appState.value
+                                      is! AppStateLoading,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: AppSize.padding * 2,
+                            ),
+                            Flexible(
+                              child: Center(
+                                child: buildSelectable(
+                                  context: context,
+                                  title: "",
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Expanded(
+                                        child: IconButtonWidget(
+                                          onTap: close,
+                                          title: 'Fechar',
+                                          icon: const Icon(Icons.close),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: AppSize.padding * 2,
+                                      ),
+                                      Expanded(
+                                        child: IconButtonWidget(
+                                          onTap: () =>
+                                              isLoading.value ? null : start(),
+                                          title: 'Iniciar',
+                                          icon:
+                                              const Icon(Icons.start_outlined),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
     });
   }
 
@@ -446,7 +489,6 @@ class _OperationWidgetState extends State<OperationWidget>
   final controller = simple.get<OperationViewModel>();
 
   late final Worker workerAppState;
-  late final Worker workerProgress;
 
   @override
   void initState() {
@@ -460,21 +502,19 @@ class _OperationWidgetState extends State<OperationWidget>
       }
     });
 
-    workerProgress = debounce(progressObs, (progressUpdated) async {
-      if (controller.appState.value is AppStateLoading) return;
-      await controller.updateProgress(
-          operationKey: widget.operationModel.operationKey,
-          progress: progressObs.value);
-      await controller.getAll();
-    });
-
     super.initState();
+  }
+
+  Future<void> update() async {
+    await controller.updateProgress(
+        operationKey: widget.operationModel.operationKey,
+        progress: progressObs.value);
+    await controller.getAll();
   }
 
   @override
   void dispose() {
     workerAppState.dispose();
-    workerProgress.dispose();
     super.dispose();
   }
 
@@ -551,13 +591,17 @@ class _OperationWidgetState extends State<OperationWidget>
                   ),
                 ),
               ),
-              Flexible(
-                child: Text(
-                  widget.operationModel.liscensePlate,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyle.displayMedium(context).copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: appTheme.titleColor,
+              SizedBox(
+                width: 8.w,
+                child: Center(
+                  child: Text(
+                    widget.operationModel.liscensePlate,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.displayMedium(context).copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: appTheme.titleColor,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
@@ -598,6 +642,7 @@ class _OperationWidgetState extends State<OperationWidget>
               Flexible(
                 child: TextFormFieldWidget<OutlineInputBorder>(
                   initialValue: progressObs.value.toString(),
+                  onChange: (e) => progressObs.value = int.parse(e),
                   textAlign: TextAlign.center,
                   fillColor: appTheme.greyColor.withOpacity(.2),
                   enable: controller.appState.value is! AppStateLoading &&
@@ -608,6 +653,10 @@ class _OperationWidgetState extends State<OperationWidget>
                     FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                   ],
                 ),
+              ),
+              IconButton(
+                onPressed: () async => await update(),
+                icon: const Icon(Icons.update),
               ),
               TextActionButtom(
                 title: "Cancelar",
@@ -621,6 +670,10 @@ class _OperationWidgetState extends State<OperationWidget>
                       operationKey: widget.operationModel.operationKey);
                   await controller.getAll();
                 },
+              ),
+              IconButton(
+                onPressed: () async => await update(),
+                icon: const Icon(Icons.file_download),
               ),
             ],
           ),

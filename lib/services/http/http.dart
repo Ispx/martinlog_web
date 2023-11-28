@@ -10,7 +10,7 @@ abstract interface class IHttp {
   Future<T> request<T>({
     required String url,
     required HttpMethod method,
-    Map<String, String>? headers,
+    Map<String, dynamic>? headers,
     Map<String, dynamic>? body,
     Map<String, dynamic>? params,
   });
@@ -28,7 +28,7 @@ class Http implements IHttp {
   Future<T> request<T>(
       {required String url,
       required HttpMethod method,
-      Map<String, String>? headers,
+      Map<String, dynamic>? headers,
       Map<String, dynamic>? body,
       Map<String, dynamic>? params}) async {
     dio.options.headers = headers ?? {};

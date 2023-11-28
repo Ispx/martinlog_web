@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:martinlog_web/core/consts/routes.dart';
-import 'package:martinlog_web/functions/futures.dart';
 import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
 

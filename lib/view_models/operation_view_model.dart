@@ -4,7 +4,6 @@ import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/enums/operation_status_enum.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/models/company_model.dart';
-import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/models/operation_model.dart';
 import 'package:martinlog_web/repositories/cancel_operation_repository.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
@@ -12,11 +11,11 @@ import 'package:martinlog_web/repositories/get_operation_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_repository.dart';
 import 'package:martinlog_web/repositories/update_progress_operation_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
-import 'package:martinlog_web/views/operation_view.dart';
 
 abstract interface class IOperationViewModel {
   Future<void> create({
     required String dockCode,
+    required CompanyModel companyModel,
     required String liscensePlate,
     required String description,
   });
@@ -79,11 +78,13 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   @override
   Future<void> create(
       {required String dockCode,
+      required CompanyModel companyModel,
       required String liscensePlate,
       required String description}) async {
     try {
       changeState(AppStateLoading());
       final operationModel = await createOperationRepository(
+          companyModel: companyModel,
           dockCode: dockCode,
           liscensePlate: liscensePlate,
           description: description);

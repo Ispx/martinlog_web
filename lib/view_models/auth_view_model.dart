@@ -28,6 +28,7 @@ class AuthViewModel implements IAuthViewModel {
     try {
       changeState(AppStateLoading());
       authModel = await authRepository(document, password);
+      simple.update<AuthViewModel>(() => this);
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
