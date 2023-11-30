@@ -569,15 +569,19 @@ class _OperationWidgetState extends State<OperationWidget>
                       ),
                     )
                   : const SizedBox.shrink(),
-              Flexible(
-                child: Text(
-                  widget.operationModel.dockModel!.idDockType
-                      .getDockType()
-                      .description,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyle.displayMedium(context).copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: appTheme.titleColor,
+              SizedBox(
+                width: 8.w,
+                child: Center(
+                  child: Text(
+                    widget.operationModel.dockModel!.idDockType
+                        .getDockType()
+                        .description,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.displayMedium(context).copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: appTheme.titleColor,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
@@ -605,15 +609,19 @@ class _OperationWidgetState extends State<OperationWidget>
                   ),
                 ),
               ),
-              Flexible(
-                child: Text(
-                  widget.operationModel.idOperationStatus
-                      .getOperationStatus()
-                      .description,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyle.displayMedium(context).copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: appTheme.titleColor,
+              SizedBox(
+                width: 8.w,
+                child: Center(
+                  child: Text(
+                    widget.operationModel.idOperationStatus
+                        .getOperationStatus()
+                        .description,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.displayMedium(context).copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: appTheme.titleColor,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
