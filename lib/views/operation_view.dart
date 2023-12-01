@@ -10,6 +10,7 @@ import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/extensions/profile_type_extension.dart';
 import 'package:martinlog_web/input_formaters/liscense_plate_input_formatter.dart';
+import 'package:martinlog_web/input_formaters/percentage_input_formatter.dart';
 import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
 import 'package:martinlog_web/models/company_model.dart';
@@ -122,11 +123,10 @@ class PageWidget extends StatefulWidget {
 }
 
 class _PageWidgetState extends State<PageWidget> {
-  late int totalPages;
-  late int currentPage;
+  late List<Widget> sublist;
   @override
   void initState() {
-    // TODO: implement initState
+    sublist = widget.itens.sublist(0, widget.limitByPage);
     super.initState();
   }
 
@@ -137,7 +137,6 @@ class _PageWidgetState extends State<PageWidget> {
       height: double.maxFinite,
       child: Padding(
         padding: EdgeInsets.symmetric(
-          vertical: AppSize.padding * 1.5,
           horizontal: AppSize.padding / 2,
         ),
         child: Column(
@@ -154,9 +153,12 @@ class _PageWidgetState extends State<PageWidget> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: widget.itens.length,
-                itemBuilder: (context, index) => widget.itens[index],
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: AppSize.padding),
+                child: ListView.builder(
+                  itemCount: widget.itens.length,
+                  itemBuilder: (context, index) => widget.itens[index],
+                ),
               ),
             ),
           ],
@@ -485,13 +487,15 @@ class OperationWidget extends StatefulWidget {
 class _OperationWidgetState extends State<OperationWidget>
     with SingleTickerProviderStateMixin {
   var progressObs = 0.obs;
-
+  late final TextEditingController percentageEdittinController;
   final controller = simple.get<OperationViewModel>();
 
   late final Worker workerAppState;
 
   @override
   void initState() {
+    percentageEdittinController =
+        TextEditingController(text: "${widget.operationModel.progress}%");
     progressObs.value = widget.operationModel.progress;
     workerAppState = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
@@ -505,6 +509,7 @@ class _OperationWidgetState extends State<OperationWidget>
     super.initState();
   }
 
+  Future<void> download() async {}
   Future<void> update() async {
     await controller.updateProgress(
         operationKey: widget.operationModel.operationKey,
@@ -638,9 +643,9 @@ class _OperationWidgetState extends State<OperationWidget>
                     CircularProgressIndicator(
                       value: progressObs.value / 100,
                       color: widget.operationModel.idOperationStatus ==
-                              OperationStatusEnum.IN_PROGRESS.idOperationStatus
-                          ? context.appTheme.primaryColor
-                          : appTheme.greyColor,
+                              OperationStatusEnum.CANCELED.idOperationStatus
+                          ? appTheme.greyColor
+                          : context.appTheme.primaryColor,
                       backgroundColor: Colors.grey.shade200,
                       semanticsValue: progressObs.value.toString(),
                     ),
@@ -649,8 +654,9 @@ class _OperationWidgetState extends State<OperationWidget>
               ),
               Flexible(
                 child: TextFormFieldWidget<OutlineInputBorder>(
-                  initialValue: progressObs.value.toString(),
-                  onChange: (e) => progressObs.value = int.parse(e),
+                  controller: percentageEdittinController,
+                  onChange: (e) => progressObs.value = int.parse(
+                      RegExp(r'[0-9]').allMatches(e).map((e) => e[0]).join()),
                   textAlign: TextAlign.center,
                   fillColor: appTheme.greyColor.withOpacity(.2),
                   enable: controller.appState.value is! AppStateLoading &&
@@ -658,13 +664,34 @@ class _OperationWidgetState extends State<OperationWidget>
                           OperationStatusEnum.IN_PROGRESS.idOperationStatus,
                   maxLength: 3,
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    PercentageInputFormatter(),
                   ],
                 ),
               ),
-              IconButton(
-                onPressed: () async => await update(),
-                icon: const Icon(Icons.update),
+              InkWell(
+                onTap: widget.operationModel.idOperationStatus
+                            .getOperationStatus() ==
+                        OperationStatusEnum.IN_PROGRESS
+                    ? () async => await update()
+                    : null,
+                borderRadius: BorderRadius.circular(100),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: widget.operationModel.idOperationStatus
+                                .getOperationStatus() ==
+                            OperationStatusEnum.IN_PROGRESS
+                        ? context.appTheme.secondColor.withOpacity(.3)
+                        : context.appTheme.greyColor,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.refresh,
+                      color: context.appTheme.secondColor,
+                    ),
+                  ),
+                ),
               ),
               TextActionButtom(
                 title: "Cancelar",
@@ -672,6 +699,10 @@ class _OperationWidgetState extends State<OperationWidget>
                         .getOperationStatus() ==
                     OperationStatusEnum.IN_PROGRESS,
                 backgroundColor: appTheme.redColor,
+                padding: EdgeInsets.symmetric(
+                  vertical: AppSize.padding / 2,
+                  horizontal: AppSize.padding,
+                ),
                 onAction: () async {
                   if (controller.appState.value is AppStateLoading) return;
                   await controller.cancel(
@@ -679,9 +710,30 @@ class _OperationWidgetState extends State<OperationWidget>
                   await controller.getAll();
                 },
               ),
-              IconButton(
-                onPressed: () async => await update(),
-                icon: const Icon(Icons.file_download),
+              InkWell(
+                onTap: widget.operationModel.idOperationStatus
+                            .getOperationStatus() ==
+                        OperationStatusEnum.FINISHED
+                    ? () async => await download()
+                    : null,
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    color: widget.operationModel.idOperationStatus
+                                .getOperationStatus() ==
+                            OperationStatusEnum.FINISHED
+                        ? context.appTheme.secondColor
+                        : context.appTheme.greyColor,
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.file_download,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

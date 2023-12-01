@@ -30,17 +30,19 @@ class IconButtonWidget extends StatelessWidget {
               ? context.appTheme.disableColor
               : buttomColor ?? context.appTheme.buttonEnableColor,
         ),
-        padding: EdgeInsets.symmetric(
-            vertical: AppSize.padding, horizontal: AppSize.padding / 2),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text(
-              title,
-              style: AppTextStyle.displayMedium(context),
-            ),
-            icon
-          ],
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: AppSize.padding, horizontal: AppSize.padding / 2),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                title,
+                style: AppTextStyle.displayMedium(context),
+              ),
+              icon
+            ],
+          ),
         ),
       ),
     );
