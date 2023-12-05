@@ -38,7 +38,10 @@ class IconButtonWidget extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: AppTextStyle.displayMedium(context),
+                style: AppTextStyle.displayMedium(context).copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: context.appTheme.titleColor,
+                ),
               ),
               icon
             ],

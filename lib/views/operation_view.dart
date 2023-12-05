@@ -75,7 +75,6 @@ class _OperationViewState extends State<OperationView> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            const Gap(5),
             const CreateOperationWidget(),
             const Gap(5),
             const Divider(),

@@ -28,7 +28,7 @@ class App extends StatelessWidget {
         theme: AppThemeData(
           primaryColor: Utils.color("#D5DE23"),
           primaryVariant: Utils.color("#CFD022"),
-          secondColor: Utils.color("#445C7E"),
+          secondColor: Utils.color("#334359"),
           greenColor: Colors.grey,
           backgroundColor: Utils.color("#F5F7FA"),
           iconColor: Colors.grey,
