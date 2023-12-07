@@ -28,7 +28,7 @@ class CreateDockRepository implements ICreateDockRepository {
           "isActive": true,
         },
       );
-      return DockModel.fromJson(jsonDecode(response.data));
+      return DockModel.fromJson(response.data);
     } catch (e) {
       throw Exception(e.toString());
     }

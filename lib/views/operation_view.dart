@@ -125,7 +125,10 @@ class _PageWidgetState extends State<PageWidget> {
   late List<Widget> sublist;
   @override
   void initState() {
-    sublist = widget.itens.sublist(0, widget.limitByPage);
+    final lastIndex = widget.itens.length < widget.limitByPage
+        ? widget.itens.length
+        : widget.limitByPage;
+    sublist = widget.itens.sublist(0, lastIndex);
     super.initState();
   }
 

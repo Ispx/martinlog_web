@@ -1,7 +1,5 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
@@ -12,8 +10,10 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/state/menu_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
+import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
+import 'package:martinlog_web/views/dock_view.dart';
 import 'package:martinlog_web/views/operation_view.dart';
 import 'package:martinlog_web/widgets/app_bar_widget.dart';
 import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
@@ -31,12 +31,16 @@ class _MenuViewState extends State<MenuView> {
   late final Worker worker;
 
   Widget getViewByMenu(MenuEnum menuEnum) => switch (menuEnum) {
-        MenuEnum.Operations => OperationView(),
+        MenuEnum.Operations => const OperationView(),
+        MenuEnum.Dock => const DockView(),
         _ => const Center()
       };
   @override
   void initState() {
-    worker = everAll([simple.get<OperationViewModel>().appState], (state) {
+    worker = everAll([
+      simple.get<OperationViewModel>().appState,
+      simple.get<DockViewModel>().appState
+    ], (state) {
       menuViewModel.changeStatus(state as AppState);
     });
     menuViewModel = simple.get<MenuViewModel>();

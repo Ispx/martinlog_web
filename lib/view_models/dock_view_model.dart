@@ -12,7 +12,7 @@ abstract interface class IDockViewModel {
 }
 
 class DockViewModel extends GetxController implements IDockViewModel {
-  List<DockModel> _docks = [];
+  var docks = <DockModel>[].obs;
   var appState = AppState().obs;
   final IGetDocksRepository getDocksRepository;
   final ICreateDockRepository createDockRepository;
@@ -21,9 +21,7 @@ class DockViewModel extends GetxController implements IDockViewModel {
     required this.createDockRepository,
   });
 
-  List<DockModel> get docks => _docks;
-
-  List<DockModel> getDocksByDockType(DockType? dockType) => _docks
+  List<DockModel> getDocksByDockType(DockType? dockType) => docks
       .where(
           (e) => dockType == null ? true : e.idDockType == dockType.idDockType)
       .toList();
@@ -31,13 +29,15 @@ class DockViewModel extends GetxController implements IDockViewModel {
   List<DockType> get docksType => DockType.values;
 
   @override
-  Future<void> create(
-      {required String code, required DockType dockType}) async {
+  Future<void> create({
+    required String code,
+    required DockType dockType,
+  }) async {
     try {
       changeState(AppStateLoading());
       final dockModel =
           await createDockRepository(code: code, dockType: dockType);
-      _docks.add(dockModel);
+      docks.add(dockModel);
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -50,7 +50,9 @@ class DockViewModel extends GetxController implements IDockViewModel {
       if (appState is AppStateLoading) return;
 
       changeState(AppStateLoading());
-      _docks = await getDocksRepository();
+      final docks = await getDocksRepository();
+      this.docks.value = docks
+        ..sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 0 : 1);
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
