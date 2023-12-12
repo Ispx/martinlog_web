@@ -7,7 +7,7 @@ import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/repositories/auth_repository.dart';
 import 'package:martinlog_web/repositories/cancel_operation_repository.dart';
 import 'package:martinlog_web/repositories/create_company_repository.dart';
-import 'package:martinlog_web/repositories/create_dock_repositoy.dart';
+import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
 import 'package:martinlog_web/repositories/get_companies_repository.dart';
 import 'package:martinlog_web/repositories/get_company_repositoy.dart';
@@ -49,8 +49,8 @@ void main() async {
         ),
       );
 
-      i.addFactory<CreateDockRepository>(
-        () => CreateDockRepository(
+      i.addFactory<UpsertDockRepository>(
+        () => UpsertDockRepository(
           http: i.get<Http>(),
           urlBase: EnvConfig.urlBase,
         ),
@@ -113,7 +113,7 @@ void main() async {
       i.addSingleton<DockViewModel>(
         () => DockViewModel(
           getDocksRepository: i.get<GetDocksRepository>(),
-          createDockRepository: i.get<CreateDockRepository>(),
+          upsertDockRepository: i.get<UpsertDockRepository>(),
         ),
       );
       i.addSingleton<OperationViewModel>(

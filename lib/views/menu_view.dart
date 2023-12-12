@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
@@ -161,7 +162,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                 children: [
                   SizedBox(height: AppSize.padding * 2),
                   MenuItem(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.dashboard,
                       color: Colors.white,
                     ),
@@ -175,8 +176,8 @@ class _DrawerMenuState extends State<DrawerMenu> {
                   ),
                   SizedBox(height: AppSize.padding),
                   MenuItem(
-                    icon: Icon(
-                      Icons.home,
+                    icon: const Icon(
+                      LineIcons.dolly,
                       color: Colors.white,
                     ),
                     isOpen: isOpen,
@@ -189,8 +190,8 @@ class _DrawerMenuState extends State<DrawerMenu> {
                   ),
                   SizedBox(height: AppSize.padding),
                   MenuItem(
-                    icon: Icon(
-                      Icons.home,
+                    icon: const Icon(
+                      LineIcons.warehouse,
                       color: Colors.white,
                     ),
                     isOpen: isOpen,
@@ -205,8 +206,8 @@ class _DrawerMenuState extends State<DrawerMenu> {
                     height: AppSize.padding,
                   ),
                   MenuItem(
-                    icon: Icon(
-                      Icons.home,
+                    icon: const Icon(
+                      LineIcons.truck,
                       color: Colors.white,
                     ),
                     isOpen: isOpen,

@@ -1,3 +1,4 @@
+import 'package:get/get_utils/get_utils.dart';
 import 'package:martinlog_web/extensions/string_extension.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
@@ -51,9 +52,10 @@ class OperationModel {
       dockModel: data['dock'] != null ? DockModel.fromJson(data['dock']) : null,
       progress: data['progress'],
       idOperationStatus: data['idOperationStatus'],
-      createdAt: data['createdAt'].toString().parseToDateTime()!,
+      createdAt:
+          data['createdAt'].toString().parseToDateTime()!.subtract(3.hours),
       finishedAt: data['finishedAt'] != null
-          ? data['finishedAt'].toString().parseToDateTime()!
+          ? data['finishedAt'].toString().parseToDateTime()!.subtract(3.hours)
           : null,
       description: data['description'],
     );

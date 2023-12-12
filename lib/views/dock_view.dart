@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
@@ -267,8 +268,7 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
                                           onTap: () =>
                                               isLoading.value ? null : create(),
                                           title: 'Criar',
-                                          icon:
-                                              const Icon(Icons.start_outlined),
+                                          icon: const Icon(LineIcons.warehouse),
                                         ),
                                       ),
                                     ],
@@ -325,8 +325,6 @@ class _DockWidgetState extends State<DockWidget> {
   late final TextEditingController dockCodeEdittinController;
   final controller = simple.get<DockViewModel>();
 
-  late final Worker workerAppState;
-
   @override
   void initState() {
     dockCodeEdittinController =
@@ -339,7 +337,6 @@ class _DockWidgetState extends State<DockWidget> {
 
   @override
   void dispose() {
-    workerAppState.dispose();
     super.dispose();
   }
 
@@ -417,20 +414,28 @@ class _DockWidgetState extends State<DockWidget> {
                   ),
                 ),
               ),
-              TextActionButtom(
-                title: widget.dockModel.isActive ? 'Desativar' : 'Ativar',
-                isEnable: controller.appState.value is! AppStateLoading,
-                backgroundColor: widget.dockModel.isActive
-                    ? appTheme.redColor
-                    : appTheme.greenColor,
-                padding: EdgeInsets.symmetric(
-                  vertical: AppSize.padding / 2,
-                  horizontal: AppSize.padding,
+              SizedBox(
+                width: 10.w,
+                child: TextActionButtom(
+                  title: widget.dockModel.isActive ? 'Desativar' : 'Ativar',
+                  isEnable: controller.appState.value is! AppStateLoading,
+                  backgroundColor: widget.dockModel.isActive
+                      ? appTheme.redColor
+                      : appTheme.greenColor,
+                  padding: EdgeInsets.symmetric(
+                    vertical: AppSize.padding / 2,
+                    horizontal: AppSize.padding,
+                  ),
+                  onAction: () async {
+                    if (controller.appState.value is AppStateLoading) return;
+                    await controller.updateDock(
+                      widget.dockModel.copyWith(
+                        isActive: !widget.dockModel.isActive,
+                      ),
+                    );
+                    await controller.getAll();
+                  },
                 ),
-                onAction: () async {
-                  if (controller.appState.value is AppStateLoading) return;
-                  // await controller.getAll();
-                },
               ),
             ],
           ),

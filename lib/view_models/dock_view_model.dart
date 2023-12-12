@@ -1,24 +1,29 @@
 import 'package:get/get.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
+import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/models/dock_model.dart';
-import 'package:martinlog_web/repositories/create_dock_repositoy.dart';
+import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';
 import 'package:martinlog_web/repositories/get_docks_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 
 abstract interface class IDockViewModel {
-  Future<void> create({required String code, required DockType dockType});
+  Future<void> create({
+    required String code,
+    required DockType dockType,
+  });
   Future<void> getAll();
+  Future<void> updateDock(DockModel dockModel);
 }
 
 class DockViewModel extends GetxController implements IDockViewModel {
   var docks = <DockModel>[].obs;
   var appState = AppState().obs;
   final IGetDocksRepository getDocksRepository;
-  final ICreateDockRepository createDockRepository;
+  final IUpsertDockRepository upsertDockRepository;
   DockViewModel({
     required this.getDocksRepository,
-    required this.createDockRepository,
+    required this.upsertDockRepository,
   });
 
   List<DockModel> getDocksByDockType(DockType? dockType) => docks
@@ -35,8 +40,11 @@ class DockViewModel extends GetxController implements IDockViewModel {
   }) async {
     try {
       changeState(AppStateLoading());
-      final dockModel =
-          await createDockRepository(code: code, dockType: dockType);
+      final dockModel = await upsertDockRepository(
+        code: code,
+        dockType: dockType,
+        isActive: true,
+      );
       docks.add(dockModel);
       changeState(AppStateDone());
     } catch (e) {
@@ -61,5 +69,20 @@ class DockViewModel extends GetxController implements IDockViewModel {
 
   void changeState(AppState appState) {
     this.appState.value = appState;
+  }
+
+  @override
+  Future<void> updateDock(DockModel dockModel) async {
+    try {
+      changeState(AppStateLoading());
+      await upsertDockRepository(
+        code: dockModel.code,
+        dockType: dockModel.idDockType.getDockType(),
+        isActive: dockModel.isActive,
+      );
+      changeState(AppStateDone());
+    } catch (e) {
+      changeState(AppStateError(e.toString()));
+    }
   }
 }

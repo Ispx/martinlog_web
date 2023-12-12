@@ -29,7 +29,7 @@ class App extends StatelessWidget {
           primaryColor: Utils.color("#D5DE23"),
           primaryVariant: Utils.color("#CFD022"),
           secondColor: Utils.color("#334359"),
-          greenColor: Colors.grey,
+          greenColor: Colors.green,
           backgroundColor: Utils.color("#F5F7FA"),
           iconColor: Colors.grey,
           buttonEnableColor: Utils.color("#D5DE23"),

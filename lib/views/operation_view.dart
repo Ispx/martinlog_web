@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/operation_status_enum.dart';
@@ -432,8 +433,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                                           onTap: () =>
                                               isLoading.value ? null : start(),
                                           title: 'Iniciar',
-                                          icon:
-                                              const Icon(Icons.start_outlined),
+                                          icon: const Icon(LineIcons.dolly),
                                         ),
                                       ),
                                     ],
@@ -593,12 +593,15 @@ class _OperationWidgetState extends State<OperationWidget>
                 ),
               ),
               Flexible(
-                child: Text(
-                  widget.operationModel.dockModel?.code ?? '',
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyle.displayMedium(context).copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: appTheme.titleColor,
+                child: SizedBox(
+                  width: 4.w,
+                  child: Text(
+                    widget.operationModel.dockModel?.code ?? '',
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.displayMedium(context).copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: appTheme.titleColor,
+                    ),
                   ),
                 ),
               ),
@@ -689,7 +692,7 @@ class _OperationWidgetState extends State<OperationWidget>
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Icon(
-                      Icons.refresh,
+                      LineIcons.syncIcon,
                       color: context.appTheme.secondColor,
                     ),
                   ),
