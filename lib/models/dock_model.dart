@@ -30,7 +30,7 @@ class DockModel {
     return {
       "code": code,
       "idDockType": idDockType,
-      "createdAt": createdAt.toString().toString().parseToDateTime(),
+      "createdAt": createdAt.toString().toString().parseToDateTime()?.subtract(3.hours),
       "isActive": isActive,
       "operationKey": operationKey,
     };
