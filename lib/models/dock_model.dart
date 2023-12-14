@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:martinlog_web/extensions/string_extension.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 
 class DockModel {
   String code;
@@ -30,7 +29,8 @@ class DockModel {
     return {
       "code": code,
       "idDockType": idDockType,
-      "createdAt": createdAt.toString().toString().parseToDateTime()?.subtract(3.hours),
+      "createdAt":
+          createdAt.toString().toString().parseToDateTime()?.subtract(3.hours),
       "isActive": isActive,
       "operationKey": operationKey,
     };
