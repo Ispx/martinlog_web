@@ -41,7 +41,9 @@ class CompanyViewModel extends GetxController implements ICompanyViewModel {
     try {
       if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
-      companies.value = await getCompaniesRepository();
+      final companies = await getCompaniesRepository();
+      this.companies.value = companies
+        ..sort((a, b) => a.createdAt!.isAfter(b.createdAt!) ? 0 : 1);
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));

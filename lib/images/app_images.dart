@@ -3,6 +3,8 @@ class AppImages {
 
   factory AppImages() => _i;
   AppImages._();
+  static String horizontal = "assets/images/horizontal.png";
+  static String icon = "assets/images/logos/icon.png";
 
   static String background = "assets/images/background.jpeg";
   static String shortLogo = "assets/images/logos/short_logo.svg";

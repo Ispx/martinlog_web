@@ -148,8 +148,8 @@ class _DrawerMenuState extends State<DrawerMenu> {
               SizedBox(
                 height: 13.h,
                 child: Center(
-                  child: SvgPicture.asset(
-                    isOpen ? AppImages.longLogo : AppImages.shortLogo,
+                  child: Image.asset(
+                    isOpen ? AppImages.horizontal : AppImages.icon,
                     width: !isOpen ? 3.w : 10.w,
                   ),
                 ),
