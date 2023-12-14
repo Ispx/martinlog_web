@@ -33,7 +33,7 @@ class CreateOperationRepository implements ICreateOperationRepository {
             "description": description
           },
           headers: {
-            'idCompany': companyModel.idCompany,
+            'IdCompany': companyModel.idCompany,
           });
       return OperationModel.fromJson(response.data);
     } catch (e) {

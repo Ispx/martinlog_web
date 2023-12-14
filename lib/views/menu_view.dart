@@ -11,9 +11,11 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/state/menu_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
+import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
+import 'package:martinlog_web/views/company_view.dart';
 import 'package:martinlog_web/views/dock_view.dart';
 import 'package:martinlog_web/views/operation_view.dart';
 import 'package:martinlog_web/widgets/app_bar_widget.dart';
@@ -34,13 +36,15 @@ class _MenuViewState extends State<MenuView> {
   Widget getViewByMenu(MenuEnum menuEnum) => switch (menuEnum) {
         MenuEnum.Operations => const OperationView(),
         MenuEnum.Dock => const DockView(),
+        MenuEnum.Company => const CompanyView(),
         _ => const Center()
       };
   @override
   void initState() {
     worker = everAll([
       simple.get<OperationViewModel>().appState,
-      simple.get<DockViewModel>().appState
+      simple.get<DockViewModel>().appState,
+      simple.get<CompanyViewModel>().appState
     ], (state) {
       menuViewModel.changeStatus(state as AppState);
     });
@@ -80,16 +84,9 @@ class _MenuViewState extends State<MenuView> {
                         backgroundColor: context.appTheme.backgroundColor,
                         title: menuViewModel.menuState.value.menuEnum.title,
                         content: const Center(),
+                        isLoading: menuViewModel.menuState.value.appState
+                            is AppStateLoading,
                       ),
-                      menuViewModel.menuState.value.appState is AppStateLoading
-                          ? SizedBox(
-                              height: 6,
-                              child: LinearProgressIndicator(
-                                color: context.appTheme.secondColor,
-                                backgroundColor: context.appTheme.greyColor,
-                              ),
-                            )
-                          : const SizedBox.shrink(),
                       Expanded(
                         child: getViewByMenu(
                             menuViewModel.menuState.value.menuEnum),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/repositories/create_company_repository.dart';
 import 'package:martinlog_web/repositories/get_companies_repository.dart';
@@ -11,10 +11,10 @@ abstract class ICompanyViewModel {
   Future<void> createCompany(CompanyModel companyModel);
 }
 
-class CompanyViewModel extends ChangeNotifier implements ICompanyViewModel {
-  AppState appState = AppStateEmpity();
+class CompanyViewModel extends GetxController implements ICompanyViewModel {
+  var appState = AppState().obs;
   CompanyModel? companyModel;
-  Set<CompanyModel> companies = {};
+  var companies = <CompanyModel>[].obs;
   final IGetCompaniesRepository getCompaniesRepository;
   final IGetCompanyRepository getCompanyRepository;
   final ICreateCompanyRepository createCompanyRepository;
@@ -41,7 +41,7 @@ class CompanyViewModel extends ChangeNotifier implements ICompanyViewModel {
     try {
       if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
-      companies.addAll(await getCompaniesRepository());
+      companies.value = await getCompaniesRepository();
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -49,8 +49,7 @@ class CompanyViewModel extends ChangeNotifier implements ICompanyViewModel {
   }
 
   void changeState(AppState appState) {
-    this.appState = appState;
-    notifyListeners();
+    this.appState.value = appState;
   }
 
   @override

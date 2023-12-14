@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:martinlog_web/extensions/string_extension.dart';
 
 class CompanyModel {
@@ -28,21 +29,6 @@ class CompanyModel {
     this.createdAt,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'socialRason': socialRason,
-      'fantasyName': fantasyName,
-      'cnpj': cnpj,
-      'ownerName': ownerName,
-      'ownerCpf': ownerCpf,
-      'telephone': telephone,
-      'zipcode': zipcode,
-      'streetNumber': streetNumber,
-      'streetComplement': streetComplement,
-      'createdAt': createdAt?.toString(),
-    };
-  }
-
   factory CompanyModel.fromJson(Map<String, dynamic> map) {
     return CompanyModel(
       idCompany: map['idCompany'],
@@ -56,7 +42,7 @@ class CompanyModel {
       streetNumber: map['streetNumber'],
       streetComplement: map['streetComplement'],
       createdAt: map['createdAt'] != null
-          ? map['createdAt'].toString().parseToDateTime()!
+          ? map['createdAt'].toString().parseToDateTime()!.subtract(3.hours)
           : null,
     );
   }
@@ -71,7 +57,6 @@ class CompanyModel {
         "zipcode": zipcode,
         "streetNumber": streetNumber,
         "streetComplement": streetComplement,
-        "createdAt": createdAt.toString(),
       };
 
   CompanyModel copyWith({
