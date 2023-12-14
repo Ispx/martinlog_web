@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -8,11 +9,14 @@ class AppBarWidget extends StatelessWidget {
   final Color backgroundColor;
   final Widget content;
   final List<Widget>? actions;
+  final bool isLoading;
+
   const AppBarWidget(
       {super.key,
       required this.title,
       required this.backgroundColor,
       required this.content,
+      this.isLoading = false,
       this.actions});
 
   @override
@@ -51,6 +55,15 @@ class AppBarWidget extends StatelessWidget {
             ),
           ),
           const Divider(),
+          SizedBox(
+            height: 6,
+            child: isLoading
+                ? LinearProgressIndicator(
+                    color: context.appTheme.secondColor,
+                    backgroundColor: context.appTheme.greyColor,
+                  )
+                : const SizedBox.shrink(),
+          ),
         ],
       ),
     );
