@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:martinlog_web/core/consts/routes.dart';
+import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/profile_type_extension.dart';
@@ -10,7 +10,7 @@ class SwitchCompanyInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final authModel = simple.get<AuthViewModel>().authModel;
 
-    if (options.uri.path == Routes.operation &&
+    if (options.uri.path == Endpoints.operationAll &&
         authModel?.idProfile == ProfileTypeEnum.MASTER.idProfileType) {
       super.onRequest(options, handler);
       return;
