@@ -564,8 +564,8 @@ class _OperationWidgetState extends State<OperationWidget>
               ),
               simple.get<AuthViewModel>().authModel!.idProfile.getProfile() ==
                       ProfileTypeEnum.MASTER
-                  ? Flexible(
-                      flex: 2,
+                  ? SizedBox(
+                      width: 10.w,
                       child: Text(
                         widget.operationModel.companyModel.fantasyName,
                         overflow: TextOverflow.ellipsis,
