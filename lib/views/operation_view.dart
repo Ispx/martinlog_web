@@ -226,6 +226,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
     descriptionEditingController.clear();
     dockCodeEditingController.clear();
     dockTypeEditingController.clear();
+    companyEditingController.clear();
     setState(() {});
   }
 
