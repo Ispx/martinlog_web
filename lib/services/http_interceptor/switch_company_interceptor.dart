@@ -14,6 +14,9 @@ class SwitchCompanyInterceptor extends Interceptor {
         authModel?.idProfile == ProfileTypeEnum.MASTER.idProfileType) {
       super.onRequest(options, handler);
       return;
+    } else if (options.uri.path == Endpoints.operation) {
+      super.onRequest(options, handler);
+      return;
     }
     if (authModel != null) {
       options.headers['idCompany'] = authModel.idCompany.toString();
