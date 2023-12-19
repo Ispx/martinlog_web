@@ -111,117 +111,119 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
                   Expanded(
                     child: Form(
                       key: formState,
-                      child: Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Column(
-                              children: [
-                                Text(
-                                  "Seja Bem-vindo!",
-                                  style: AppTextStyle.displayLarge(context)
-                                      .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.sp,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.center,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Seja Bem-vindo!",
+                                    style: AppTextStyle.displayLarge(context)
+                                        .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.sp,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: AppSize.padding / 2,
-                                ),
-                                Text(
-                                  "Insira seu CPF e Senha para efetuar o login.",
-                                  style: AppTextStyle.displaySmall(context)
-                                      .copyWith(
-                                    fontWeight: FontWeight.w600,
+                                  SizedBox(
+                                    height: AppSize.padding / 2,
                                   ),
+                                  Text(
+                                    "Insira seu CPF e Senha para efetuar o login.",
+                                    style: AppTextStyle.displaySmall(context)
+                                        .copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Gap(3.h),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                "Login",
+                                style:
+                                    AppTextStyle.displayMedium(context).copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            Gap(3.h),
+                            TextFormFieldWidget<OutlineInputBorder>(
+                              label: "CPF",
+                              validator: isNotCPF,
+                              onSaved: (e) {
+                                cpf = e;
+                              },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.]'),
+                                ),
+                                TextInputMask(
+                                  mask: '999.999.999-99',
                                 ),
                               ],
                             ),
-                          ),
-                          Gap(3.h),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Login",
-                              style:
-                                  AppTextStyle.displayMedium(context).copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          Gap(3.h),
-                          TextFormFieldWidget<OutlineInputBorder>(
-                            label: "CPF",
-                            validator: isNotCPF,
-                            onSaved: (e) {
-                              cpf = e;
-                            },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                RegExp(r'[0-9.]'),
-                              ),
-                              TextInputMask(
-                                mask: '999.999.999-99',
-                              ),
-                            ],
-                          ),
-                          Gap(4.h),
-                          Obx(
-                            () => TextFormFieldWidget<OutlineInputBorder>(
-                              label: "Senha",
-                              validator: isNotEmpity,
-                              obscure: !isVisiblePassword.value,
-                              maxLines: 1,
-                              sufix: GestureDetector(
-                                onTap: () {
-                                  isVisiblePassword.value =
-                                      !isVisiblePassword.value;
-                                },
-                                child: Icon(
-                                  isVisiblePassword.value
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
+                            Gap(4.h),
+                            Obx(
+                              () => TextFormFieldWidget<OutlineInputBorder>(
+                                label: "Senha",
+                                validator: isNotEmpity,
+                                obscure: !isVisiblePassword.value,
+                                maxLines: 1,
+                                sufix: GestureDetector(
+                                  onTap: () {
+                                    isVisiblePassword.value =
+                                        !isVisiblePassword.value;
+                                  },
+                                  child: Icon(
+                                    isVisiblePassword.value
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                  ),
                                 ),
+                                onSaved: (e) {
+                                  password = e;
+                                },
                               ),
-                              onSaved: (e) {
-                                password = e;
-                              },
                             ),
-                          ),
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: Padding(
-                              padding:
-                                  EdgeInsets.only(top: AppSize.padding / 2),
-                              child: TextButton(
-                                onPressed: () {},
-                                child: Text(
-                                  "Esqueci minha senha",
-                                  style: AppTextStyle.displaySmall(context)
-                                      .copyWith(
-                                    fontWeight: FontWeight.w600,
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Padding(
+                                padding:
+                                    EdgeInsets.only(top: AppSize.padding / 2),
+                                child: TextButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    "Esqueci minha senha",
+                                    style: AppTextStyle.displaySmall(context)
+                                        .copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          Gap(AppSize.padding * 2),
-                          Obx(() {
-                            return ButtomWidget(
-                              title: "Acessar agora",
-                              isLoading:
-                                  controller.appState.value is AppStateLoading,
-                              radius: 10,
-                              onTap: () async {
-                                if (formState.currentState?.validate() ??
-                                    false) {
-                                  formState.currentState!.save();
-                                  await controller.login(_cpf, _password);
-                                }
-                              },
-                            );
-                          })
-                        ],
+                            Gap(AppSize.padding * 2),
+                            Obx(() {
+                              return ButtomWidget(
+                                title: "Acessar agora",
+                                isLoading:
+                                    controller.appState.value is AppStateLoading,
+                                radius: 10,
+                                onTap: () async {
+                                  if (formState.currentState?.validate() ??
+                                      false) {
+                                    formState.currentState!.save();
+                                    await controller.login(_cpf, _password);
+                                  }
+                                },
+                              );
+                            })
+                          ],
+                        ),
                       ),
                     ),
                   ),

@@ -14,6 +14,7 @@ import 'package:martinlog_web/input_formaters/percentage_input_formatter.dart';
 import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
 import 'package:martinlog_web/models/company_model.dart';
+import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
@@ -715,36 +716,207 @@ class _OperationWidgetState extends State<OperationWidget>
                   await controller.getAll();
                 },
               ),
-              InkWell(
-                onTap: widget.operationModel.idOperationStatus
-                            .getOperationStatus() ==
-                        OperationStatusEnum.FINISHED
-                    ? () async => await download()
-                    : null,
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    color: widget.operationModel.idOperationStatus
-                                .getOperationStatus() ==
-                            OperationStatusEnum.FINISHED
-                        ? context.appTheme.secondColor
-                        : context.appTheme.greyColor,
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.file_download,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+              IconButton(
+                icon: const Icon(LineIcons.eye),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialogDetailsWidget(
+                        operationModel: widget.operationModel,
+                      );
+                    },
+                  );
+                },
               ),
             ],
           ),
         ),
       );
     });
+  }
+}
+
+class AlertDialogDetailsWidget extends StatefulWidget {
+  final OperationModel operationModel;
+  const AlertDialogDetailsWidget({
+    super.key,
+    required this.operationModel,
+  });
+  @override
+  State<AlertDialogDetailsWidget> createState() =>
+      _AlertDialogDetailsWidgetState();
+}
+
+class _AlertDialogDetailsWidgetState extends State<AlertDialogDetailsWidget> {
+  var progressObs = 0.obs;
+  late final TextEditingController percentageEdittinController;
+
+  late final Worker workerAppState;
+
+  @override
+  void initState() {
+    percentageEdittinController =
+        TextEditingController(text: "${widget.operationModel.progress}%");
+    progressObs.value = widget.operationModel.progress;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog.adaptive(
+      title: Text(
+        'Detalhes',
+        style: AppTextStyle.displayMedium(context).copyWith(
+          fontWeight: FontWeight.bold,
+          fontSize: 18.sp,
+        ),
+      ),
+      backgroundColor: Colors.white,
+      content: SizedBox(
+        width: 70.w,
+        height: 80.h,
+        child: LayoutBuilder(builder: (context, snap) {
+          return Stack(children: [
+            Positioned(
+                left: 2.w,
+                top: 2.w,
+                height: snap.maxHeight * .8,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ValuesDetailsWidget(
+                      title: 'Transportadora:',
+                      value: widget.operationModel.companyModel.fantasyName,
+                    ),
+                    ValuesDetailsWidget(
+                      title: 'CNPJ:',
+                      value: widget.operationModel.companyModel.cnpj,
+                    ),
+                    ValuesDetailsWidget(
+                      title: 'Doca:',
+                      value: widget.operationModel.dockModel!.code,
+                    ),
+                    ValuesDetailsWidget(
+                      title: 'Tipo:',
+                      value: widget.operationModel.dockModel!.idDockType
+                          .getDockType()
+                          .description,
+                    ),
+                    ValuesDetailsWidget(
+                        title: 'Status:',
+                        value: widget.operationModel.idOperationStatus
+                            .getOperationStatus()
+                            .description),
+                    ValuesDetailsWidget(
+                      title: 'Data de início:',
+                      value: widget.operationModel.createdAt.ddMMyyyyHHmmss,
+                    ),
+                    ValuesDetailsWidget(
+                      title: 'Data da finalização:',
+                      value: widget.operationModel.finishedAt?.ddMMyyyyHHmmss ??
+                          '',
+                    ),
+                    ValuesDetailsWidget(
+                      title: 'Placa:',
+                      value: widget.operationModel.liscensePlate,
+                    ),
+                    ValuesDetailsWidget(
+                      title: 'Descrição:',
+                      value: widget.operationModel.description ?? '',
+                    ),
+                    ValuesDetailsWidget(
+                      title: 'Chave da operação:',
+                      value: widget.operationModel.operationKey,
+                    ),
+                  ],
+                )),
+            Positioned(
+              height: snap.maxWidth * .3,
+              width: snap.maxWidth * .3,
+              right: 5.w,
+              top: 1.w,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Text(
+                    "${progressObs.value}%",
+                    style: AppTextStyle.displaySmall(context)
+                        .copyWith(fontWeight: FontWeight.w600, fontSize: 22.sp),
+                  ),
+                  Positioned.fill(
+                    child: CircularProgressIndicator(
+                      value: progressObs.value / 100,
+                      strokeWidth: 15,
+                      color: widget.operationModel.idOperationStatus ==
+                              OperationStatusEnum.CANCELED.idOperationStatus
+                          ? context.appTheme.greyColor
+                          : context.appTheme.primaryColor,
+                      backgroundColor: Colors.grey.shade200,
+                      semanticsValue: progressObs.value.toString(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ]);
+        }),
+      ),
+      actions: [
+        SizedBox(
+          width: 10.w,
+          child: IconButtonWidget(
+            icon: const Icon(LineIcons.download),
+            radius: 10,
+            title: 'Baixar arquivo',
+            onTap: () {},
+          ),
+        ),
+        SizedBox(
+          width: AppSize.padding,
+        ),
+        SizedBox(
+          width: 10.w,
+          child: IconButtonWidget(
+            icon: const Icon(Icons.close),
+            radius: 10,
+            title: 'Fechar',
+            onTap: () => GoTo.pop(),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class ValuesDetailsWidget extends StatelessWidget {
+  final String title;
+  final String value;
+  const ValuesDetailsWidget({
+    super.key,
+    required this.title,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text.rich(
+      TextSpan(
+        text: "$title ",
+        style: AppTextStyle.displayMedium(context).copyWith(
+          fontWeight: FontWeight.bold,
+        ),
+        children: [
+          TextSpan(
+            text: value,
+            style: AppTextStyle.displayMedium(context).copyWith(
+              fontWeight: FontWeight.w500,
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
 
