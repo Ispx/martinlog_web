@@ -722,8 +722,45 @@ class _OperationWidgetState extends State<OperationWidget>
                   showDialog(
                     context: context,
                     builder: (context) {
-                      return AlertDialogDetailsWidget(
-                        operationModel: widget.operationModel,
+                      return AlertDialog(
+                        title: Text(
+                          'Detalhes',
+                          style: AppTextStyle.displayMedium(context).copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.sp,
+                          ),
+                        ),
+                        backgroundColor: Colors.white,
+                        content: SizedBox(
+                          height: 80.h,
+                          width: 70.w,
+                          child: DetailsWidget(
+                            operationModel: widget.operationModel,
+                          ),
+                        ),
+                        actions: [
+                          SizedBox(
+                            width: 10.w,
+                            child: IconButtonWidget(
+                              icon: const Icon(LineIcons.download),
+                              radius: 10,
+                              title: 'Baixar arquivo',
+                              onTap: () {},
+                            ),
+                          ),
+                          SizedBox(
+                            width: AppSize.padding,
+                          ),
+                          SizedBox(
+                            width: 10.w,
+                            child: IconButtonWidget(
+                              icon: const Icon(Icons.close),
+                              radius: 10,
+                              title: 'Fechar',
+                              onTap: () => GoTo.pop(),
+                            ),
+                          )
+                        ],
                       );
                     },
                   );
@@ -737,18 +774,17 @@ class _OperationWidgetState extends State<OperationWidget>
   }
 }
 
-class AlertDialogDetailsWidget extends StatefulWidget {
+class DetailsWidget extends StatefulWidget {
   final OperationModel operationModel;
-  const AlertDialogDetailsWidget({
+  const DetailsWidget({
     super.key,
     required this.operationModel,
   });
   @override
-  State<AlertDialogDetailsWidget> createState() =>
-      _AlertDialogDetailsWidgetState();
+  State<DetailsWidget> createState() => _DetailsWidgetState();
 }
 
-class _AlertDialogDetailsWidgetState extends State<AlertDialogDetailsWidget> {
+class _DetailsWidgetState extends State<DetailsWidget> {
   var progressObs = 0.obs;
   late final TextEditingController percentageEdittinController;
 
@@ -764,20 +800,10 @@ class _AlertDialogDetailsWidgetState extends State<AlertDialogDetailsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog.adaptive(
-      title: Text(
-        'Detalhes',
-        style: AppTextStyle.displayMedium(context).copyWith(
-          fontWeight: FontWeight.bold,
-          fontSize: 18.sp,
-        ),
-      ),
-      backgroundColor: Colors.white,
-      content: SizedBox(
-        width: 70.w,
-        height: 80.h,
-        child: LayoutBuilder(builder: (context, snap) {
-          return Stack(children: [
+    return LayoutBuilder(
+      builder: (context, snap) {
+        return Stack(
+          children: [
             Positioned(
                 left: 2.w,
                 top: 2.w,
@@ -860,32 +886,9 @@ class _AlertDialogDetailsWidgetState extends State<AlertDialogDetailsWidget> {
                 ],
               ),
             ),
-          ]);
-        }),
-      ),
-      actions: [
-        SizedBox(
-          width: 10.w,
-          child: IconButtonWidget(
-            icon: const Icon(LineIcons.download),
-            radius: 10,
-            title: 'Baixar arquivo',
-            onTap: () {},
-          ),
-        ),
-        SizedBox(
-          width: AppSize.padding,
-        ),
-        SizedBox(
-          width: 10.w,
-          child: IconButtonWidget(
-            icon: const Icon(Icons.close),
-            radius: 10,
-            title: 'Fechar',
-            onTap: () => GoTo.pop(),
-          ),
-        )
-      ],
+          ],
+        );
+      },
     );
   }
 }
