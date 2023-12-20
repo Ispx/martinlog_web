@@ -50,6 +50,7 @@ dependencies:
   dio: ^5.3.3
   flutter_svg: ^2.0.9
   line_icons: ^2.0.3
+  flutter_excel: ^1.0.1
 
 dev_dependencies:
   flutter_test:

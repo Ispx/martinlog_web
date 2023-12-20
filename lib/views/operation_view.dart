@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_excel/excel.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
@@ -512,7 +513,51 @@ class _OperationWidgetState extends State<OperationWidget>
     super.initState();
   }
 
-  Future<void> download() async {}
+  Future<void> downloadFile() async {
+    final excel = Excel.createExcel();
+    const sheetName = "Detalhes";
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("A1"), "TRANSPORTADORA");
+    excel.updateCell(sheetName, CellIndex.indexByString("A2"),
+        widget.operationModel.companyModel.fantasyName);
+    excel.updateCell(sheetName, CellIndex.indexByString("B1"), "CNPJ");
+    excel.updateCell(sheetName, CellIndex.indexByString("B2"),
+        widget.operationModel.companyModel.cnpj);
+    excel.updateCell(sheetName, CellIndex.indexByString("C1"), "DOCA");
+    excel.updateCell(sheetName, CellIndex.indexByString("C2"),
+        widget.operationModel.dockModel?.code);
+    excel.updateCell(sheetName, CellIndex.indexByString("D1"), "Tipo");
+    excel.updateCell(sheetName, CellIndex.indexByString("D2"),
+        widget.operationModel.dockModel?.idDockType.getDockType().description);
+    excel.updateCell(sheetName, CellIndex.indexByString("E1"), "Status");
+    excel.updateCell(
+        sheetName,
+        CellIndex.indexByString("E2"),
+        widget.operationModel.idOperationStatus
+            .getOperationStatus()
+            .description);
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("F1"), "Data de início");
+    excel.updateCell(sheetName, CellIndex.indexByString("F2"),
+        widget.operationModel.createdAt.ddMMyyyyHHmmss);
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("G1"), "Data de finalização");
+    excel.updateCell(sheetName, CellIndex.indexByString("G2"),
+        widget.operationModel.finishedAt?.ddMMyyyyHHmmss ?? '');
+    excel.updateCell(sheetName, CellIndex.indexByString("H1"), "Placa");
+    excel.updateCell(sheetName, CellIndex.indexByString("H2"),
+        widget.operationModel.liscensePlate);
+    excel.updateCell(sheetName, CellIndex.indexByString("I1"), "Descrição");
+    excel.updateCell(sheetName, CellIndex.indexByString("I2"),
+        widget.operationModel.description);
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("J1"), "Chave da operação");
+    excel.updateCell(sheetName, CellIndex.indexByString("J2"),
+        widget.operationModel.operationKey);
+    excel.setDefaultSheet(sheetName);
+    excel.save(fileName: "${widget.operationModel.operationKey}.xlsx");
+  }
+
   Future<void> update() async {
     await controller.updateProgress(
         operationKey: widget.operationModel.operationKey,
@@ -745,7 +790,7 @@ class _OperationWidgetState extends State<OperationWidget>
                               icon: const Icon(LineIcons.download),
                               radius: 10,
                               title: 'Baixar arquivo',
-                              onTap: () {},
+                              onTap: downloadFile,
                             ),
                           ),
                           SizedBox(
