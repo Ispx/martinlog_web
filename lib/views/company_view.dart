@@ -16,6 +16,7 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
+import 'package:martinlog_web/widgets/page_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import '../view_models/company_view_model.dart';
@@ -83,74 +84,9 @@ class _CompanyViewState extends State<CompanyView> {
                     )
                     .toList(),
                 onRefresh: () async => await controller.getAllCompanies(),
-                limitByPage: 10,
+                totalByPage: 10,
               );
             }),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class PageWidget extends StatefulWidget {
-  final List<Widget> itens;
-  final int limitByPage;
-  final VoidCallback? onRefresh;
-
-  const PageWidget({
-    Key? key,
-    required this.itens,
-    required this.limitByPage,
-    this.onRefresh,
-  }) : super(key: key);
-
-  @override
-  State<PageWidget> createState() => _PageWidgetState();
-}
-
-class _PageWidgetState extends State<PageWidget> {
-  late List<Widget> sublist;
-  @override
-  void initState() {
-    final lastIndex = widget.itens.length < widget.limitByPage
-        ? widget.itens.length
-        : widget.limitByPage;
-    sublist = widget.itens.sublist(0, lastIndex);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.zero,
-      height: double.maxFinite,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: AppSize.padding / 2,
-        ),
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: IconButton(
-                onPressed: () {
-                  if (widget.onRefresh != null) {
-                    widget.onRefresh!();
-                  }
-                },
-                icon: const Icon(Icons.refresh),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: AppSize.padding),
-                child: ListView.builder(
-                  itemCount: widget.itens.length,
-                  itemBuilder: (context, index) => widget.itens[index],
-                ),
-              ),
-            ),
           ],
         ),
       ),

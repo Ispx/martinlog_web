@@ -19,6 +19,7 @@ import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/views/operation_view.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
 import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
+import 'package:martinlog_web/widgets/page_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -85,7 +86,7 @@ class _DockViewState extends State<DockView> {
                     )
                     .toList(),
                 onRefresh: () async => await controller.getAll(),
-                limitByPage: 10,
+                totalByPage: 10,
               );
             }),
           ],
