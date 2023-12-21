@@ -493,14 +493,29 @@ class _OperationWidgetState extends State<OperationWidget>
   var progressObs = 0.obs;
   late final TextEditingController percentageEdittinController;
   final controller = simple.get<OperationViewModel>();
-
   late final Worker workerAppState;
-
+  late final AnimationController animationController;
+  late final Animation<double> progressAnimation;
+  late final Animation<int> textAnimation;
   @override
   void initState() {
-    percentageEdittinController =
-        TextEditingController(text: "${widget.operationModel.progress}%");
-    progressObs.value = widget.operationModel.progress;
+    animationController = AnimationController(vsync: this, duration: 2.seconds)
+      ..addListener(() {
+        progressObs.value = textAnimation.value;
+        percentageEdittinController.text = "${progressObs.value}%";
+        setState(() {});
+      });
+    progressAnimation =
+        Tween<double>(begin: 0.0, end: widget.operationModel.progress / 100)
+            .animate(
+      CurvedAnimation(parent: animationController, curve: Curves.decelerate),
+    );
+    textAnimation =
+        IntTween(begin: 0, end: widget.operationModel.progress).animate(
+      CurvedAnimation(parent: animationController, curve: Curves.decelerate),
+    );
+    percentageEdittinController = TextEditingController();
+
     workerAppState = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
         progressObs.update((val) {
@@ -508,6 +523,12 @@ class _OperationWidgetState extends State<OperationWidget>
         });
         setState(() {});
       }
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Future.delayed(100.milliseconds).then(
+        (value) => animationController.forward(),
+      );
     });
 
     super.initState();
@@ -560,14 +581,15 @@ class _OperationWidgetState extends State<OperationWidget>
 
   Future<void> update() async {
     await controller.updateProgress(
-        operationKey: widget.operationModel.operationKey,
-        progress: progressObs.value);
-    await controller.getAll();
+      operationKey: widget.operationModel.operationKey,
+      progress: progressObs.value,
+    );
   }
 
   @override
   void dispose() {
     workerAppState.dispose();
+    animationController.dispose();
     super.dispose();
   }
 
@@ -692,7 +714,7 @@ class _OperationWidgetState extends State<OperationWidget>
                       ),
                     ),
                     CircularProgressIndicator(
-                      value: progressObs.value / 100,
+                      value: progressAnimation.value,
                       color: widget.operationModel.idOperationStatus ==
                               OperationStatusEnum.CANCELED.idOperationStatus
                           ? appTheme.greyColor
@@ -706,8 +728,12 @@ class _OperationWidgetState extends State<OperationWidget>
               Flexible(
                 child: TextFormFieldWidget<OutlineInputBorder>(
                   controller: percentageEdittinController,
-                  onChange: (e) => progressObs.value = int.parse(
-                      RegExp(r'[0-9]').allMatches(e).map((e) => e[0]).join()),
+                  onChange: (e) => progressObs.value = e.isEmpty
+                      ? 0
+                      : int.parse(RegExp(r'[0-9]')
+                          .allMatches(e)
+                          .map((e) => e[0])
+                          .join()),
                   textAlign: TextAlign.center,
                   fillColor: appTheme.greyColor.withOpacity(.2),
                   enable: controller.appState.value is! AppStateLoading &&
@@ -829,18 +855,45 @@ class DetailsWidget extends StatefulWidget {
   State<DetailsWidget> createState() => _DetailsWidgetState();
 }
 
-class _DetailsWidgetState extends State<DetailsWidget> {
+class _DetailsWidgetState extends State<DetailsWidget>
+    with SingleTickerProviderStateMixin {
   var progressObs = 0.obs;
   late final TextEditingController percentageEdittinController;
-
+  late final AnimationController animationController;
+  late final Animation<double> progressAnimation;
+  late final Animation<int> textAnimation;
   late final Worker workerAppState;
 
   @override
   void initState() {
+    animationController = AnimationController(vsync: this, duration: 2.seconds)
+      ..addListener(() {
+        progressObs.value = textAnimation.value;
+        setState(() {});
+      });
+    progressAnimation =
+        Tween<double>(begin: 0.0, end: widget.operationModel.progress / 100)
+            .animate(
+      CurvedAnimation(parent: animationController, curve: Curves.decelerate),
+    );
+    textAnimation =
+        IntTween(begin: 0, end: widget.operationModel.progress).animate(
+      CurvedAnimation(parent: animationController, curve: Curves.decelerate),
+    );
     percentageEdittinController =
         TextEditingController(text: "${widget.operationModel.progress}%");
-    progressObs.value = widget.operationModel.progress;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Future.delayed(200.milliseconds).then(
+        (value) => animationController.forward(),
+      );
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -918,7 +971,7 @@ class _DetailsWidgetState extends State<DetailsWidget> {
                   ),
                   Positioned.fill(
                     child: CircularProgressIndicator(
-                      value: progressObs.value / 100,
+                      value: progressAnimation.value,
                       strokeWidth: 15,
                       color: widget.operationModel.idOperationStatus ==
                               OperationStatusEnum.CANCELED.idOperationStatus
