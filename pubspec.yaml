@@ -51,6 +51,7 @@ dependencies:
   flutter_svg: ^2.0.9
   line_icons: ^2.0.3
   flutter_excel: ^1.0.1
+  flutter_date_range_picker: ^0.0.14
 
 dev_dependencies:
   flutter_test:

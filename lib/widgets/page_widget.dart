@@ -9,11 +9,12 @@ class PageWidget extends StatefulWidget {
   final List<Widget> itens;
   final int totalByPage;
   final VoidCallback? onRefresh;
-
+  final VoidCallback? onDownload;
   const PageWidget({
     Key? key,
     required this.itens,
     required this.totalByPage,
+    this.onDownload,
     this.onRefresh,
   }) : super(key: key);
 
@@ -25,7 +26,6 @@ class _PageWidgetState extends State<PageWidget> {
   var currentIndexPage = 0.obs;
   late final int totalPages;
   var sublistItens = <Widget>[].obs;
-
   @override
   void initState() {
     totalPages = widget.itens.length ~/ widget.totalByPage +
@@ -75,9 +75,6 @@ class _PageWidgetState extends State<PageWidget> {
               return Row(
                 children: [
                   const Expanded(child: SizedBox.shrink()),
-                  SizedBox(
-                    width: AppSize.padding * 2,
-                  ),
                   Row(
                     children: [
                       IconButton(
@@ -88,6 +85,7 @@ class _PageWidgetState extends State<PageWidget> {
                               ? Colors.black
                               : context.appTheme.greyColor,
                         ),
+                        tooltip: "Página anterior",
                       ),
                       IconButton(
                         onPressed: nextPage,
@@ -97,23 +95,48 @@ class _PageWidgetState extends State<PageWidget> {
                               ? Colors.black
                               : context.appTheme.greyColor,
                         ),
+                        tooltip: "Próxima página",
                       ),
                     ],
                   ),
                   SizedBox(
                     width: AppSize.padding * 2,
                   ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                      onPressed: () {
-                        if (widget.onRefresh != null) {
-                          widget.onRefresh!();
-                        }
-                      },
-                      icon: const Icon(Icons.refresh),
+                  IconButton(
+                    onPressed: () {
+                      if (widget.onRefresh != null) {
+                        widget.onRefresh!();
+                      }
+                    },
+                    icon: const Icon(Icons.refresh),
+                    tooltip: "Atualizar dados",
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.resolveWith(
+                        (states) => RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
                     ),
                   ),
+                  SizedBox(
+                    width: AppSize.padding * 2,
+                  ),
+                  widget.onDownload != null
+                      ? IconButton(
+                          onPressed: widget.onDownload,
+                          tooltip: "Baixar arquivo",
+                          icon: const Icon(
+                            LineIcons.download,
+                          ),
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.resolveWith(
+                              (states) => RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
                 ],
               );
             }),

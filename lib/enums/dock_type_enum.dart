@@ -1,4 +1,5 @@
 enum DockType {
+  UNDEFINED,
   EXPEDITION,
   RECEIPT,
   KAMIKAZE,

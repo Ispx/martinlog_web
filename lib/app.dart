@@ -48,6 +48,7 @@ class App extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         locale: const Locale('pt_BR'),
+        supportedLocales: const [Locale('pt', 'BR')],
         routes: {
           Routes.auth: (context) => AuthView(),
           Routes.operation: (context) => OperationView(),

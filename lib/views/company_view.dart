@@ -84,6 +84,7 @@ class _CompanyViewState extends State<CompanyView> {
                     )
                     .toList(),
                 onRefresh: () async => await controller.getAllCompanies(),
+                onDownload: () async => await controller.downloadFile(),
                 totalByPage: 10,
               );
             }),

@@ -35,9 +35,11 @@ class Http implements IHttp {
     dio.options.sendTimeout = 10.seconds;
     try {
       return switch (method) {
-        HttpMethod.GET => await dio.get(url),
-        HttpMethod.POST => await dio.post(url, data: body),
-        HttpMethod.PUT => await dio.put(url, data: body)
+        HttpMethod.GET => await dio.get(url, queryParameters: params),
+        HttpMethod.POST =>
+          await dio.post(url, data: body, queryParameters: params),
+        HttpMethod.PUT =>
+          await dio.put(url, data: body, queryParameters: params)
       } as T;
     } on DioException catch (e) {
       throw e.response?.data ?? "Falha inesperada";

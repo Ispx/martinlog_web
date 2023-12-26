@@ -1,5 +1,7 @@
+import 'package:flutter_excel/excel.dart';
 import 'package:get/get.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
+import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/models/dock_model.dart';
@@ -12,8 +14,10 @@ abstract interface class IDockViewModel {
     required String code,
     required DockType dockType,
   });
+
   Future<void> getAll();
   Future<void> updateDock(DockModel dockModel);
+  Future<void> downloadFile();
 }
 
 class DockViewModel extends GetxController implements IDockViewModel {
@@ -69,6 +73,37 @@ class DockViewModel extends GetxController implements IDockViewModel {
 
   void changeState(AppState appState) {
     this.appState.value = appState;
+  }
+
+  @override
+  Future<void> downloadFile() async {
+    changeState(AppStateLoading());
+    final excel = Excel.createExcel();
+    const sheetName = "Docas";
+    excel.updateCell(sheetName, CellIndex.indexByString("A1"), "Tipo");
+    excel.updateCell(sheetName, CellIndex.indexByString("B1"), "Código");
+    excel.updateCell(sheetName, CellIndex.indexByString("C1"), "Status");
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("D1"), "Data de criação");
+    for (int i = 0; i < docks.length; i++) {
+      var index = i + 2;
+      final dockModel = docks[i];
+      excel.updateCell(sheetName, CellIndex.indexByString("A$index"),
+          dockModel.idDockType.getDockType().description);
+      excel.updateCell(
+          sheetName, CellIndex.indexByString("B$index"), dockModel.code);
+      excel.updateCell(
+        sheetName,
+        CellIndex.indexByString("C$index"),
+        dockModel.isActive ? 'Ativado' : 'Desativado',
+      );
+      excel.updateCell(sheetName, CellIndex.indexByString("D$index"),
+          dockModel.createdAt.ddMMyyyy);
+    }
+
+    excel.setDefaultSheet(sheetName);
+    excel.save(fileName: "relatório_das_docas.xlsx");
+    changeState(AppStateDone());
   }
 
   @override

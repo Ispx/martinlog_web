@@ -153,13 +153,17 @@ abstract class Utils {
     required int currentIndexPage,
     required List<Widget> widgets,
   }) {
-    int totalPages = widgets.length ~/ totalByPage +
-        (widgets.length % totalByPage > 0 ? 1 : 0);
-    int startIndex = currentIndexPage * totalByPage;
-    int? lastIndex = currentIndexPage == totalPages - 1
-        ? null
-        : (currentIndexPage * totalByPage) + totalByPage;
-    return widgets.sublist(startIndex, lastIndex);
+    try {
+      int totalPages = widgets.length ~/ totalByPage +
+          (widgets.length % totalByPage > 0 ? 1 : 0);
+      int startIndex = currentIndexPage * totalByPage;
+      int? lastIndex = currentIndexPage == totalPages - 1
+          ? null
+          : (currentIndexPage * totalByPage) + totalByPage;
+      return widgets.sublist(startIndex, lastIndex);
+    } catch (e) {
+      return [];
+    }
   }
 
   static String resolveDocumentTypeMask(String source) =>

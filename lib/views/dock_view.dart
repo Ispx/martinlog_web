@@ -86,6 +86,7 @@ class _DockViewState extends State<DockView> {
                     )
                     .toList(),
                 onRefresh: () async => await controller.getAll(),
+                onDownload: () async => await controller.downloadFile(),
                 totalByPage: 10,
               );
             }),
