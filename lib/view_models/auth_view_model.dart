@@ -1,8 +1,8 @@
-import 'dart:io';
-
 import 'package:get/state_manager.dart';
+import 'package:martinlog_web/core/consts/routes.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/models/auth_model.dart';
+import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/repositories/auth_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 
@@ -18,9 +18,9 @@ class AuthViewModel implements IAuthViewModel {
   AuthViewModel({required this.authRepository});
 
   @override
-  Future<void> loggout() {
+  Future<void> loggout() async {
     simple.reset();
-    exit(0);
+    GoTo.removeAllAndGoTo(Routes.auth);
   }
 
   @override

@@ -198,6 +198,7 @@ class _OperationViewState extends State<OperationView> {
                 ),
                 DropBoxWidget<OperationStatusEnum>(
                   controller: operationStatusEditingController,
+                  label: 'Status',
                   dropdownMenuEntries: [
                     ...OperationStatusEnum.values
                         .map(
@@ -216,6 +217,7 @@ class _OperationViewState extends State<OperationView> {
                 ),
                 DropBoxWidget<DockType>(
                   controller: dockTypeEditingController,
+                  label: 'Tipo',
                   dropdownMenuEntries: [
                     ...DockType.values
                         .map(

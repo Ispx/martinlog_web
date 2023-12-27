@@ -87,6 +87,7 @@ class _PageWidgetState extends State<PageWidget> {
                         ),
                         tooltip: "Página anterior",
                       ),
+                      Text("${currentIndexPage.value + 1}"),
                       IconButton(
                         onPressed: nextPage,
                         icon: Icon(

@@ -10,7 +10,7 @@ class DropBoxWidget<T> extends StatelessWidget {
   final List<DropdownMenuEntry<T>> dropdownMenuEntries;
   final Function(T?) onSelected;
   final double? width;
-
+  final String? label;
   const DropBoxWidget({
     super.key,
     required this.controller,
@@ -18,6 +18,7 @@ class DropBoxWidget<T> extends StatelessWidget {
     this.enable = true,
     this.width,
     required this.onSelected,
+    this.label,
   });
 
   @override
@@ -26,6 +27,7 @@ class DropBoxWidget<T> extends StatelessWidget {
       controller: controller,
       enabled: enable,
       width: width ?? 10.w,
+      label: label != null ? Text(label!) : null,
       onSelected: (value) => onSelected(value),
       inputDecorationTheme: InputDecorationTheme(
         fillColor: Colors.white,
