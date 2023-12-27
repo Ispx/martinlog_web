@@ -7,7 +7,7 @@ extension ProfileTypeExt on ProfileTypeEnum {
       };
 
   String get description => switch (this) {
-        ProfileTypeEnum.ADM => "Admistrador",
+        ProfileTypeEnum.ADM => "Lider",
         ProfileTypeEnum.MASTER => "Master",
       };
 }

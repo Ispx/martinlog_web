@@ -17,6 +17,9 @@ class SwitchCompanyInterceptor extends Interceptor {
     } else if (options.uri.path == Endpoints.operation) {
       super.onRequest(options, handler);
       return;
+    } else if (options.uri.path == Endpoints.user) {
+      super.onRequest(options, handler);
+      return;
     }
     if (authModel != null) {
       options.headers['idCompany'] = authModel.idCompany.toString();

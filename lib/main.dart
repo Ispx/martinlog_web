@@ -7,6 +7,9 @@ import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/repositories/auth_repository.dart';
 import 'package:martinlog_web/repositories/cancel_operation_repository.dart';
 import 'package:martinlog_web/repositories/create_company_repository.dart';
+import 'package:martinlog_web/repositories/create_user_repository.dart';
+import 'package:martinlog_web/repositories/get_users_repository.dart';
+import 'package:martinlog_web/repositories/update_user_repository.dart';
 import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
 import 'package:martinlog_web/repositories/get_companies_repository.dart';
@@ -21,6 +24,7 @@ import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
+import 'package:martinlog_web/view_models/user_view_model.dart';
 
 void main() async {
   await EnvConfig().read(const String.fromEnvironment("DEV"));
@@ -97,7 +101,24 @@ void main() async {
           urlBase: EnvConfig.urlBase,
         ),
       );
-
+      i.addFactory<UpdateUserRepository>(
+        () => UpdateUserRepository(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
+      i.addFactory<CreateUserRepository>(
+        () => CreateUserRepository(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
+      i.addFactory<GetUsersRepository>(
+        () => GetUsersRepository(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
       i.addSingleton<AuthViewModel>(
         () => AuthViewModel(
           authRepository: i.get<AuthRepository>(),
@@ -124,6 +145,13 @@ void main() async {
           getOperationRepository: i.get<GetOperationRepository>(),
           updateProgressOperationRepository:
               i.get<UpdateProgressOperationRepository>(),
+        ),
+      );
+      i.addSingleton<UserViewModel>(
+        () => UserViewModel(
+          createUserRepository: i.get<CreateUserRepository>(),
+          updateUserRepository: i.get<UpdateUserRepository>(),
+          getUsersRepository: i.get<GetUsersRepository>(),
         ),
       );
       i.addSingleton<MenuViewModel>(

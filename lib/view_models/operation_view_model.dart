@@ -170,9 +170,9 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     excel.updateCell(sheetName, CellIndex.indexByString("I1"), "Descrição");
     excel.updateCell(
         sheetName, CellIndex.indexByString("J1"), "Chave da operação");
-    for (int i = 0; i < operations.length; i++) {
+    for (int i = 0; i < operationsFilted.length; i++) {
       var index = i + 2;
-      final operationModel = operations[i];
+      final operationModel = operationsFilted[i];
 
       excel.updateCell(sheetName, CellIndex.indexByString("A$index"),
           operationModel.companyModel.fantasyName);

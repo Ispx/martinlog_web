@@ -5,6 +5,7 @@ extension MenuExt on MenuEnum {
         MenuEnum.Operations => "Operações",
         MenuEnum.Dashboard => "Dashboard",
         MenuEnum.Company => "Transportadoras",
-        MenuEnum.Dock => "Docas"
+        MenuEnum.Dock => "Docas",
+        MenuEnum.Users => "Usuários"
       };
 }

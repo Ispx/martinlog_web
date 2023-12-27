@@ -62,6 +62,13 @@ mixin ValidatorsMixin {
     return null;
   }
 
+  String? isNotEmail(String? value, [String? message]) {
+    if (!(value?.contains('@') ?? false)) {
+      return message ?? 'Informe o nome completo do titular';
+    }
+    return null;
+  }
+
   String? onCombine(List<String? Function()> validators) {
     for (var function in validators) {
       final validator = function();

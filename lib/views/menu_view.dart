@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
+import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
+import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
 import 'package:martinlog_web/functions/futures.dart';
 import 'package:martinlog_web/images/app_images.dart';
@@ -11,13 +12,16 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/state/menu_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
+import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
+import 'package:martinlog_web/view_models/user_view_model.dart';
 import 'package:martinlog_web/views/company_view.dart';
 import 'package:martinlog_web/views/dock_view.dart';
 import 'package:martinlog_web/views/operation_view.dart';
+import 'package:martinlog_web/views/users_view.dart';
 import 'package:martinlog_web/widgets/app_bar_widget.dart';
 import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -37,6 +41,7 @@ class _MenuViewState extends State<MenuView> {
         MenuEnum.Operations => const OperationView(),
         MenuEnum.Dock => const DockView(),
         MenuEnum.Company => const CompanyView(),
+        MenuEnum.Users => const UserView(),
         _ => const Center()
       };
   @override
@@ -44,7 +49,8 @@ class _MenuViewState extends State<MenuView> {
     worker = everAll([
       simple.get<OperationViewModel>().appState,
       simple.get<DockViewModel>().appState,
-      simple.get<CompanyViewModel>().appState
+      simple.get<CompanyViewModel>().appState,
+      simple.get<UserViewModel>().appState
     ], (state) {
       menuViewModel.changeStatus(state as AppState);
     });
@@ -198,6 +204,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                     onTap: () {
                       widget.menuViewModel.changeMenu(MenuEnum.Dock);
                     },
+                    profiles: const [ProfileTypeEnum.MASTER],
                   ),
                   SizedBox(
                     height: AppSize.padding,
@@ -214,6 +221,24 @@ class _DrawerMenuState extends State<DrawerMenu> {
                     onTap: () {
                       widget.menuViewModel.changeMenu(MenuEnum.Company);
                     },
+                    profiles: const [ProfileTypeEnum.MASTER],
+                  ),
+                  SizedBox(
+                    height: AppSize.padding,
+                  ),
+                  MenuItem(
+                    icon: const Icon(
+                      LineIcons.users,
+                      color: Colors.white,
+                    ),
+                    isOpen: isOpen,
+                    isSelected: widget.menuViewModel.menuState.value.menuEnum ==
+                        MenuEnum.Users,
+                    title: 'Usuários',
+                    onTap: () {
+                      widget.menuViewModel.changeMenu(MenuEnum.Users);
+                    },
+                    profiles: const [ProfileTypeEnum.MASTER],
                   ),
                   SizedBox(
                     height: AppSize.padding,
@@ -240,7 +265,9 @@ class MenuItem extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
   final bool isOpen;
-  final isSelected;
+  final bool isSelected;
+  final List<ProfileTypeEnum>? profiles;
+
   const MenuItem({
     super.key,
     required this.icon,
@@ -248,59 +275,68 @@ class MenuItem extends StatelessWidget {
     required this.onTap,
     this.isOpen = false,
     this.isSelected = false,
+    this.profiles,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      splashColor: context.appTheme.primaryColor,
-      child: SizedBox(
-        height: 7.h,
-        child: Row(
-          children: [
-            Container(
-              height: double.maxFinite,
-              width: 5,
-              decoration: BoxDecoration(
-                color: isSelected ? context.appTheme.primaryColor : null,
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
-              ),
-            ),
-            Expanded(
+    return (profiles?.contains(simple
+                .get<AuthViewModel>()
+                .authModel!
+                .idProfile
+                .getProfile()) ??
+            true)
+        ? InkWell(
+            onTap: onTap,
+            splashColor: context.appTheme.primaryColor,
+            child: SizedBox(
+              height: 7.h,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: isOpen ? AppSize.padding : 0,
+                  Container(
+                    height: double.maxFinite,
+                    width: 5,
+                    decoration: BoxDecoration(
+                      color: isSelected ? context.appTheme.primaryColor : null,
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
                   ),
-                  icon,
-                  SizedBox(
-                    width: isOpen ? AppSize.padding : 0,
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: isOpen ? AppSize.padding : 0,
+                        ),
+                        icon,
+                        SizedBox(
+                          width: isOpen ? AppSize.padding : 0,
+                        ),
+                        isOpen
+                            ? Expanded(
+                                child: Text(
+                                  title,
+                                  style: AppTextStyle.displayMedium(context)
+                                      .copyWith(
+                                    color: Colors.white,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.w300,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
                   ),
-                  isOpen
-                      ? Expanded(
-                          child: Text(
-                            title,
-                            style: AppTextStyle.displayMedium(context).copyWith(
-                              color: Colors.white,
-                              fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.w300,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        )
-                      : const SizedBox.shrink(),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          )
+        : const SizedBox.shrink();
   }
 }

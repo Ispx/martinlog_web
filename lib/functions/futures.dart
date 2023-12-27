@@ -5,12 +5,17 @@ import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
+import 'package:martinlog_web/view_models/user_view_model.dart';
 
 Future getAccountInfo = Future.sync(() async {
   await simple.get<OperationViewModel>().getAll();
   if (simple.get<AuthViewModel>().authModel?.idProfile ==
       ProfileTypeEnum.MASTER.idProfileType) {
     await simple.get<CompanyViewModel>().getAllCompanies();
+  }
+  if (simple.get<AuthViewModel>().authModel?.idProfile ==
+      ProfileTypeEnum.MASTER.idProfileType) {
+    await simple.get<UserViewModel>().getAll();
   }
   await simple.get<CompanyViewModel>().getCompany();
   await simple.get<DockViewModel>().getAll();
