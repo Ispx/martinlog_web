@@ -558,7 +558,7 @@ class _UserWidgetState extends State<UserWidget> {
                 ),
               ),
               SizedBox(
-                width: 8.w,
+                width: 10.w,
                 child: TextActionButtomWidget(
                   title: widget.userModel.isActive ? 'Desativar' : 'Ativar',
                   isEnable: controller.appState.value is! AppStateLoading,
