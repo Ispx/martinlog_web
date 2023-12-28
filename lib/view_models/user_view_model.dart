@@ -137,8 +137,7 @@ class UserViewModel implements IUserViewModel {
         document: userModel.document,
         email: userModel.email,
         idProfile: userModel.idProfile,
-        isActive: true,
-        idCompany: userModel.companyModel.idCompany,
+        isActive: userModel.isActive,
       );
       changeState(AppStateDone());
     } catch (e) {

@@ -445,9 +445,12 @@ class UserWidget extends StatefulWidget {
 }
 
 class _UserWidgetState extends State<UserWidget> {
+  late final TextEditingController profileEditingController;
   final controller = simple.get<UserViewModel>();
   @override
   void initState() {
+    profileEditingController = TextEditingController(
+        text: widget.userModel.idProfile.getProfile().description);
     super.initState();
   }
 
@@ -483,6 +486,7 @@ class _UserWidgetState extends State<UserWidget> {
                     fontWeight: FontWeight.w600,
                     color: appTheme.titleColor,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
               SizedBox(
@@ -494,10 +498,11 @@ class _UserWidgetState extends State<UserWidget> {
                     fontWeight: FontWeight.w600,
                     color: appTheme.titleColor,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
               SizedBox(
-                width: 15.w,
+                width: 10.w,
                 child: Text(
                   widget.userModel.email,
                   overflow: TextOverflow.ellipsis,
@@ -505,17 +510,27 @@ class _UserWidgetState extends State<UserWidget> {
                     fontWeight: FontWeight.w600,
                     color: appTheme.titleColor,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
               SizedBox(
-                width: 8.w,
-                child: Text(
-                  widget.userModel.idProfile.getProfile().description,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyle.displayMedium(context).copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: appTheme.titleColor,
-                  ),
+                width: 10.w,
+                child: DropBoxWidget<ProfileTypeEnum>(
+                  controller: profileEditingController,
+                  dropdownMenuEntries: [
+                    ...ProfileTypeEnum.values
+                        .map((e) =>
+                            DropdownMenuEntry(value: e, label: e.description))
+                        .toList()
+                  ],
+                  onSelected: (e) async {
+                    if (e == null) return;
+                    await controller.updateUser(
+                      widget.userModel.copyWith(
+                        idProfile: e.idProfileType,
+                      ),
+                    );
+                  },
                 ),
               ),
               SizedBox(
@@ -527,6 +542,7 @@ class _UserWidgetState extends State<UserWidget> {
                     fontWeight: FontWeight.w600,
                     color: appTheme.titleColor,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
               SizedBox(
@@ -538,10 +554,11 @@ class _UserWidgetState extends State<UserWidget> {
                     fontWeight: FontWeight.w600,
                     color: appTheme.titleColor,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
               SizedBox(
-                width: 10.w,
+                width: 8.w,
                 child: TextActionButtomWidget(
                   title: widget.userModel.isActive ? 'Desativar' : 'Ativar',
                   isEnable: controller.appState.value is! AppStateLoading,
