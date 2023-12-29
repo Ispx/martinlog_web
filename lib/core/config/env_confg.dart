@@ -3,6 +3,5 @@ final class EnvConfig {
   EnvConfig._();
   factory EnvConfig() => _i;
   static String get urlBase => const String.fromEnvironment("URL_BASE");
-  static String get environment => const String.fromEnvironment("ENVIRONMENT");
   static String get appName => const String.fromEnvironment("APP_NAME");
 }

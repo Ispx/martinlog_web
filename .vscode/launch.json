@@ -15,8 +15,6 @@
                 "URL_BASE=http://35.85.148.75",
                 "--dart-define",
                 "APP_NAME=Plataforma Martin log",
-                "--dart-define",
-                "ENVIRONMENT=dev",
             ],
         },
         {
@@ -30,8 +28,6 @@
                 "URL_BASE=http://35.85.148.75",
                 "--dart-define",
                 "APP_NAME=Plataforma Martin log",
-                "--dart-define",
-                "ENVIRONMENT=dev",
             ],
         },
         {
