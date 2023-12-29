@@ -23,17 +23,4 @@ Future Function() funcGetAccountInfo = () async {
     return true;
   });
 };
-Future getAccountInfo = Future.sync(() async {
-  await simple.get<OperationViewModel>().getAll();
-  if (simple.get<AuthViewModel>().authModel?.idProfile ==
-      ProfileTypeEnum.MASTER.idProfileType) {
-    await simple.get<CompanyViewModel>().getAllCompanies();
-  }
-  if (simple.get<AuthViewModel>().authModel?.idProfile ==
-      ProfileTypeEnum.MASTER.idProfileType) {
-    await simple.get<UserViewModel>().getAll();
-  }
-  await simple.get<CompanyViewModel>().getCompany();
-  await simple.get<DockViewModel>().getAll();
-  return true;
-});
+
