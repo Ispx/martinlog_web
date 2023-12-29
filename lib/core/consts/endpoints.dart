@@ -3,6 +3,8 @@ class Endpoints {
   Endpoints._();
   factory Endpoints() => _i;
   static const auth = "/login";
+  static const passwordRecoveryStart = "/password/start";
+  static const passwordRecoveryComplete = "/password/complete";
   static const company = "/company";
   static const companyAll = "$company/all";
   static const dock = "/dock";

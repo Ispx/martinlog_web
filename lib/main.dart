@@ -6,9 +6,11 @@ import 'package:martinlog_web/core/config/env_confg.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/repositories/auth_repository.dart';
 import 'package:martinlog_web/repositories/cancel_operation_repository.dart';
+import 'package:martinlog_web/repositories/complete_password_recovery_repository.dart';
 import 'package:martinlog_web/repositories/create_company_repository.dart';
 import 'package:martinlog_web/repositories/create_user_repository.dart';
 import 'package:martinlog_web/repositories/get_users_repository.dart';
+import 'package:martinlog_web/repositories/start_password_recovery_repository.dart';
 import 'package:martinlog_web/repositories/update_user_repository.dart';
 import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
@@ -24,7 +26,9 @@ import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
+import 'package:martinlog_web/view_models/password_recovery_view_model.dart';
 import 'package:martinlog_web/view_models/user_view_model.dart';
+import 'package:martinlog_web/views/password_recovery_view.dart';
 
 void main() async {
   Intl.defaultLocale = 'pt_BR';
@@ -118,6 +122,18 @@ void main() async {
           urlBase: EnvConfig.urlBase,
         ),
       );
+      i.addFactory<StartPasswordRecoveryRepository>(
+        () => StartPasswordRecoveryRepository(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
+      i.addFactory<CompletePasswordRecoveryRepository>(
+        () => CompletePasswordRecoveryRepository(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
       i.addSingleton<AuthViewModel>(
         () => AuthViewModel(
           authRepository: i.get<AuthRepository>(),
@@ -151,6 +167,14 @@ void main() async {
           createUserRepository: i.get<CreateUserRepository>(),
           updateUserRepository: i.get<UpdateUserRepository>(),
           getUsersRepository: i.get<GetUsersRepository>(),
+        ),
+      );
+      i.addSingleton<PasswordRecoveryViewModel>(
+        () => PasswordRecoveryViewModel(
+          startPasswordRecoveryRepository:
+              i.get<StartPasswordRecoveryRepository>(),
+          completePasswordRecoveryRepository:
+              i.get<CompletePasswordRecoveryRepository>(),
         ),
       );
       i.addSingleton<MenuViewModel>(

@@ -1,3 +1,5 @@
+import 'dart:js_util';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
@@ -55,6 +57,7 @@ class _MenuViewState extends State<MenuView> {
       menuViewModel.changeStatus(state as AppState);
     });
     menuViewModel = simple.get<MenuViewModel>();
+
     super.initState();
   }
 
@@ -69,7 +72,7 @@ class _MenuViewState extends State<MenuView> {
     return Scaffold(
       backgroundColor: context.appTheme.backgroundColor,
       body: FutureBuilder(
-        future: getAccountInfo,
+        future: funcGetAccountInfo(),
         builder: (_, snapshot) {
           if (snapshot.hasError) {
             return Text(snapshot.error.toString());
