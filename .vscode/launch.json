@@ -5,12 +5,33 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "martinlog_web",
+            "name": "[DEV] martinlog_web",
             "request": "launch",
             "type": "dart",
             "args": [
                 "--dart-define",
-                "ENV=dev"
+                "ENV=dev",
+                "--dart-define",
+                "URL_BASE=http://35.85.148.75",
+                "--dart-define",
+                "APP_NAME=Plataforma Martin log",
+                "--dart-define",
+                "ENVIRONMENT=dev",
+            ],
+        },
+        {
+            "name": "[PROD] martinlog_web",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define",
+                "ENV=dev",
+                "--dart-define",
+                "URL_BASE=http://35.85.148.75",
+                "--dart-define",
+                "APP_NAME=Plataforma Martin log",
+                "--dart-define",
+                "ENVIRONMENT=dev",
             ],
         },
         {

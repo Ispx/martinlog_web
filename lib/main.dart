@@ -27,7 +27,6 @@ import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/view_models/user_view_model.dart';
 
 void main() async {
-  await EnvConfig().read(const String.fromEnvironment("DEV"));
   Intl.defaultLocale = 'pt_BR';
   initializeDateFormatting('pt_BR', null);
 
