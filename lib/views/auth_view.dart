@@ -47,7 +47,7 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
             backgroundColor: Colors.red);
       }
       if (appState is AppStateDone) {
-        GoTo.removeAllPreviousAndGoTo(Routes.menu);
+        GoTo.removeAllAndGoTo(Routes.menu);
       }
     });
     menuController = ResponsiveMenuController();
@@ -144,8 +144,8 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 "Login",
-                                style:
-                                    AppTextStyle.displayMedium(context).copyWith(
+                                style: AppTextStyle.displayMedium(context)
+                                    .copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -195,7 +195,9 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
                                 padding:
                                     EdgeInsets.only(top: AppSize.padding / 2),
                                 child: TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    GoTo.goTo(Routes.passwordRecovery);
+                                  },
                                   child: Text(
                                     "Esqueci minha senha",
                                     style: AppTextStyle.displaySmall(context)
@@ -210,8 +212,8 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
                             Obx(() {
                               return ButtomWidget(
                                 title: "Acessar agora",
-                                isLoading:
-                                    controller.appState.value is AppStateLoading,
+                                isLoading: controller.appState.value
+                                    is AppStateLoading,
                                 radius: 10,
                                 onTap: () async {
                                   if (formState.currentState?.validate() ??

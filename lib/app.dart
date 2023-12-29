@@ -12,6 +12,7 @@ import 'package:martinlog_web/views/menu_view.dart';
 import 'package:martinlog_web/views/operation_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:martinlog_web/components/banner_component.dart';
+import 'package:martinlog_web/views/password_recovery_view.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class App extends StatelessWidget {
@@ -50,12 +51,13 @@ class App extends StatelessWidget {
         locale: const Locale('pt_BR'),
         supportedLocales: const [Locale('pt', 'BR')],
         routes: {
-          Routes.auth: (context) => AuthView(),
-          Routes.operation: (context) => OperationView(),
-          Routes.company: (context) => CompanyView(),
-          Routes.dock: (context) => DockView(),
-          Routes.dashboard: (context) => DashboardView(),
-          Routes.menu: (context) => MenuView(),
+          Routes.auth: (context) => const AuthView(),
+          Routes.operation: (context) => const OperationView(),
+          Routes.company: (context) => const CompanyView(),
+          Routes.dock: (context) => const DockView(),
+          Routes.dashboard: (context) => const DashboardView(),
+          Routes.menu: (context) => const MenuView(),
+          Routes.passwordRecovery: (context) => const PassswordRecoveryView(),
         },
       );
     });

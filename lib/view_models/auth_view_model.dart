@@ -20,7 +20,7 @@ class AuthViewModel implements IAuthViewModel {
   @override
   Future<void> loggout() async {
     simple.reset();
-    GoTo.removeAllAndGoTo(Routes.auth);
+    GoTo.removeAllPreviousAndGoTo(Routes.auth);
   }
 
   @override

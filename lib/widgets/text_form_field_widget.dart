@@ -84,7 +84,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
       obscureText: obscure ?? false,
       maxLength: maxLength,
       minLines: minLines,
-      maxLines: maxLines,
+      maxLines: obscure == true ? 1 : maxLines,
       onTap: onTap,
       focusNode: focusNode,
       textInputAction: textInputAction,
