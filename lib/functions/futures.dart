@@ -3,6 +3,7 @@ import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/profile_type_extension.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
+import 'package:martinlog_web/view_models/dashboard_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/view_models/user_view_model.dart';
@@ -23,4 +24,3 @@ Future Function() funcGetAccountInfo = () async {
     return true;
   });
 };
-
