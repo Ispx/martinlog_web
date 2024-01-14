@@ -3,13 +3,16 @@ import 'package:martinlog_web/core/config/env_confg.dart';
 import 'package:martinlog_web/core/consts/routes.dart';
 import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/style/theme/app_theme.dart';
-import 'package:martinlog_web/view_models/dashboard_view.dart';
+import 'package:martinlog_web/utils/utils.dart';
+import 'package:martinlog_web/views/dashboard_view.dart';
 import 'package:martinlog_web/views/auth_view.dart';
 import 'package:martinlog_web/views/company_view.dart';
 import 'package:martinlog_web/views/dock_view.dart';
+import 'package:martinlog_web/views/menu_view.dart';
 import 'package:martinlog_web/views/operation_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:martinlog_web/components/banner_component.dart';
+import 'package:martinlog_web/views/password_recovery_view.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class App extends StatelessWidget {
@@ -24,19 +27,19 @@ class App extends StatelessWidget {
         scaffoldMessengerKey: scaffoldMessengerState,
         title: EnvConfig.appName,
         theme: AppThemeData(
-          primaryColor: Colors.greenAccent,
-          primaryVariant: Colors.blueAccent,
-          secondColor: Colors.blue,
-          greenColor: Colors.grey,
-          backgroundColor: Colors.white,
+          primaryColor: Utils.color("#D5DE23"),
+          primaryVariant: Utils.color("#CFD022"),
+          secondColor: Utils.color("#334359"),
+          greenColor: Colors.green,
+          backgroundColor: Utils.color("#F5F7FA"),
           iconColor: Colors.grey,
-          buttonEnableColor: Colors.green,
+          buttonEnableColor: Utils.color("#D5DE23"),
           disableColor: Colors.grey,
           buttonDisableColor: Colors.grey,
-          hintFieldColor: Colors.black,
-          borderColor: Colors.black,
+          hintFieldColor: Utils.color("#5A789D"),
+          borderColor: Utils.color("#5A789D"),
           titleColor: Colors.black,
-          greyColor: Colors.green,
+          greyColor: Utils.color("#CCCCCC"),
           redColor: Colors.red,
         ).theme,
         initialRoute: Routes.auth,
@@ -46,12 +49,15 @@ class App extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         locale: const Locale('pt_BR'),
+        supportedLocales: const [Locale('pt', 'BR')],
         routes: {
-          Routes.auth: (context) => AuthView(),
-          Routes.operation: (context) => OperationView(),
-          Routes.company: (context) => CompanyView(),
-          Routes.dock: (context) => DockView(),
-          Routes.dashboard: (context) => DashboardView(),
+          Routes.auth: (context) => const AuthView(),
+          Routes.operation: (context) => const OperationView(),
+          Routes.company: (context) => const CompanyView(),
+          Routes.dock: (context) => const DockView(),
+          Routes.dashboard: (context) => const DashboardView(),
+          Routes.menu: (context) => const MenuView(),
+          Routes.passwordRecovery: (context) => const PassswordRecoveryView(),
         },
       );
     });

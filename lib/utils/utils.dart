@@ -1,5 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:martinlog_web/extensions/string_extension.dart';
 import 'package:martinlog_web/helpers/formater_helper.dart';
 
 abstract class Utils {
@@ -38,6 +42,10 @@ abstract class Utils {
     } catch (e) {
       return false;
     }
+  }
+
+  static Color color(String hex) {
+    return Color(hex.replaceAll("#", "0xFF").parseToType<int>());
   }
 
   static bool containsChar(String source) =>
@@ -138,6 +146,24 @@ abstract class Utils {
     var absRef = (firstValue - secondValue).abs();
     bool isSequential = (secondValue - lastValue).abs() == absRef;
     return isSequential;
+  }
+
+  static List<Widget> getWidgetsByPage({
+    required int totalByPage,
+    required int currentIndexPage,
+    required List<Widget> widgets,
+  }) {
+    try {
+      int totalPages = widgets.length ~/ totalByPage +
+          (widgets.length % totalByPage > 0 ? 1 : 0);
+      int startIndex = currentIndexPage * totalByPage;
+      int? lastIndex = currentIndexPage == totalPages - 1
+          ? null
+          : (currentIndexPage * totalByPage) + totalByPage;
+      return widgets.sublist(startIndex, lastIndex);
+    } catch (e) {
+      return [];
+    }
   }
 
   static String resolveDocumentTypeMask(String source) =>

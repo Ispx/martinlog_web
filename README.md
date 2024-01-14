@@ -23,3 +23,22 @@ curl -sL https://firebase.tools | bash &&  firebase experiments:enable webframew
 
 1
 curl -sL https://firebase.tools | bash &&  firebase loggout && firebase login && firebase experiments:enable webframeworks &&  firebase deploy
+
+
+server {
+    listen 443 ssl;
+    server_name _;
+
+    ssl_certificate /etc/ssl/certs/server.crt;
+    ssl_certificate_key /etc/ssl/private/server.key;
+
+    # Configurações adicionais...
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+
+
+
+

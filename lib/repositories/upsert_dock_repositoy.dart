@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
@@ -7,17 +5,22 @@ import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/models/dock_model.dart';
 
-abstract interface class ICreateDockRepository {
-  Future<DockModel> call({required String code, required DockType dockType});
+abstract interface class IUpsertDockRepository {
+  Future<DockModel> call(
+      {required String code,
+      required DockType dockType,
+      required bool isActive});
 }
 
-class CreateDockRepository implements ICreateDockRepository {
+class UpsertDockRepository implements IUpsertDockRepository {
   final IHttp http;
   final String urlBase;
-  CreateDockRepository({required this.http, required this.urlBase});
+  UpsertDockRepository({required this.http, required this.urlBase});
   @override
   Future<DockModel> call(
-      {required String code, required DockType dockType}) async {
+      {required String code,
+      required DockType dockType,
+      required bool isActive}) async {
     try {
       final response = await http.request<Response>(
         url: urlBase + Endpoints.dock,
@@ -25,10 +28,10 @@ class CreateDockRepository implements ICreateDockRepository {
         body: {
           "code": code,
           "type": dockType.idDockType,
-          "isActive": true,
+          "isActive": isActive,
         },
       );
-      return DockModel.fromJson(jsonDecode(response.data));
+      return DockModel.fromJson(response.data);
     } catch (e) {
       throw Exception(e.toString());
     }

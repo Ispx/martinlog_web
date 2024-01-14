@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_excel/excel.dart';
+import 'package:get/get.dart';
+import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/repositories/create_company_repository.dart';
 import 'package:martinlog_web/repositories/get_companies_repository.dart';
@@ -9,12 +11,13 @@ abstract class ICompanyViewModel {
   Future<void> getCompany();
   Future<void> getAllCompanies();
   Future<void> createCompany(CompanyModel companyModel);
+  Future<void> downloadFile();
 }
 
-class CompanyViewModel extends ChangeNotifier implements ICompanyViewModel {
-  AppState appState = AppStateEmpity();
+class CompanyViewModel extends GetxController implements ICompanyViewModel {
+  var appState = AppState().obs;
   CompanyModel? companyModel;
-  Set<CompanyModel> companies = {};
+  var companies = <CompanyModel>[].obs;
   final IGetCompaniesRepository getCompaniesRepository;
   final IGetCompanyRepository getCompanyRepository;
   final ICreateCompanyRepository createCompanyRepository;
@@ -41,7 +44,9 @@ class CompanyViewModel extends ChangeNotifier implements ICompanyViewModel {
     try {
       if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
-      companies.addAll(await getCompaniesRepository());
+      final companies = await getCompaniesRepository();
+      this.companies.value = companies
+        ..sort((a, b) => a.createdAt!.isAfter(b.createdAt!) ? 0 : 1);
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -49,8 +54,60 @@ class CompanyViewModel extends ChangeNotifier implements ICompanyViewModel {
   }
 
   void changeState(AppState appState) {
-    this.appState = appState;
-    notifyListeners();
+    this.appState.value = appState;
+  }
+
+  @override
+  Future<void> downloadFile() async {
+    changeState(AppStateLoading());
+    final excel = Excel.createExcel();
+    const sheetName = "Transportadoras";
+    excel.updateCell(sheetName, CellIndex.indexByString("A1"), "Cnpj");
+    excel.updateCell(sheetName, CellIndex.indexByString("B1"), "Razão Social");
+    excel.updateCell(sheetName, CellIndex.indexByString("C1"), "Nome fantasia");
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("D1"), "Nome do proprietário");
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("E1"), "CPF do proprietário");
+    excel.updateCell(sheetName, CellIndex.indexByString("F1"), "Telefone");
+    excel.updateCell(sheetName, CellIndex.indexByString("G1"), "CEP");
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("H1"), "Número do endereço");
+    excel.updateCell(sheetName, CellIndex.indexByString("I1"), "Complemento");
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("J1"), "Data de criação");
+
+    for (int i = 0; i < companies.length; i++) {
+      var index = i + 2;
+      final companyModel = companies[i];
+      excel.updateCell(
+          sheetName, CellIndex.indexByString("A$index"), companyModel.cnpj);
+      excel.updateCell(sheetName, CellIndex.indexByString("B$index"),
+          companyModel.socialRason);
+      excel.updateCell(
+        sheetName,
+        CellIndex.indexByString("C$index"),
+        companyModel.fantasyName,
+      );
+      excel.updateCell(sheetName, CellIndex.indexByString("D$index"),
+          companyModel.ownerName);
+      excel.updateCell(
+          sheetName, CellIndex.indexByString("E$index"), companyModel.ownerCpf);
+      excel.updateCell(sheetName, CellIndex.indexByString("F$index"),
+          companyModel.telephone);
+      excel.updateCell(
+          sheetName, CellIndex.indexByString("G$index"), companyModel.zipcode);
+      excel.updateCell(sheetName, CellIndex.indexByString("H$index"),
+          companyModel.streetNumber);
+      excel.updateCell(sheetName, CellIndex.indexByString("I$index"),
+          companyModel.streetComplement);
+      excel.updateCell(sheetName, CellIndex.indexByString("J$index"),
+          companyModel.createdAt!.ddMMyyyy);
+    }
+
+    excel.setDefaultSheet(sheetName);
+    excel.save(fileName: "relatório_das_transportadoras.xlsx");
+    changeState(AppStateDone());
   }
 
   @override

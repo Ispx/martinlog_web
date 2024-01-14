@@ -1,4 +1,9 @@
+import 'package:get/get.dart';
+import 'package:martinlog_web/extensions/string_extension.dart';
+
 class CompanyModel {
+  int idCompany;
+
   String socialRason;
   String fantasyName;
   String cnpj;
@@ -11,6 +16,7 @@ class CompanyModel {
   DateTime? createdAt;
 
   CompanyModel({
+    required this.idCompany,
     required this.socialRason,
     required this.fantasyName,
     required this.cnpj,
@@ -23,23 +29,9 @@ class CompanyModel {
     this.createdAt,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'socialRason': socialRason,
-      'fantasyName': fantasyName,
-      'cnpj': cnpj,
-      'ownerName': ownerName,
-      'ownerCpf': ownerCpf,
-      'telephone': telephone,
-      'zipcode': zipcode,
-      'streetNumber': streetNumber,
-      'streetComplement': streetComplement,
-      'createdAt': createdAt?.toString(),
-    };
-  }
-
   factory CompanyModel.fromJson(Map<String, dynamic> map) {
     return CompanyModel(
+      idCompany: map['idCompany'],
       socialRason: map['socialRason'],
       fantasyName: map['fantasyName'],
       cnpj: map['cnpj'],
@@ -49,8 +41,9 @@ class CompanyModel {
       zipcode: map['zipcode'],
       streetNumber: map['streetNumber'],
       streetComplement: map['streetComplement'],
-      createdAt:
-          map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
+      createdAt: map['createdAt'] != null
+          ? map['createdAt'].toString().parseToDateTime()!.subtract(3.hours)
+          : null,
     );
   }
 
@@ -64,7 +57,6 @@ class CompanyModel {
         "zipcode": zipcode,
         "streetNumber": streetNumber,
         "streetComplement": streetComplement,
-        "createdAt": createdAt.toString(),
       };
 
   CompanyModel copyWith({
@@ -78,6 +70,7 @@ class CompanyModel {
     String? streetComplement,
   }) {
     return CompanyModel(
+      idCompany: idCompany,
       socialRason: socialRason ?? this.socialRason,
       fantasyName: fantasyName ?? this.fantasyName,
       cnpj: cnpj,

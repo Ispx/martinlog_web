@@ -8,7 +8,7 @@ class ButtomWidget extends StatelessWidget {
   final VoidCallback? onTap;
   final bool? isLoading;
   final Color? backgroundColor;
-  final Color textColor;
+  final Color? textColor;
   final double? radius;
   final double? elevation;
 
@@ -20,7 +20,7 @@ class ButtomWidget extends StatelessWidget {
     required this.title,
     required this.onTap,
     this.backgroundColor,
-    this.textColor = Colors.white,
+    this.textColor,
     this.bottomSafeArea = false,
     this.isLoading = false,
     this.trainling,
@@ -36,9 +36,11 @@ class ButtomWidget extends StatelessWidget {
       elevation: elevation ?? 6.0,
       borderRadius: BorderRadius.circular(radius!),
       type: MaterialType.button,
-      color: onTap != null
-          ? buttomEnableColor
-          : digitalAccountTheme.buttonDisableColor,
+      color: (isLoading ?? false)
+          ? digitalAccountTheme.buttonDisableColor
+          : onTap != null
+              ? buttomEnableColor
+              : digitalAccountTheme.buttonDisableColor,
       child: InkWell(
         radius: radius!,
         splashColor: digitalAccountTheme.greenColor,
@@ -71,7 +73,7 @@ class ButtomWidget extends StatelessWidget {
                       title!,
                       style: AppTextStyle.displayMedium(context).copyWith(
                         fontWeight: FontWeight.bold,
-                        color: textColor,
+                        color: textColor ?? digitalAccountTheme.titleColor,
                       ),
                       textAlign: TextAlign.center,
                     ),

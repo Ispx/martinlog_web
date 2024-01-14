@@ -1,3 +1,4 @@
+
 typedef InstanceOf = Object Function();
 typedef Bind = Simple Function(Simple i);
 
@@ -39,11 +40,15 @@ class Simple {
   }
 
   T get<T>() {
-    final props = _instances[T];
-    if (props == null) {
-      throw Exception("NOT FOUND INSTANCE OF $T");
+    try {
+      final props = _instances[T];
+      if (props == null) {
+        throw Exception("NOT FOUND INSTANCE OF $T");
+      }
+      return props.get() as T;
+    } catch (e) {
+      throw Exception(e.toString());
     }
-    return props.get() as T;
   }
 
   void update<T>(InstanceOf instance) {

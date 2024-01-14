@@ -52,7 +52,7 @@ class AppThemeData {
       selectionHandleColor: primaryColor,
     ),
     appBarTheme: AppBarTheme(
-      color: primaryColor,
+      color: backgroundColor,
       centerTitle: false,
       elevation: 8.0,
       titleTextStyle: appBarTextStyle,
@@ -100,7 +100,7 @@ class AppThemeData {
         ),
         appBarVariantTheme: const AppBarTheme(
           backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.black),
+          iconTheme: IconThemeData(color: Colors.white),
         ),
       ),
     ],

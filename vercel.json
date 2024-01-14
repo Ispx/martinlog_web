@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+      {
+        "source": "/(.*)",
+        "destination": "http://martinlog-web.vercel.app/"
+      }
+    ]
+  }

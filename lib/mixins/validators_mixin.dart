@@ -25,6 +25,14 @@ mixin ValidatorsMixin {
     return null;
   }
 
+  String? isNotCNPJ(String? value, [String? message]) {
+    value = FormaterHelper.cnpj(value ?? '');
+    if (GetUtils.isCnpj(value) == false) {
+      return message ?? 'CNPJ inválido';
+    }
+    return null;
+  }
+
   String? isNotCPF(String? value, [String? message]) {
     value = FormaterHelper.cpf(value ?? '');
     if (GetUtils.isCpf(value) == false) {
@@ -49,6 +57,13 @@ mixin ValidatorsMixin {
 
   String? isNotFullName(String? value, [String? message]) {
     if (value?.split(' ').length == 1) {
+      return message ?? 'Informe o nome completo do titular';
+    }
+    return null;
+  }
+
+  String? isNotEmail(String? value, [String? message]) {
+    if (!(value?.contains('@') ?? false)) {
       return message ?? 'Informe o nome completo do titular';
     }
     return null;

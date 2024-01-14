@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:martinlog_web/extensions/string_extension.dart';
 
 class DockModel {
@@ -18,7 +19,7 @@ class DockModel {
     return DockModel(
       code: data['code'],
       idDockType: data['idDockType'],
-      createdAt: DateTime.parse(data['createdAt']),
+      createdAt: DateTime.parse(data['createdAt']).subtract(3.hours),
       isActive: data['isActive'],
       operationKey: data['operationKey'],
     );
@@ -28,7 +29,8 @@ class DockModel {
     return {
       "code": code,
       "idDockType": idDockType,
-      "createdAt": createdAt.toString().toString().parseToDateTime(),
+      "createdAt":
+          createdAt.toString().toString().parseToDateTime()?.subtract(3.hours),
       "isActive": isActive,
       "operationKey": operationKey,
     };

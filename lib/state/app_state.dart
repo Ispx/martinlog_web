@@ -4,8 +4,9 @@ class AppStateEmpity extends AppState {}
 
 class AppStateLoading extends AppState {}
 
-class AppStateDone extends AppState {
-  AppStateDone();
+class AppStateDone<T> extends AppState {
+  final T? result;
+  AppStateDone([this.result]);
 }
 
 class AppStateError extends AppState {
