@@ -16,11 +16,13 @@ import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
+import 'package:martinlog_web/view_models/dashboard_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/view_models/user_view_model.dart';
 import 'package:martinlog_web/views/company_view.dart';
+import 'package:martinlog_web/views/dashboard_view.dart';
 import 'package:martinlog_web/views/dock_view.dart';
 import 'package:martinlog_web/views/operation_view.dart';
 import 'package:martinlog_web/views/users_view.dart';
@@ -44,7 +46,7 @@ class _MenuViewState extends State<MenuView> {
         MenuEnum.Dock => const DockView(),
         MenuEnum.Company => const CompanyView(),
         MenuEnum.Users => const UserView(),
-        _ => const Center()
+        MenuEnum.Dashboard => const DashboardView()
       };
   @override
   void initState() {
@@ -52,7 +54,8 @@ class _MenuViewState extends State<MenuView> {
       simple.get<OperationViewModel>().appState,
       simple.get<DockViewModel>().appState,
       simple.get<CompanyViewModel>().appState,
-      simple.get<UserViewModel>().appState
+      simple.get<UserViewModel>().appState,
+      simple.get<DashboardViewModel>().appState
     ], (state) {
       menuViewModel.changeStatus(state as AppState);
     });

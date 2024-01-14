@@ -4,7 +4,7 @@ import 'package:martinlog_web/core/consts/routes.dart';
 import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/style/theme/app_theme.dart';
 import 'package:martinlog_web/utils/utils.dart';
-import 'package:martinlog_web/view_models/dashboard_view.dart';
+import 'package:martinlog_web/views/dashboard_view.dart';
 import 'package:martinlog_web/views/auth_view.dart';
 import 'package:martinlog_web/views/company_view.dart';
 import 'package:martinlog_web/views/dock_view.dart';

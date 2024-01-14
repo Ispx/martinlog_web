@@ -23,12 +23,12 @@ import 'package:martinlog_web/repositories/update_progress_operation_repository.
 import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
+import 'package:martinlog_web/view_models/dashboard_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/view_models/password_recovery_view_model.dart';
 import 'package:martinlog_web/view_models/user_view_model.dart';
-import 'package:martinlog_web/views/password_recovery_view.dart';
 
 void main() async {
   Intl.defaultLocale = 'pt_BR';
@@ -175,6 +175,13 @@ void main() async {
               i.get<StartPasswordRecoveryRepository>(),
           completePasswordRecoveryRepository:
               i.get<CompletePasswordRecoveryRepository>(),
+        ),
+      );
+      i.addSingleton<DashboardViewModel>(
+        () => DashboardViewModel(
+          getCompaniesRepository: i.get<GetCompaniesRepository>(),
+          getDocksRepository: i.get<GetDocksRepository>(),
+          getOperationsRepository: i.get<GetOperationsRepository>(),
         ),
       );
       i.addSingleton<MenuViewModel>(

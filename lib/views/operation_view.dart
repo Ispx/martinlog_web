@@ -382,7 +382,9 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                 child: IconButtonWidget(
                   onTap: open,
                   title: 'Nova Operação',
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(
+                    LineIcons.dolly,
+                  ),
                 ),
               ),
             )
@@ -540,7 +542,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                                           onTap: () =>
                                               isLoading.value ? null : start(),
                                           title: 'Iniciar',
-                                          icon: const Icon(LineIcons.dolly),
+                                          icon: const Icon(LineIcons.check),
                                         ),
                                       ),
                                     ],
@@ -599,8 +601,9 @@ class _OperationWidgetState extends State<OperationWidget>
   late final TextEditingController percentageEdittinController;
   final controller = simple.get<OperationViewModel>();
   late final Worker workerAppState;
+  late final Worker workerProgress;
   late final AnimationController animationController;
-  late final Animation<double> progressAnimation;
+  late Animation<double> progressAnimation;
   late final Animation<int> textAnimation;
   @override
   void initState() {
@@ -629,6 +632,13 @@ class _OperationWidgetState extends State<OperationWidget>
         setState(() {});
       }
     });
+    workerProgress = ever(progressObs, (newProgress) {
+      progressAnimation =
+          Tween<double>(begin: 0.0, end: newProgress / 100).animate(
+        CurvedAnimation(parent: animationController, curve: Curves.decelerate),
+      );
+      setState(() {});
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(100.milliseconds).then(
@@ -653,6 +663,7 @@ class _OperationWidgetState extends State<OperationWidget>
   @override
   void dispose() {
     workerAppState.dispose();
+    workerProgress.dispose();
     animationController.dispose();
     super.dispose();
   }
@@ -804,7 +815,7 @@ class _OperationWidgetState extends State<OperationWidget>
                   enable: controller.appState.value is! AppStateLoading &&
                       widget.operationModel.idOperationStatus ==
                           OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                  maxLength: 3,
+                  maxLength: 4,
                   inputFormatters: [
                     PercentageInputFormatter(),
                   ],
