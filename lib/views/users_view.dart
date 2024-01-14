@@ -231,8 +231,8 @@ class _CreateUserWidgetState extends State<CreateUserWidget>
                 width: 15.w,
                 child: IconButtonWidget(
                   onTap: open,
-                  title: 'Cadastrar',
-                  icon: const Icon(Icons.add),
+                  title: 'Novo usuário',
+                  icon: const Icon(LineIcons.user),
                 ),
               ),
             )
@@ -391,7 +391,7 @@ class _CreateUserWidgetState extends State<CreateUserWidget>
                                           onTap: () =>
                                               isLoading.value ? null : create(),
                                           title: 'Cadastrar',
-                                          icon: const Icon(LineIcons.user),
+                                          icon: const Icon(LineIcons.check),
                                         ),
                                       ),
                                     ],

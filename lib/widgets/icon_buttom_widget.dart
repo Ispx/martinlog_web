@@ -14,7 +14,7 @@ class IconButtonWidget extends StatelessWidget {
     required this.icon,
     required this.onTap,
     required this.title,
-    this.radius = 20,
+    this.radius = 10,
     this.buttomColor,
   });
 

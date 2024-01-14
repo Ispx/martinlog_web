@@ -182,7 +182,7 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
                 child: IconButtonWidget(
                   onTap: open,
                   title: 'Nova Doca',
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(LineIcons.warehouse),
                 ),
               ),
             )
@@ -270,7 +270,7 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
                                           onTap: () =>
                                               isLoading.value ? null : create(),
                                           title: 'Criar',
-                                          icon: const Icon(LineIcons.warehouse),
+                                          icon: const Icon(LineIcons.check),
                                         ),
                                       ),
                                     ],

@@ -192,8 +192,8 @@ class _CreateCompanyWidgetState extends State<CreateCompanyWidget>
                 width: 15.w,
                 child: IconButtonWidget(
                   onTap: open,
-                  title: 'Cadastrar',
-                  icon: const Icon(Icons.add),
+                  title: 'Nova Transportadora',
+                  icon: const Icon(LineIcons.truck),
                 ),
               ),
             )
@@ -415,7 +415,7 @@ class _CreateCompanyWidgetState extends State<CreateCompanyWidget>
                                           onTap: () =>
                                               isLoading.value ? null : create(),
                                           title: 'Cadastrar',
-                                          icon: const Icon(LineIcons.truck),
+                                          icon: const Icon(LineIcons.check),
                                         ),
                                       ),
                                     ],

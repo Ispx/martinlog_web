@@ -382,7 +382,9 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                 child: IconButtonWidget(
                   onTap: open,
                   title: 'Nova Operação',
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(
+                    LineIcons.dolly,
+                  ),
                 ),
               ),
             )
@@ -540,7 +542,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                                           onTap: () =>
                                               isLoading.value ? null : start(),
                                           title: 'Iniciar',
-                                          icon: const Icon(LineIcons.dolly),
+                                          icon: const Icon(LineIcons.check),
                                         ),
                                       ),
                                     ],
