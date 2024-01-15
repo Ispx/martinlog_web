@@ -276,7 +276,6 @@ class CardSummaryOperationWidget extends StatelessWidget {
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                            OperationStatusEnum.FINISHED.idOperationStatus,
                           ]).length,
                       isLoading: simple.get<DashboardViewModel>().appState.value
                           is AppStateLoading,
