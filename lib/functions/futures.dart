@@ -19,11 +19,6 @@ Future Function() funcGetAccountInfo = () async {
         ProfileTypeEnum.MASTER.idProfileType) {
       await simple.get<UserViewModel>().getAll();
     }
-    if (simple.get<AuthViewModel>().authModel?.idProfile ==
-        ProfileTypeEnum.MASTER.idProfileType) {
-      await simple.get<DashboardViewModel>().getCompanies();
-      await simple.get<DashboardViewModel>().getDocks();
-    }
     await simple.get<DashboardViewModel>().getAllOperations();
     await simple.get<CompanyViewModel>().getCompany();
     await simple.get<DockViewModel>().getAll();

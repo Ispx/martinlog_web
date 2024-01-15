@@ -66,19 +66,22 @@ class _DashboardViewState extends State<DashboardView>
                 ),
                 SizedBox(
                   width: snapshot.maxWidth,
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CardSummaryOperationWidget(
-                        dockType: DockType.RECEIPT,
-                      ),
-                      CardSummaryOperationWidget(
-                        dockType: DockType.EXPEDITION,
-                      ),
-                      CardSummaryOperationWidget(
-                        dockType: DockType.KAMIKAZE,
-                      ),
-                    ],
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 2.w),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CardSummaryOperationWidget(
+                          dockType: DockType.RECEIPT,
+                        ),
+                        CardSummaryOperationWidget(
+                          dockType: DockType.EXPEDITION,
+                        ),
+                        CardSummaryOperationWidget(
+                          dockType: DockType.KAMIKAZE,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -144,7 +147,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
     return switch (dockType) {
       DockType.EXPEDITION => Colors.blue,
       DockType.RECEIPT => Colors.green,
-      DockType.KAMIKAZE => Colors.red,
+      DockType.KAMIKAZE => Colors.orange,
       _ => throw "Invalid icondata to dockType"
     };
   }
@@ -160,129 +163,136 @@ class CardSummaryOperationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 27.w,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
-      ),
-      padding: EdgeInsets.only(left: 1.w, right: 1.w),
-      child: LayoutBuilder(builder: (context, snapshot) {
-        final width = snapshot.maxWidth / 5;
-
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 2.w,
-            ),
-            Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: getColorIconDockType(dockType),
-                  ),
-                  alignment: Alignment.center,
-                  child: Center(
-                    child: Icon(
-                      getIconDataByDockType(dockType),
-                      color: Colors.white,
-                      size: 30,
+    return Material(
+      borderRadius: BorderRadius.circular(10),
+      elevation: 6.0,
+      child: Container(
+        width: 27.w,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+        ),
+        padding: EdgeInsets.only(left: 1.w, right: 1.w),
+        child: LayoutBuilder(builder: (context, snapshot) {
+          final width = snapshot.maxWidth / 4.5;
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 2.w,
+              ),
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color: getColorIconDockType(dockType),
+                    ),
+                    alignment: Alignment.center,
+                    child: Center(
+                      child: Icon(
+                        getIconDataByDockType(dockType),
+                        color: Colors.white,
+                        size: 30,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  width: 0.5.w,
-                ),
-                Text(
-                  dockType.description,
-                  style: AppTextStyle.displayLarge(context).copyWith(
-                    fontWeight: FontWeight.bold,
+                  SizedBox(
+                    width: 0.5.w,
                   ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 3.w,
-            ),
-            SizedBox(
-              width: snapshot.maxWidth,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CardIndicatorWidget(
-                    width: width,
-                    value: simple
-                        .get<DashboardViewModel>()
-                        .filterOperations(
+                  Text(
+                    dockType.description,
+                    style: AppTextStyle.displayLarge(context).copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 3.w,
+              ),
+              SizedBox(
+                width: snapshot.maxWidth,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CardIndicatorWidget(
+                      width: width,
+                      value: simple.get<DashboardViewModel>().filterOperations(
                           idDockType: dockType.idDockType,
-                        )
-                        .length,
-                    isLoading: simple.get<DashboardViewModel>().appState.value
-                        is AppStateLoading,
-                    title: "Total Geral",
-                    backgroundColor: Colors.yellow,
-                  ),
-                  CardIndicatorWidget(
-                    width: width,
-                    value: simple
-                        .get<DashboardViewModel>()
-                        .filterOperations(
+                          status: [
+                            OperationStatusEnum.CREATED.idOperationStatus,
+                            OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                            OperationStatusEnum.FINISHED.idOperationStatus,
+                          ]).length,
+                      isLoading: simple.get<DashboardViewModel>().appState.value
+                          is AppStateLoading,
+                      title: "Total Geral",
+                      backgroundColor: context.appTheme.secondColor,
+                    ),
+                    CardIndicatorWidget(
+                      width: width,
+                      value: simple.get<DashboardViewModel>().filterOperations(
                           idDockType: dockType.idDockType,
                           dateFrom: DateTime(
                               DateTime.now().year, DateTime.now().month, 1),
                           dateUntil: DateTime(DateTime.now().year,
                                   DateTime.now().month + 1, 1)
                               .subtract(1.seconds),
-                        )
-                        .length,
-                    isLoading: simple.get<DashboardViewModel>().appState.value
-                        is AppStateLoading,
-                    title: "Mês",
-                    backgroundColor: Colors.yellow,
-                  ),
-                  CardIndicatorWidget(
-                    width: width,
-                    value: simple
-                        .get<DashboardViewModel>()
-                        .filterOperations(
+                          status: [
+                            OperationStatusEnum.CREATED.idOperationStatus,
+                            OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                            OperationStatusEnum.FINISHED.idOperationStatus,
+                          ]).length,
+                      isLoading: simple.get<DashboardViewModel>().appState.value
+                          is AppStateLoading,
+                      title: "Mês",
+                      backgroundColor: Colors.blue,
+                    ),
+                    CardIndicatorWidget(
+                      width: width,
+                      value: simple.get<DashboardViewModel>().filterOperations(
                           idDockType: dockType.idDockType,
                           dateFrom: DateTime(DateTime.now().year,
                               DateTime.now().month, DateTime.now().day),
                           dateUntil: DateTime.now().add(1.days),
-                        )
-                        .length,
-                    isLoading: simple.get<DashboardViewModel>().appState.value
-                        is AppStateLoading,
-                    title: "Hoje",
-                    backgroundColor: Colors.green,
-                  ),
-                  CardIndicatorWidget(
-                    width: width,
-                    value: simple.get<DashboardViewModel>().filterOperations(
-                      idDockType: dockType.idDockType,
-                      status: [
-                        OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                      ],
-                    ).length,
-                    isLoading: simple.get<DashboardViewModel>().appState.value
-                        is AppStateLoading,
-                    title: "Em execução",
-                    backgroundColor: Colors.green,
-                  ),
-                ],
+                          status: [
+                            OperationStatusEnum.CREATED.idOperationStatus,
+                            OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                            OperationStatusEnum.FINISHED.idOperationStatus,
+                          ]).length,
+                      isLoading: simple.get<DashboardViewModel>().appState.value
+                          is AppStateLoading,
+                      title: "Hoje",
+                      backgroundColor: context.appTheme.primaryColor,
+                    ),
+                    CardIndicatorWidget(
+                      width: width,
+                      value: simple.get<DashboardViewModel>().filterOperations(
+                          idDockType: dockType.idDockType,
+                          status: [
+                            OperationStatusEnum.CREATED.idOperationStatus,
+                            OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                            OperationStatusEnum.FINISHED.idOperationStatus,
+                          ]).length,
+                      isLoading: simple.get<DashboardViewModel>().appState.value
+                          is AppStateLoading,
+                      title: "Em execução",
+                      backgroundColor: context.appTheme.primaryVariant,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: 2.w,
-            ),
-          ],
-        );
-      }),
+              SizedBox(
+                height: 2.w,
+              ),
+            ],
+          );
+        }),
+      ),
     );
   }
 }
@@ -304,37 +314,44 @@ class CardIndicatorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: width != null ? width! * .80 : null,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: EdgeInsets.only(
-        top: 0.5.w,
-        bottom: 0.5.w,
-        left: 0.5.w,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: AppTextStyle.displaySmall(context).copyWith(
-              overflow: TextOverflow.ellipsis,
+    return Material(
+      borderRadius: BorderRadius.circular(10),
+      elevation: 4.0,
+      child: Container(
+        width: width,
+        height: width != null ? width! * .80 : null,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: EdgeInsets.only(
+          top: 0.5.w,
+          bottom: 0.5.w,
+          left: 0.5.w,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: AppTextStyle.displaySmall(context).copyWith(
+                overflow: TextOverflow.ellipsis,
+                color: Colors.white,
+              ),
             ),
-          ),
-          isLoading == true
-              ? const CircularProgressIndicatorWidget()
-              : Text(
-                  value.toString(),
-                  style: AppTextStyle.displayLarge(context).copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-        ],
+            isLoading == true
+                ? const CircularProgressIndicatorWidget()
+                : Text(
+                    value.toString(),
+                    style: AppTextStyle.displayLarge(context).copyWith(
+                      fontWeight: FontWeight.bold,
+                      overflow: TextOverflow.ellipsis,
+                      color: Colors.white,
+                    ),
+                  )
+          ],
+        ),
       ),
     );
   }

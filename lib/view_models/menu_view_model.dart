@@ -3,7 +3,7 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/state/menu_state.dart';
 
 class MenuViewModel extends GetxController {
-  var menuState = MenuState(menuEnum: MenuEnum.Operations).obs;
+  var menuState = MenuState(menuEnum: MenuEnum.Dashboard).obs;
 
   void _change(MenuState menuState) {
     this.menuState.value = menuState;
