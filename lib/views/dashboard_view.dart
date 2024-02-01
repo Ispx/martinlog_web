@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
@@ -27,9 +26,13 @@ class DashboardView extends StatefulWidget {
   State<DashboardView> createState() => _DashboardViewState();
 }
 
-class _DashboardViewState extends State<DashboardView>
-    with KeepAliveParentDataMixin {
+class _DashboardViewState extends State<DashboardView> {
   final DashboardViewModel controller = simple.get<DashboardViewModel>();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,26 +67,38 @@ class _DashboardViewState extends State<DashboardView>
                 SizedBox(
                   height: 2.w,
                 ),
-                SizedBox(
-                  width: snapshot.maxWidth,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 2.w),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CardSummaryOperationWidget(
-                          dockType: DockType.RECEIPT,
-                        ),
-                        CardSummaryOperationWidget(
-                          dockType: DockType.EXPEDITION,
-                        ),
-                        CardSummaryOperationWidget(
-                          dockType: DockType.KAMIKAZE,
-                        ),
-                      ],
+                Obx(() {
+                  var operations = controller.operations.value;
+                  return SizedBox(
+                    width: snapshot.maxWidth,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 2.w),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CardSummaryOperationWidget(
+                            key: ValueKey(
+                              DockType.RECEIPT,
+                            ),
+                            dockType: DockType.RECEIPT,
+                          ),
+                          CardSummaryOperationWidget(
+                            key: ValueKey(
+                              DockType.EXPEDITION,
+                            ),
+                            dockType: DockType.EXPEDITION,
+                          ),
+                          CardSummaryOperationWidget(
+                            key: ValueKey(
+                              DockType.KAMIKAZE,
+                            ),
+                            dockType: DockType.KAMIKAZE,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                }),
                 SizedBox(
                   height: 3.w,
                 ),
@@ -117,8 +132,7 @@ class _DashboardViewState extends State<DashboardView>
                       )
                       .toList(),
                   onRefresh: () async {
-                    await controller.getAllOperations();
-                    setState(() {});
+                    await simple.get<DashboardViewModel>().getAllOperations();
                   },
                 ),
               ],
@@ -128,21 +142,22 @@ class _DashboardViewState extends State<DashboardView>
       }),
     );
   }
-
-  @override
-  void detach() {}
-
-  @override
-  bool get keptAlive => true;
 }
 
-class CardSummaryOperationWidget extends StatelessWidget {
+class CardSummaryOperationWidget extends StatefulWidget {
   final DockType dockType;
   const CardSummaryOperationWidget({
     super.key,
     required this.dockType,
   });
 
+  @override
+  State<CardSummaryOperationWidget> createState() =>
+      _CardSummaryOperationWidgetState();
+}
+
+class _CardSummaryOperationWidgetState
+    extends State<CardSummaryOperationWidget> {
   Color getColorIconDockType(DockType dockType) {
     return switch (dockType) {
       DockType.EXPEDITION => Colors.blue,
@@ -189,12 +204,12 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     height: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      color: getColorIconDockType(dockType),
+                      color: getColorIconDockType(widget.dockType),
                     ),
                     alignment: Alignment.center,
                     child: Center(
                       child: Icon(
-                        getIconDataByDockType(dockType),
+                        getIconDataByDockType(widget.dockType),
                         color: Colors.white,
                         size: 30,
                       ),
@@ -204,7 +219,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     width: 0.5.w,
                   ),
                   Text(
-                    dockType.description,
+                    widget.dockType.description,
                     style: AppTextStyle.displayLarge(context).copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -222,7 +237,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     CardIndicatorWidget(
                       width: width,
                       value: simple.get<DashboardViewModel>().filterOperations(
-                          idDockType: dockType.idDockType,
+                          idDockType: widget.dockType.idDockType,
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
@@ -236,11 +251,13 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     CardIndicatorWidget(
                       width: width,
                       value: simple.get<DashboardViewModel>().filterOperations(
-                          idDockType: dockType.idDockType,
+                          idDockType: widget.dockType.idDockType,
                           dateFrom: DateTime(
-                              DateTime.now().year, DateTime.now().month, 1),
+                                  DateTime.now().year, DateTime.now().month, 1)
+                              .toUtc(),
                           dateUntil: DateTime(DateTime.now().year,
                                   DateTime.now().month + 1, 1)
+                              .toUtc()
                               .subtract(1.seconds),
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
@@ -255,10 +272,18 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     CardIndicatorWidget(
                       width: width,
                       value: simple.get<DashboardViewModel>().filterOperations(
-                          idDockType: dockType.idDockType,
+                          idDockType: widget.dockType.idDockType,
                           dateFrom: DateTime(DateTime.now().year,
-                              DateTime.now().month, DateTime.now().day),
-                          dateUntil: DateTime.now().add(1.days),
+                                  DateTime.now().month, DateTime.now().day)
+                              .toUtc(),
+                          dateUntil: DateTime(
+                                  DateTime.now().year,
+                                  DateTime.now().month,
+                                  DateTime.now().day,
+                                  23,
+                                  59,
+                                  59)
+                              .toUtc(),
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
@@ -272,7 +297,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     CardIndicatorWidget(
                       width: width,
                       value: simple.get<DashboardViewModel>().filterOperations(
-                          idDockType: dockType.idDockType,
+                          idDockType: widget.dockType.idDockType,
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
