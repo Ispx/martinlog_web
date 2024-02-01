@@ -112,11 +112,10 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     try {
       if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
-      final operations = await getOperationsRepository(
+      final result = await getOperationsRepository(
           dateFrom: dateFrom, dateUntil: dateUntil, status: status);
-      this.operations.value = operations
-        ..sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 0 : 1);
-      operationsFilted.value = operations;
+      operations.value = result;
+      operationsFilted.value = result;
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -249,8 +248,8 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
           dateFrom: start,
           dateUntil: DateTime(end.year, end.month, end.day, 23, 59, 59),
           status: null);
-      operationsFilted.value = operations
-        ..sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 0 : 1);
+      operations.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 0 : 1);
+       operationsFilted.value = operations;
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
