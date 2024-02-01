@@ -17,6 +17,7 @@ import 'package:martinlog_web/mixins/validators_mixin.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/state/app_state.dart';
+import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
@@ -361,6 +362,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
         liscensePlate: liscensePlateEditingController.text,
         description: descriptionEditingController.text,
       );
+      await controller.getAll();
       isLoading.value = false;
       clearFields();
     }
@@ -607,7 +609,7 @@ class _OperationWidgetState extends State<OperationWidget>
   late final Animation<int> textAnimation;
   @override
   void initState() {
-    animationController = AnimationController(vsync: this, duration: 2.seconds)
+    animationController = AnimationController(vsync: this, duration: 1.seconds)
       ..addListener(() {
         progressObs.value = textAnimation.value;
         percentageEdittinController.text = "${progressObs.value}%";
@@ -618,6 +620,7 @@ class _OperationWidgetState extends State<OperationWidget>
             .animate(
       CurvedAnimation(parent: animationController, curve: Curves.decelerate),
     );
+
     textAnimation =
         IntTween(begin: 0, end: widget.operationModel.progress).animate(
       CurvedAnimation(parent: animationController, curve: Curves.decelerate),
@@ -697,7 +700,9 @@ class _OperationWidgetState extends State<OperationWidget>
               Flexible(
                 flex: 2,
                 child: Text(
-                  widget.operationModel.createdAt.ddMMyyyyHHmmss,
+                  Utils.fromServerToLocal(
+                          widget.operationModel.createdAt.toString())
+                      .toString(),
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.displayMedium(context).copyWith(
                     fontWeight: FontWeight.w600,

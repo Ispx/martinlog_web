@@ -6,7 +6,6 @@ import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
-import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
@@ -15,6 +14,7 @@ import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
+import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/views/operation_view.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
@@ -363,7 +363,8 @@ class _DockWidgetState extends State<DockWidget> {
               Flexible(
                 flex: 2,
                 child: Text(
-                  widget.dockModel.createdAt.ddMMyyyyHHmmss,
+                  Utils.fromServerToLocal(widget.dockModel.createdAt.toString())
+                      .toString(),
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.displayMedium(context).copyWith(
                     fontWeight: FontWeight.w600,

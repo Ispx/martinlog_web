@@ -179,8 +179,6 @@ void main() async {
       );
       i.addSingleton<DashboardViewModel>(
         () => DashboardViewModel(
-          getCompaniesRepository: i.get<GetCompaniesRepository>(),
-          getDocksRepository: i.get<GetDocksRepository>(),
           getOperationsRepository: i.get<GetOperationsRepository>(),
         ),
       );

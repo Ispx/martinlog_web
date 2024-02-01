@@ -52,10 +52,9 @@ class OperationModel {
       dockModel: data['dock'] != null ? DockModel.fromJson(data['dock']) : null,
       progress: data['progress'],
       idOperationStatus: data['idOperationStatus'],
-      createdAt:
-          data['createdAt'].toString().parseToDateTime()!.subtract(3.hours),
+      createdAt: data['createdAt'].toString().parseToDateTime()!,
       finishedAt: data['finishedAt'] != null
-          ? data['finishedAt'].toString().parseToDateTime()!.subtract(3.hours)
+          ? data['finishedAt'].toString().parseToDateTime()!
           : null,
       description: data['description'],
     );
