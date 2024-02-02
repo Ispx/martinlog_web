@@ -502,7 +502,7 @@ class _CompanyWidgetState extends State<CompanyWidget> {
               child: Text(
                 Utils.fromServerToLocal(
                         widget.companyModel.createdAt!.toString())
-                    .toString(),
+                    .ddMMyyyyHHmmss,
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyle.displayMedium(context).copyWith(
                   fontWeight: FontWeight.w600,

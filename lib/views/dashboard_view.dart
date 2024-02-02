@@ -28,10 +28,19 @@ class DashboardView extends StatefulWidget {
 
 class _DashboardViewState extends State<DashboardView> {
   final DashboardViewModel controller = simple.get<DashboardViewModel>();
-
+  late Worker worker;
   @override
   void initState() {
+    worker = ever(controller.operations, (callback) {
+      setState(() {});
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    worker.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,38 +76,29 @@ class _DashboardViewState extends State<DashboardView> {
                 SizedBox(
                   height: 2.w,
                 ),
-                Obx(() {
-                  var operations = controller.operations.value;
-                  return SizedBox(
-                    width: snapshot.maxWidth,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 2.w),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CardSummaryOperationWidget(
-                            key: ValueKey(
-                              DockType.RECEIPT,
-                            ),
-                            dockType: DockType.RECEIPT,
-                          ),
-                          CardSummaryOperationWidget(
-                            key: ValueKey(
-                              DockType.EXPEDITION,
-                            ),
-                            dockType: DockType.EXPEDITION,
-                          ),
-                          CardSummaryOperationWidget(
-                            key: ValueKey(
-                              DockType.KAMIKAZE,
-                            ),
-                            dockType: DockType.KAMIKAZE,
-                          ),
-                        ],
-                      ),
+                SizedBox(
+                  width: snapshot.maxWidth,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 2.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CardSummaryOperationWidget(
+                          controller: controller,
+                          dockType: DockType.RECEIPT,
+                        ),
+                        CardSummaryOperationWidget(
+                          controller: controller,
+                          dockType: DockType.EXPEDITION,
+                        ),
+                        CardSummaryOperationWidget(
+                          controller: controller,
+                          dockType: DockType.KAMIKAZE,
+                        ),
+                      ],
                     ),
-                  );
-                }),
+                  ),
+                ),
                 SizedBox(
                   height: 3.w,
                 ),
@@ -127,13 +127,13 @@ class _DashboardViewState extends State<DashboardView> {
                           child: OperationWidget(
                             key: ObjectKey(operationModel),
                             operationModel: operationModel,
+                            onAction: () async =>
+                                await controller.getAllOperations(),
                           ),
                         ),
                       )
                       .toList(),
-                  onRefresh: () async {
-                    await simple.get<DashboardViewModel>().getAllOperations();
-                  },
+                  onRefresh: () async => await controller.getAllOperations(),
                 ),
               ],
             ),
@@ -144,20 +144,14 @@ class _DashboardViewState extends State<DashboardView> {
   }
 }
 
-class CardSummaryOperationWidget extends StatefulWidget {
+class CardSummaryOperationWidget extends StatelessWidget {
   final DockType dockType;
+  final DashboardViewModel controller;
   const CardSummaryOperationWidget({
     super.key,
     required this.dockType,
+    required this.controller,
   });
-
-  @override
-  State<CardSummaryOperationWidget> createState() =>
-      _CardSummaryOperationWidgetState();
-}
-
-class _CardSummaryOperationWidgetState
-    extends State<CardSummaryOperationWidget> {
   Color getColorIconDockType(DockType dockType) {
     return switch (dockType) {
       DockType.EXPEDITION => Colors.blue,
@@ -204,12 +198,12 @@ class _CardSummaryOperationWidgetState
                     height: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      color: getColorIconDockType(widget.dockType),
+                      color: getColorIconDockType(dockType),
                     ),
                     alignment: Alignment.center,
                     child: Center(
                       child: Icon(
-                        getIconDataByDockType(widget.dockType),
+                        getIconDataByDockType(dockType),
                         color: Colors.white,
                         size: 30,
                       ),
@@ -219,7 +213,7 @@ class _CardSummaryOperationWidgetState
                     width: 0.5.w,
                   ),
                   Text(
-                    widget.dockType.description,
+                    dockType.description,
                     style: AppTextStyle.displayLarge(context).copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -236,22 +230,21 @@ class _CardSummaryOperationWidgetState
                   children: [
                     CardIndicatorWidget(
                       width: width,
-                      value: simple.get<DashboardViewModel>().filterOperations(
-                          idDockType: widget.dockType.idDockType,
+                      value: controller.filterOperations(
+                          idDockType: dockType.idDockType,
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
                             OperationStatusEnum.FINISHED.idOperationStatus,
                           ]).length,
-                      isLoading: simple.get<DashboardViewModel>().appState.value
-                          is AppStateLoading,
+                      isLoading: controller.appState.value is AppStateLoading,
                       title: "Total Geral",
                       backgroundColor: context.appTheme.secondColor,
                     ),
                     CardIndicatorWidget(
                       width: width,
-                      value: simple.get<DashboardViewModel>().filterOperations(
-                          idDockType: widget.dockType.idDockType,
+                      value: controller.filterOperations(
+                          idDockType: dockType.idDockType,
                           dateFrom: DateTime(
                                   DateTime.now().year, DateTime.now().month, 1)
                               .toUtc(),
@@ -264,15 +257,14 @@ class _CardSummaryOperationWidgetState
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
                             OperationStatusEnum.FINISHED.idOperationStatus,
                           ]).length,
-                      isLoading: simple.get<DashboardViewModel>().appState.value
-                          is AppStateLoading,
+                      isLoading: controller.appState.value is AppStateLoading,
                       title: "Mês",
                       backgroundColor: Colors.blue,
                     ),
                     CardIndicatorWidget(
                       width: width,
-                      value: simple.get<DashboardViewModel>().filterOperations(
-                          idDockType: widget.dockType.idDockType,
+                      value: controller.filterOperations(
+                          idDockType: dockType.idDockType,
                           dateFrom: DateTime(DateTime.now().year,
                                   DateTime.now().month, DateTime.now().day)
                               .toUtc(),
@@ -289,21 +281,19 @@ class _CardSummaryOperationWidgetState
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
                             OperationStatusEnum.FINISHED.idOperationStatus,
                           ]).length,
-                      isLoading: simple.get<DashboardViewModel>().appState.value
-                          is AppStateLoading,
+                      isLoading: controller.appState.value is AppStateLoading,
                       title: "Hoje",
                       backgroundColor: context.appTheme.primaryColor,
                     ),
                     CardIndicatorWidget(
                       width: width,
-                      value: simple.get<DashboardViewModel>().filterOperations(
-                          idDockType: widget.dockType.idDockType,
+                      value: controller.filterOperations(
+                          idDockType: dockType.idDockType,
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
                           ]).length,
-                      isLoading: simple.get<DashboardViewModel>().appState.value
-                          is AppStateLoading,
+                      isLoading: controller.appState.value is AppStateLoading,
                       title: "Em execução",
                       backgroundColor: context.appTheme.primaryVariant,
                     ),

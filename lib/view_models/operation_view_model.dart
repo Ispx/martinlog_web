@@ -75,6 +75,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     try {
       changeState(AppStateLoading());
       await cancelOperationRepository(operationKey);
+      await _internalGetAll();
       changeState(AppStateDone("Operação cancelada com sucesso!"));
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -95,7 +96,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
           liscensePlate: liscensePlate,
           description: description);
       operations.add(operationModel);
-      await getAll();
+      await _internalGetAll();
       BannerComponent(
         message: "Operação criada com sucesso",
         backgroundColor: Colors.green,
@@ -122,6 +123,12 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     }
   }
 
+  Future<void> _internalGetAll() async {
+    final result = await getOperationsRepository();
+    operations.value = result;
+    operationsFilted.value = result;
+  }
+
   @override
   Future<void> getOperation({required operationKey}) async {
     try {
@@ -140,6 +147,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       changeState(AppStateLoading());
       await updateProgressOperationRepository(
           operationKey: operationKey, progress: progress);
+      await _internalGetAll();
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -209,14 +217,14 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       operationsFilted.value = operations;
       return;
     }
-    operationsFilted.value = operations
+    operationsFilted.value = operationsFilted
         .where((p0) => p0.dockModel!.idDockType == dockType.idDockType)
         .toList();
   }
 
   @override
   Future<void> search(String text) async {
-    operationsFilted.value = operations
+    operationsFilted.value = operationsFilted
         .where((p0) =>
             p0.companyModel.fantasyName.contains(text) ||
             p0.dockModel!.code.contains(text))
@@ -229,7 +237,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       operationsFilted.value = operations;
       return;
     }
-    operationsFilted.value = operations
+    operationsFilted.value = operationsFilted
         .where((p0) => p0.idOperationStatus == statusEnum.idOperationStatus)
         .toList();
   }
@@ -245,11 +253,11 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
       final operations = await getOperationsRepository(
-          dateFrom: start,
-          dateUntil: DateTime(end.year, end.month, end.day, 23, 59, 59),
+          dateFrom: start.toUtc(),
+          dateUntil: DateTime(end.year, end.month, end.day, 23, 59, 59).toUtc(),
           status: null);
       operations.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 0 : 1);
-       operationsFilted.value = operations;
+      operationsFilted.value = operations;
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));

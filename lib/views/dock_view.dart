@@ -6,6 +6,7 @@ import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
+import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
@@ -364,7 +365,7 @@ class _DockWidgetState extends State<DockWidget> {
                 flex: 2,
                 child: Text(
                   Utils.fromServerToLocal(widget.dockModel.createdAt.toString())
-                      .toString(),
+                      .ddMMyyyyHHmmss,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.displayMedium(context).copyWith(
                     fontWeight: FontWeight.w600,

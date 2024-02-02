@@ -362,7 +362,6 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
         liscensePlate: liscensePlateEditingController.text,
         description: descriptionEditingController.text,
       );
-      await controller.getAll();
       isLoading.value = false;
       clearFields();
     }
@@ -587,10 +586,11 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
 
 class OperationWidget extends StatefulWidget {
   final OperationModel operationModel;
-
+  final VoidCallback? onAction;
   const OperationWidget({
     super.key,
     required this.operationModel,
+    this.onAction,
   });
 
   @override
@@ -661,6 +661,9 @@ class _OperationWidgetState extends State<OperationWidget>
       operationKey: widget.operationModel.operationKey,
       progress: progressObs.value,
     );
+    if (widget.onAction != null) {
+      widget.onAction!();
+    }
   }
 
   @override
@@ -702,7 +705,7 @@ class _OperationWidgetState extends State<OperationWidget>
                 child: Text(
                   Utils.fromServerToLocal(
                           widget.operationModel.createdAt.toString())
-                      .toString(),
+                      .ddMMyyyyHHmmss,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.displayMedium(context).copyWith(
                     fontWeight: FontWeight.w600,
@@ -865,7 +868,9 @@ class _OperationWidgetState extends State<OperationWidget>
                   if (controller.appState.value is AppStateLoading) return;
                   await controller.cancel(
                       operationKey: widget.operationModel.operationKey);
-                  await controller.getAll();
+                  if (widget.onAction != null) {
+                    widget.onAction!();
+                  }
                 },
               ),
               IconButton(

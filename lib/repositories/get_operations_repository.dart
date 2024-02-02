@@ -19,18 +19,21 @@ class GetOperationsRepository implements IGetOperationsRepository {
       {DateTime? dateFrom, DateTime? dateUntil, List<int>? status}) async {
     try {
       final params = <String, dynamic>{};
+      String url = urlBase + Endpoints.operationAll;
       if (dateFrom != null) {
-        params.addAll({"dateFrom": dateFrom.yyyyMMdd});
+        params.addAll({"dateFrom": dateFrom.yyyyMMddyHHmmss});
         if (dateUntil == null) throw Exception("dateUntil is required");
-        params.addAll({"dateUntil": dateUntil.yyyyMMdd});
+        params.addAll({"dateUntil": dateUntil.yyyyMMddyHHmmss});
+        url +=
+            "?dateFrom=${dateFrom.yyyyMMddyHHmmss}&dateUntil=${dateUntil.yyyyMMddyHHmmss}";
       }
       if (status != null) {
         params.addAll({for (int st in status) "status": st});
       }
       final response = await http.request<Response>(
-        url: urlBase + Endpoints.operationAll,
+        url: url,
         method: HttpMethod.GET,
-        params: params,
+        //   params: params,
       );
       var result = List<OperationModel>.from(
           response.data.map((e) => OperationModel.fromJson(e)).toList());
