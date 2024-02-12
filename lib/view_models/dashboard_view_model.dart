@@ -2,8 +2,6 @@ import 'package:get/state_manager.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/models/operation_model.dart';
-import 'package:martinlog_web/repositories/get_companies_repository.dart';
-import 'package:martinlog_web/repositories/get_docks_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 
