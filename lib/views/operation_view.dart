@@ -658,7 +658,7 @@ class _OperationWidgetState extends State<OperationWidget>
 
   Future<void> update() async {
     await controller.updateProgress(
-      operationKey: widget.operationModel.operationKey,
+      operationModel: widget.operationModel,
       progress: progressObs.value,
     );
     if (widget.onAction != null) {
@@ -876,51 +876,7 @@ class _OperationWidgetState extends State<OperationWidget>
               IconButton(
                 icon: const Icon(LineIcons.eye),
                 onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text(
-                          'Detalhes',
-                          style: AppTextStyle.displayMedium(context).copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.sp,
-                          ),
-                        ),
-                        backgroundColor: Colors.white,
-                        content: SizedBox(
-                          height: 80.h,
-                          width: 70.w,
-                          child: DetailsWidget(
-                            operationModel: widget.operationModel,
-                          ),
-                        ),
-                        actions: [
-                          SizedBox(
-                            width: 10.w,
-                            child: IconButtonWidget(
-                              icon: const Icon(LineIcons.download),
-                              radius: 10,
-                              title: 'Baixar arquivo',
-                              onTap: downloadFile,
-                            ),
-                          ),
-                          SizedBox(
-                            width: AppSize.padding,
-                          ),
-                          SizedBox(
-                            width: 10.w,
-                            child: IconButtonWidget(
-                              icon: const Icon(Icons.close),
-                              radius: 10,
-                              title: 'Fechar',
-                              onTap: () => GoTo.pop(),
-                            ),
-                          )
-                        ],
-                      );
-                    },
-                  );
+                  showDialogDetailsOperation(context, widget.operationModel);
                 },
               ),
             ],
@@ -1165,4 +1121,55 @@ class TextActionButtom extends StatelessWidget {
       ),
     );
   }
+}
+
+void showDialogDetailsOperation(
+    BuildContext context, OperationModel operationModel) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(
+          'Detalhes',
+          style: AppTextStyle.displayMedium(context).copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 18.sp,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        content: SizedBox(
+          height: 80.h,
+          width: 70.w,
+          child: DetailsWidget(
+            operationModel: operationModel,
+          ),
+        ),
+        actions: [
+          SizedBox(
+            width: 10.w,
+            child: IconButtonWidget(
+              icon: const Icon(LineIcons.download),
+              radius: 10,
+              title: 'Baixar arquivo',
+              onTap: () => simple
+                  .get<OperationViewModel>()
+                  .downloadFile([operationModel]),
+            ),
+          ),
+          SizedBox(
+            width: AppSize.padding,
+          ),
+          SizedBox(
+            width: 10.w,
+            child: IconButtonWidget(
+              icon: const Icon(Icons.close),
+              radius: 10,
+              title: 'Fechar',
+              onTap: () => GoTo.pop(),
+            ),
+          )
+        ],
+      );
+    },
+  );
 }

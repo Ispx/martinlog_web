@@ -1,15 +1,18 @@
-import 'dart:js_util';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
+import 'package:martinlog_web/enums/event_type_enum.dart';
 import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
+import 'package:martinlog_web/extensions/event_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
 import 'package:martinlog_web/functions/futures.dart';
 import 'package:martinlog_web/images/app_images.dart';
+import 'package:martinlog_web/repositories/get_operation_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/state/menu_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
@@ -38,8 +41,11 @@ class MenuView extends StatefulWidget {
 }
 
 class _MenuViewState extends State<MenuView> {
+  final CollectionReference _collection =
+      FirebaseFirestore.instance.collection('operation_events');
   late final MenuViewModel menuViewModel;
   late final Worker worker;
+  var _isFirstLogin = true;
 
   Widget getViewByMenu(MenuEnum menuEnum) => switch (menuEnum) {
         MenuEnum.Operations => const OperationView(),
@@ -50,6 +56,42 @@ class _MenuViewState extends State<MenuView> {
       };
   @override
   void initState() {
+    _collection.snapshots().listen((event) async {
+      if (!_isFirstLogin) {
+        for (var doc in event.docChanges) {
+          final data = doc.doc.data() as Map;
+          if (data['idUser'] == simple.get<AuthViewModel>().authModel?.idUser) {
+            return;
+          }
+          final operationKey = data['operationKey'];
+          final eventType = data['event_type'];
+          final message =
+              "A operação ${operationKey.substring(0, 8)} foi ${eventType == EventTypeEnum.OPERATION_UPDATED.description ? 'atualizada' : 'finalizada'}.";
+          BannerComponent(
+            duration: 4.seconds,
+            message: message,
+            // ignore: use_build_context_synchronously
+            backgroundColor: context.appTheme.secondColor,
+            actions: [
+              TextActionButtom(
+                title: 'Ver detalhes',
+                onAction: () async {
+                  showDialogDetailsOperation(
+                    context,
+                    await simple
+                        .get<GetOperationRepository>()
+                        .call(operationKey),
+                  );
+                },
+              ),
+            ],
+          );
+        }
+      }
+
+      _isFirstLogin = false;
+    });
+
     worker = everAll([
       simple.get<OperationViewModel>().appState,
       simple.get<DockViewModel>().appState,

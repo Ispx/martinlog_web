@@ -52,6 +52,8 @@ dependencies:
   line_icons: ^2.0.3
   flutter_excel: ^1.0.1
   flutter_date_range_picker: ^0.0.14
+  firebase_core: ^2.25.4
+  cloud_firestore: ^4.15.4
 
 dev_dependencies:
   flutter_test:

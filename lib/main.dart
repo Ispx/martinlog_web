@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -31,6 +33,20 @@ import 'package:martinlog_web/view_models/password_recovery_view_model.dart';
 import 'package:martinlog_web/view_models/user_view_model.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyBojaKfglolWvClT-VwYW9QzU2RGKi_e9E",
+        appId: "1:1062375327946:web:3ae61c6e184e8e75130c33",
+        messagingSenderId: "1062375327946",
+        projectId: "martinlog-web",
+      ),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
+
   Intl.defaultLocale = 'pt_BR';
   initializeDateFormatting('pt_BR', null);
 
@@ -188,5 +204,6 @@ void main() async {
       return i;
     },
   );
+
   runApp(const App());
 }

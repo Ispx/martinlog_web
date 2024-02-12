@@ -1,11 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_excel/excel.dart';
 import 'package:get/get.dart';
 import 'package:martinlog_web/components/banner_component.dart';
+import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
+import 'package:martinlog_web/enums/event_type_enum.dart';
 import 'package:martinlog_web/enums/operation_status_enum.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
+import 'package:martinlog_web/extensions/event_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/models/company_model.dart';
@@ -16,6 +20,7 @@ import 'package:martinlog_web/repositories/get_operation_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_repository.dart';
 import 'package:martinlog_web/repositories/update_progress_operation_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
+import 'package:martinlog_web/view_models/auth_view_model.dart';
 
 abstract interface class IOperationViewModel {
   Future<void> create({
@@ -25,7 +30,7 @@ abstract interface class IOperationViewModel {
     required String description,
   });
   Future<void> updateProgress({
-    required String operationKey,
+    required OperationModel operationModel,
     required int progress,
   });
 
@@ -95,6 +100,11 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
           dockCode: dockCode,
           liscensePlate: liscensePlate,
           description: description);
+      await FirebaseFirestore.instance.collection('operation_events').add({
+        'operationKey': operationModel.operationKey,
+        'event_type': EventTypeEnum.OPERATION_CREATED.description,
+        'idUser': simple.get<AuthViewModel>().authModel!.idUser,
+      });
       operations.add(operationModel);
       await _internalGetAll();
       BannerComponent(
@@ -141,12 +151,21 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   }
 
   @override
-  Future<void> updateProgress(
-      {required String operationKey, required int progress}) async {
+  Future<void> updateProgress({
+    required OperationModel operationModel,
+    required int progress,
+  }) async {
     try {
       changeState(AppStateLoading());
       await updateProgressOperationRepository(
-          operationKey: operationKey, progress: progress);
+          operationKey: operationModel.operationKey, progress: progress);
+      await FirebaseFirestore.instance.collection('operation_events').add({
+        'operationKey': operationModel.operationKey,
+        'event_type': progress == 100
+            ? EventTypeEnum.OPERATION_FINISHED.description
+            : EventTypeEnum.OPERATION_UPDATED.description,
+        'idUser': simple.get<AuthViewModel>().authModel!.idUser,
+      });
       await _internalGetAll();
       changeState(AppStateDone());
     } catch (e) {
