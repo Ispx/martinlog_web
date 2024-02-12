@@ -45,7 +45,6 @@ class _MenuViewState extends State<MenuView> {
       FirebaseFirestore.instance.collection('operation_events');
   late final MenuViewModel menuViewModel;
   late final Worker worker;
-  var _isFirstLogin = true;
 
   Widget getViewByMenu(MenuEnum menuEnum) => switch (menuEnum) {
         MenuEnum.Operations => const OperationView(),
@@ -57,16 +56,21 @@ class _MenuViewState extends State<MenuView> {
   @override
   void initState() {
     _collection.snapshots().listen((event) async {
-      if (!_isFirstLogin) {
+      if (event.docChanges.length == 1) {
         for (var doc in event.docChanges) {
           final data = doc.doc.data() as Map;
           if (data['idUser'] == simple.get<AuthViewModel>().authModel?.idUser) {
             return;
           }
-          final operationKey = data['operationKey'];
+          await simple
+              .get<OperationViewModel>()
+              .getOperation(operationKey: data['operationKey']);
+          final operationModel =
+              simple.get<OperationViewModel>().operationModel;
           final eventType = data['event_type'];
           final message =
-              "A operação ${operationKey.substring(0, 8)} foi ${eventType == EventTypeEnum.OPERATION_UPDATED.description ? 'atualizada' : 'finalizada'}.";
+              "A operação ${operationModel?.operationKey.substring(0, 8)} foi ${eventType == EventTypeEnum.OPERATION_UPDATED.description ? 'atualizada' : 'finalizada'}.";
+
           BannerComponent(
             duration: 4.seconds,
             message: message,
@@ -78,9 +82,7 @@ class _MenuViewState extends State<MenuView> {
                 onAction: () async {
                   showDialogDetailsOperation(
                     context,
-                    await simple
-                        .get<GetOperationRepository>()
-                        .call(operationKey),
+                    operationModel!,
                   );
                 },
               ),
@@ -88,8 +90,6 @@ class _MenuViewState extends State<MenuView> {
           );
         }
       }
-
-      _isFirstLogin = false;
     });
 
     worker = everAll([
