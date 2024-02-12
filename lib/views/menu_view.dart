@@ -62,14 +62,10 @@ class _MenuViewState extends State<MenuView> {
           if (data['idUser'] == simple.get<AuthViewModel>().authModel?.idUser) {
             return;
           }
-          await simple
-              .get<OperationViewModel>()
-              .getOperation(operationKey: data['operationKey']);
-          final operationModel =
-              simple.get<OperationViewModel>().operationModel;
           final eventType = data['event_type'];
+          final operationKey = data['operationKey'];
           final message =
-              "A operação ${operationModel?.operationKey.substring(0, 8)} foi ${eventType == EventTypeEnum.OPERATION_UPDATED.description ? 'atualizada' : 'finalizada'}.";
+              "A operação ${operationKey.substring(0, 8)} foi ${eventType == EventTypeEnum.OPERATION_UPDATED.description ? 'atualizada' : 'finalizada'}.";
 
           BannerComponent(
             duration: 4.seconds,
@@ -80,9 +76,13 @@ class _MenuViewState extends State<MenuView> {
               TextActionButtom(
                 title: 'Ver detalhes',
                 onAction: () async {
+                  await simple
+                      .get<OperationViewModel>()
+                      .getOperation(operationKey: data['operationKey']);
+                  // ignore: use_build_context_synchronously
                   showDialogDetailsOperation(
                     context,
-                    operationModel!,
+                    simple.get<OperationViewModel>().operationModel!,
                   );
                 },
               ),
