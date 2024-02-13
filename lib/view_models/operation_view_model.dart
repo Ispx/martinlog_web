@@ -34,9 +34,7 @@ abstract interface class IOperationViewModel {
     required int progress,
   });
 
-  Future<void> cancel({
-    required String operationKey,
-  });
+  Future<void> cancel({required OperationModel operationModel});
 
   Future<void> getAll(
       {DateTime? dateFrom, DateTime? dateUntil, List<int>? status});
@@ -76,10 +74,17 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   List<OperationStatusEnum> get operationStatus => OperationStatusEnum.values;
 
   @override
-  Future<void> cancel({required operationKey}) async {
+  Future<void> cancel({
+    required OperationModel operationModel,
+  }) async {
     try {
       changeState(AppStateLoading());
-      await cancelOperationRepository(operationKey);
+      await cancelOperationRepository(operationModel.operationKey);
+      await FirebaseFirestore.instance.collection('operation_events').add({
+        'data': operationModel.toJson(),
+        'event_type': EventTypeEnum.OPERATION_CANCELED.description,
+        'idUser': simple.get<AuthViewModel>().authModel!.idUser,
+      });
       await _internalGetAll();
       changeState(AppStateDone("Operação cancelada com sucesso!"));
     } catch (e) {

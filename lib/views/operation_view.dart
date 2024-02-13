@@ -867,7 +867,7 @@ class _OperationWidgetState extends State<OperationWidget>
                 onAction: () async {
                   if (controller.appState.value is AppStateLoading) return;
                   await controller.cancel(
-                      operationKey: widget.operationModel.operationKey);
+                      operationModel: widget.operationModel);
                   if (widget.onAction != null) {
                     widget.onAction!();
                   }

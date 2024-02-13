@@ -33,7 +33,6 @@ import 'package:martinlog_web/views/operation_view.dart';
 import 'package:martinlog_web/views/users_view.dart';
 import 'package:martinlog_web/widgets/app_bar_widget.dart';
 import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
-import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class MenuView extends StatefulWidget {
@@ -78,20 +77,24 @@ class _MenuViewState extends State<MenuView> {
           final data = doc.doc.data() as Map;
           final eventType = data['event_type'];
           final operationKey = data['data']['operationKey'];
+          final fantasyName =
+              data['data']['company']['fantasyName'].toString().toUpperCase();
+
           final message =
-              "A operação ${operationKey.substring(0, 8)} foi ${eventType == EventTypeEnum.OPERATION_UPDATED.description ? 'atualizada' : 'finalizada'}.";
+              "$fantasyName: Operação ${operationKey.substring(0, 8)} foi ${eventType == EventTypeEnum.OPERATION_UPDATED.description ? 'atualizada' : eventType == EventTypeEnum.OPERATION_FINISHED.description ? 'finalizada' : 'cancelada'}.";
 
           BannerComponent(
             duration: 5.seconds,
             message: message,
             // ignore: use_build_context_synchronously
-            backgroundColor: context.appTheme.secondColor,
+            backgroundColor: context.appTheme.primaryColor,
             actions: [
               TextActionButtom(
                 title: 'Ver detalhes',
                 onAction: () async {
                   final operationViewModel = simple.get<OperationViewModel>();
-                  operationViewModel.getOperation(operationKey: operationKey);
+                  await operationViewModel.getOperation(
+                      operationKey: operationKey);
                   final operationModel = operationViewModel.operationModel!;
                   // ignore: use_build_context_synchronously
                   showDialogDetailsOperation(
@@ -99,11 +102,6 @@ class _MenuViewState extends State<MenuView> {
                     operationModel,
                   );
                 },
-              ),
-              TextActionButtom(
-                title: 'Fechar',
-                onAction: () =>
-                    scaffoldMessengerState.currentState?.clearMaterialBanners(),
               ),
             ],
           );

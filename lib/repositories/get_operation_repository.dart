@@ -15,8 +15,7 @@ class GetOperationRepository implements IGetOperationRepository {
   Future<OperationModel> call(String operationKey) async {
     try {
       final response = await http.request<Response>(
-        url: urlBase +
-            Endpoints.operation.replaceAll('<operationKey>', operationKey),
+        url: '$urlBase${Endpoints.operation}/$operationKey',
         method: HttpMethod.GET,
       );
       return OperationModel.fromJson(response.data);
