@@ -10,8 +10,10 @@ import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/event_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
+import 'package:martinlog_web/extensions/profile_type_extension.dart';
 import 'package:martinlog_web/functions/futures.dart';
 import 'package:martinlog_web/images/app_images.dart';
+import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/repositories/get_operation_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/state/menu_state.dart';
@@ -31,6 +33,7 @@ import 'package:martinlog_web/views/operation_view.dart';
 import 'package:martinlog_web/views/users_view.dart';
 import 'package:martinlog_web/widgets/app_bar_widget.dart';
 import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
+import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class MenuView extends StatefulWidget {
@@ -55,20 +58,31 @@ class _MenuViewState extends State<MenuView> {
       };
   @override
   void initState() {
-    _collection.snapshots().listen((event) async {
+    _collection.snapshots().where((event) {
+      for (var doc in event.docChanges) {
+        final data = doc.doc.data() as Map;
+        if (data['idUser'] == simple.get<AuthViewModel>().authModel?.idUser) {
+          return false;
+        }
+        if (data['data']['company']['cnpj'] !=
+                simple.get<CompanyViewModel>().companyModel?.cnpj &&
+            simple.get<AuthViewModel>().authModel?.idProfile !=
+                ProfileTypeEnum.MASTER.idProfileType) {
+          return false;
+        }
+      }
+      return true;
+    }).listen((event) async {
       if (event.docChanges.length == 1) {
         for (var doc in event.docChanges) {
           final data = doc.doc.data() as Map;
-          if (data['idUser'] == simple.get<AuthViewModel>().authModel?.idUser) {
-            return;
-          }
           final eventType = data['event_type'];
-          final operationKey = data['operationKey'];
+          final operationKey = data['data']['operationKey'];
           final message =
               "A operação ${operationKey.substring(0, 8)} foi ${eventType == EventTypeEnum.OPERATION_UPDATED.description ? 'atualizada' : 'finalizada'}.";
 
           BannerComponent(
-            duration: 4.seconds,
+            duration: 5.seconds,
             message: message,
             // ignore: use_build_context_synchronously
             backgroundColor: context.appTheme.secondColor,
@@ -76,15 +90,20 @@ class _MenuViewState extends State<MenuView> {
               TextActionButtom(
                 title: 'Ver detalhes',
                 onAction: () async {
-                  await simple
-                      .get<OperationViewModel>()
-                      .getOperation(operationKey: data['operationKey']);
+                  final operationViewModel = simple.get<OperationViewModel>();
+                  operationViewModel.getOperation(operationKey: operationKey);
+                  final operationModel = operationViewModel.operationModel!;
                   // ignore: use_build_context_synchronously
                   showDialogDetailsOperation(
                     context,
-                    simple.get<OperationViewModel>().operationModel!,
+                    operationModel,
                   );
                 },
+              ),
+              TextActionButtom(
+                title: 'Fechar',
+                onAction: () =>
+                    scaffoldMessengerState.currentState?.clearMaterialBanners(),
               ),
             ],
           );

@@ -101,7 +101,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
           liscensePlate: liscensePlate,
           description: description);
       await FirebaseFirestore.instance.collection('operation_events').add({
-        'operationKey': operationModel.operationKey,
+        'data': operationModel.toJson(),
         'event_type': EventTypeEnum.OPERATION_CREATED.description,
         'idUser': simple.get<AuthViewModel>().authModel!.idUser,
       });
@@ -160,7 +160,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       await updateProgressOperationRepository(
           operationKey: operationModel.operationKey, progress: progress);
       await FirebaseFirestore.instance.collection('operation_events').add({
-        'operationKey': operationModel.operationKey,
+        'data': operationModel.toJson(),
         'event_type': progress == 100
             ? EventTypeEnum.OPERATION_FINISHED.description
             : EventTypeEnum.OPERATION_UPDATED.description,
