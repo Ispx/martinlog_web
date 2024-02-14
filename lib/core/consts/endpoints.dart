@@ -14,5 +14,5 @@ class Endpoints {
   static const operation = "/operation";
   static const operationAll = "$operation/all";
   static const operationCancel = "$operation/cancel/<operationKey>";
-  static const operationProgress = "$operation/progress/<operationKey>";
+  static const operationUpdate = "$operation/<operationKey>";
 }

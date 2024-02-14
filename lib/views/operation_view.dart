@@ -601,6 +601,7 @@ class _OperationWidgetState extends State<OperationWidget>
     with SingleTickerProviderStateMixin {
   var progressObs = 0.obs;
   late final TextEditingController percentageEdittinController;
+
   final controller = simple.get<OperationViewModel>();
   late final Worker workerAppState;
   late final Worker workerProgress;
@@ -657,9 +658,10 @@ class _OperationWidgetState extends State<OperationWidget>
   }
 
   Future<void> update() async {
-    await controller.updateProgress(
+    await controller.updateOperation(
       operationModel: widget.operationModel,
       progress: progressObs.value,
+      additionalData: null,
     );
     if (widget.onAction != null) {
       widget.onAction!();
@@ -899,15 +901,39 @@ class DetailsWidget extends StatefulWidget {
 
 class _DetailsWidgetState extends State<DetailsWidget>
     with SingleTickerProviderStateMixin {
+  var additionalData = ''.obs;
   var progressObs = 0.obs;
   late final TextEditingController percentageEdittinController;
+  late final TextEditingController additionalDataEdittinController;
+
   late final AnimationController animationController;
   late final Animation<double> progressAnimation;
   late final Animation<int> textAnimation;
   late final Worker workerAppState;
-
+  late final Worker workerAdditionalData;
+  final controller = simple.get<OperationViewModel>();
   @override
   void initState() {
+    additionalDataEdittinController =
+        TextEditingController(text: widget.operationModel.additionalData);
+    additionalData.update((val) {
+      if (widget.operationModel.additionalData != null) {
+        additionalData.value = widget.operationModel.additionalData!;
+        setState(() {});
+      }
+    });
+    workerAdditionalData = debounce(
+      additionalData,
+      (text) async {
+        if (controller.appState.value is AppStateLoading) return;
+        await controller.updateOperation(
+          operationModel: widget.operationModel,
+          progress: widget.operationModel.progress,
+          additionalData: text,
+        );
+      },
+      time: 3.seconds,
+    );
     animationController = AnimationController(vsync: this, duration: 2.seconds)
       ..addListener(() {
         progressObs.value = textAnimation.value;
@@ -945,59 +971,105 @@ class _DetailsWidgetState extends State<DetailsWidget>
         return Stack(
           children: [
             Positioned(
-                left: 2.w,
-                top: 2.w,
-                height: snap.maxHeight * .8,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ValuesDetailsWidget(
-                      title: 'Transportadora:',
-                      value: widget.operationModel.companyModel.fantasyName,
+              left: 2.w,
+              top: 2.w,
+              height: snap.maxHeight * .90,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ValuesDetailsWidget(
+                    title: 'Transportadora:',
+                    value: widget.operationModel.companyModel.fantasyName,
+                  ),
+                  ValuesDetailsWidget(
+                    title: 'CNPJ:',
+                    value: widget.operationModel.companyModel.cnpj,
+                  ),
+                  ValuesDetailsWidget(
+                    title: 'Doca:',
+                    value: widget.operationModel.dockModel!.code,
+                  ),
+                  ValuesDetailsWidget(
+                    title: 'Tipo:',
+                    value: widget.operationModel.dockModel!.idDockType
+                        .getDockType()
+                        .description,
+                  ),
+                  ValuesDetailsWidget(
+                      title: 'Status:',
+                      value: widget.operationModel.idOperationStatus
+                          .getOperationStatus()
+                          .description),
+                  ValuesDetailsWidget(
+                    title: 'Data de início:',
+                    value: widget.operationModel.createdAt
+                        .toLocal()
+                        .ddMMyyyyHHmmss,
+                  ),
+                  ValuesDetailsWidget(
+                    title: 'Data da finalização:',
+                    value: widget.operationModel.finishedAt
+                            ?.toLocal()
+                            .ddMMyyyyHHmmss ??
+                        '',
+                  ),
+                  ValuesDetailsWidget(
+                    title: 'Placa:',
+                    value: widget.operationModel.liscensePlate,
+                  ),
+                  ValuesDetailsWidget(
+                    title: 'Descrição:',
+                    value: widget.operationModel.description ?? '',
+                  ),
+                  ValuesDetailsWidget(
+                    title: 'Chave da operação:',
+                    value: widget.operationModel.operationKey,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: const Border.fromBorderSide(
+                        BorderSide(width: 1, color: Colors.black),
+                      ),
                     ),
-                    ValuesDetailsWidget(
-                      title: 'CNPJ:',
-                      value: widget.operationModel.companyModel.cnpj,
+                    width: snap.maxWidth * .40,
+                    height: snap.maxHeight * .35,
+                    padding: const EdgeInsets.all(8),
+                    child: TextField(
+                      controller: additionalDataEdittinController,
+                      enabled: widget.operationModel.idOperationStatus ==
+                              OperationStatusEnum
+                                  .IN_PROGRESS.idOperationStatus &&
+                          controller.appState is! AppStateLoading,
+                      maxLength: 255,
+                      maxLines: 10,
+                      style: AppTextStyle.displayMedium(context).copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Descrição',
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        focusedErrorBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        helperStyle:
+                            AppTextStyle.displayMedium(context).copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                      ),
+                      onChanged: (e) {
+                        additionalData.value = e;
+                      },
                     ),
-                    ValuesDetailsWidget(
-                      title: 'Doca:',
-                      value: widget.operationModel.dockModel!.code,
-                    ),
-                    ValuesDetailsWidget(
-                      title: 'Tipo:',
-                      value: widget.operationModel.dockModel!.idDockType
-                          .getDockType()
-                          .description,
-                    ),
-                    ValuesDetailsWidget(
-                        title: 'Status:',
-                        value: widget.operationModel.idOperationStatus
-                            .getOperationStatus()
-                            .description),
-                    ValuesDetailsWidget(
-                      title: 'Data de início:',
-                      value: widget.operationModel.createdAt.ddMMyyyyHHmmss,
-                    ),
-                    ValuesDetailsWidget(
-                      title: 'Data da finalização:',
-                      value: widget.operationModel.finishedAt?.ddMMyyyyHHmmss ??
-                          '',
-                    ),
-                    ValuesDetailsWidget(
-                      title: 'Placa:',
-                      value: widget.operationModel.liscensePlate,
-                    ),
-                    ValuesDetailsWidget(
-                      title: 'Descrição:',
-                      value: widget.operationModel.description ?? '',
-                    ),
-                    ValuesDetailsWidget(
-                      title: 'Chave da operação:',
-                      value: widget.operationModel.operationKey,
-                    ),
-                  ],
-                )),
+                  ),
+                ],
+              ),
+            ),
             Positioned(
               height: snap.maxWidth * .3,
               width: snap.maxWidth * .3,

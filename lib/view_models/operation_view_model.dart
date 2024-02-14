@@ -29,9 +29,10 @@ abstract interface class IOperationViewModel {
     required String liscensePlate,
     required String description,
   });
-  Future<void> updateProgress({
+  Future<void> updateOperation({
     required OperationModel operationModel,
     required int progress,
+    required String? additionalData,
   });
 
   Future<void> cancel({required OperationModel operationModel});
@@ -62,13 +63,13 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   final ICreateOperationRepository createOperationRepository;
   final IGetOperationsRepository getOperationsRepository;
   final IGetOperationRepository getOperationRepository;
-  final IUpdateProgressOperationRepository updateProgressOperationRepository;
+  final IUpdateOperationRepository updateOperationRepository;
   OperationViewModel({
     required this.cancelOperationRepository,
     required this.createOperationRepository,
     required this.getOperationRepository,
     required this.getOperationsRepository,
-    required this.updateProgressOperationRepository,
+    required this.updateOperationRepository,
   });
   OperationModel? get operationModel => _operationModel;
   List<OperationStatusEnum> get operationStatus => OperationStatusEnum.values;
@@ -156,14 +157,18 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   }
 
   @override
-  Future<void> updateProgress({
+  Future<void> updateOperation({
     required OperationModel operationModel,
     required int progress,
+    required String? additionalData,
   }) async {
     try {
       changeState(AppStateLoading());
-      await updateProgressOperationRepository(
-          operationKey: operationModel.operationKey, progress: progress);
+      await updateOperationRepository(
+        operationKey: operationModel.operationKey,
+        progress: progress,
+        additionalData: additionalData,
+      );
       await FirebaseFirestore.instance.collection('operation_events').add({
         'data': operationModel.toJson(),
         'event_type': progress == 100

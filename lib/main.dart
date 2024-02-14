@@ -114,8 +114,8 @@ void main() async {
           urlBase: EnvConfig.urlBase,
         ),
       );
-      i.addFactory<UpdateProgressOperationRepository>(
-        () => UpdateProgressOperationRepository(
+      i.addFactory<UpdateOperationRepository>(
+        () => UpdateOperationRepository(
           http: i.get<Http>(),
           urlBase: EnvConfig.urlBase,
         ),
@@ -174,8 +174,7 @@ void main() async {
           createOperationRepository: i.get<CreateOperationRepository>(),
           getOperationsRepository: i.get<GetOperationsRepository>(),
           getOperationRepository: i.get<GetOperationRepository>(),
-          updateProgressOperationRepository:
-              i.get<UpdateProgressOperationRepository>(),
+          updateOperationRepository: i.get<UpdateOperationRepository>(),
         ),
       );
       i.addSingleton<UserViewModel>(
