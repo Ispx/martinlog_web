@@ -54,6 +54,9 @@ dependencies:
   flutter_date_range_picker: ^0.0.14
   firebase_core: ^2.25.4
   cloud_firestore: ^4.15.4
+  image_picker_for_web: ^3.0.2
+  image_picker: ^1.0.7
+  url_launcher: ^6.2.4
 
 dev_dependencies:
   flutter_test:

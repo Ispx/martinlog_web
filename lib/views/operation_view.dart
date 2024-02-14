@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_for_web/image_picker_for_web.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
@@ -35,6 +40,7 @@ import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OperationView extends StatefulWidget {
   const OperationView({super.key});
@@ -973,7 +979,7 @@ class _DetailsWidgetState extends State<DetailsWidget>
             Positioned(
               left: 2.w,
               top: 2.w,
-              height: snap.maxHeight * .90,
+              height: snap.maxHeight * .95,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1021,6 +1027,35 @@ class _DetailsWidgetState extends State<DetailsWidget>
                   ValuesDetailsWidget(
                     title: 'Descrição:',
                     value: widget.operationModel.description ?? '',
+                  ),
+                  Text.rich(
+                    TextSpan(
+                      text: 'Anexo: ',
+                      style: AppTextStyle.displayMedium(context).copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: widget.operationModel.urlImage != null
+                              ? '${widget.operationModel.urlImage!.substring(0, 50)}...'
+                              : '',
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              if (widget.operationModel.urlImage != null) {
+                                await launchUrl(
+                                  Uri.parse(widget.operationModel.urlImage!),
+                                );
+                              }
+                            },
+                          style: AppTextStyle.displayMedium(context).copyWith(
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.blueAccent,
+                            color: Colors.blueAccent,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                   ValuesDetailsWidget(
                     title: 'Chave da operação:',
@@ -1211,14 +1246,37 @@ void showDialogDetailsOperation(
         backgroundColor: Colors.white,
         content: SizedBox(
           height: 80.h,
-          width: 70.w,
+          width: 80.w,
           child: DetailsWidget(
             operationModel: operationModel,
           ),
         ),
         actions: [
           SizedBox(
-            width: 10.w,
+            width: 12.w,
+            child: IconButtonWidget(
+              icon: const Icon(LineIcons.upload),
+              radius: 10,
+              title: 'Importar arquivo',
+              onTap: () async {
+                final ImagePicker picker = ImagePicker();
+                final imageBytes =
+                    await picker.pickImage(source: ImageSource.gallery);
+                if (imageBytes == null) return;
+                await simple.get<OperationViewModel>().uploadFile(
+                      operationKey: operationModel.operationKey,
+                      fileBytes: await imageBytes.readAsBytes(),
+                      filename: imageBytes.name,
+                      file: File(imageBytes.path),
+                    );
+              },
+            ),
+          ),
+          SizedBox(
+            width: AppSize.padding,
+          ),
+          SizedBox(
+            width: 12.w,
             child: IconButtonWidget(
               icon: const Icon(LineIcons.download),
               radius: 10,
@@ -1232,7 +1290,7 @@ void showDialogDetailsOperation(
             width: AppSize.padding,
           ),
           SizedBox(
-            width: 10.w,
+            width: 12.w,
             child: IconButtonWidget(
               icon: const Icon(Icons.close),
               radius: 10,

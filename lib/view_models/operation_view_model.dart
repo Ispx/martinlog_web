@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_excel/excel.dart';
@@ -19,6 +21,7 @@ import 'package:martinlog_web/repositories/create_operation_repository.dart';
 import 'package:martinlog_web/repositories/get_operation_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_repository.dart';
 import 'package:martinlog_web/repositories/update_progress_operation_repository.dart';
+import 'package:martinlog_web/repositories/upload_file_operation_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 
@@ -45,6 +48,13 @@ abstract interface class IOperationViewModel {
   });
 
   Future<void> downloadFile(List<OperationModel> operations);
+  Future<void> uploadFile({
+    required String operationKey,
+    required List<int> fileBytes,
+    required String filename,
+    required File file,
+  });
+
   Future<void> filterByStatus(OperationStatusEnum statusEnum);
   Future<void> filterByDock(DockType dockType);
   Future<void> filterByDate(DateTime start, DateTime end);
@@ -64,12 +74,15 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   final IGetOperationsRepository getOperationsRepository;
   final IGetOperationRepository getOperationRepository;
   final IUpdateOperationRepository updateOperationRepository;
+  final IUploadFileOperationRepository uploadFileOperationRepository;
+
   OperationViewModel({
     required this.cancelOperationRepository,
     required this.createOperationRepository,
     required this.getOperationRepository,
     required this.getOperationsRepository,
     required this.updateOperationRepository,
+    required this.uploadFileOperationRepository,
   });
   OperationModel? get operationModel => _operationModel;
   List<OperationStatusEnum> get operationStatus => OperationStatusEnum.values;
@@ -287,6 +300,29 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
           status: null);
       operations.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 0 : 1);
       operationsFilted.value = operations;
+      changeState(AppStateDone());
+    } catch (e) {
+      changeState(AppStateError(e.toString()));
+    }
+  }
+
+  @override
+  Future<void> uploadFile({
+    required String operationKey,
+    required List<int> fileBytes,
+    required String filename,
+    required File file,
+  }) async {
+    try {
+      if (appState is AppStateLoading) return;
+      changeState(AppStateLoading());
+      await uploadFileOperationRepository(
+        operationKey: operationKey,
+        fileBytes: fileBytes,
+        filename: filename,
+        file: file,
+      );
+      await _internalGetAll();
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));

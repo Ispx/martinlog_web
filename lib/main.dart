@@ -14,6 +14,7 @@ import 'package:martinlog_web/repositories/create_user_repository.dart';
 import 'package:martinlog_web/repositories/get_users_repository.dart';
 import 'package:martinlog_web/repositories/start_password_recovery_repository.dart';
 import 'package:martinlog_web/repositories/update_user_repository.dart';
+import 'package:martinlog_web/repositories/upload_file_operation_repository.dart';
 import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
 import 'package:martinlog_web/repositories/get_companies_repository.dart';
@@ -61,6 +62,12 @@ void main() async {
       );
       i.addFactory<CancelOperationRepository>(
         () => CancelOperationRepository(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
+      i.addFactory<UploadFileOperationRepository>(
+        () => UploadFileOperationRepository(
           http: i.get<Http>(),
           urlBase: EnvConfig.urlBase,
         ),
@@ -170,6 +177,7 @@ void main() async {
       );
       i.addSingleton<OperationViewModel>(
         () => OperationViewModel(
+          uploadFileOperationRepository: i.get<UploadFileOperationRepository>(),
           cancelOperationRepository: i.get<CancelOperationRepository>(),
           createOperationRepository: i.get<CreateOperationRepository>(),
           getOperationsRepository: i.get<GetOperationsRepository>(),
