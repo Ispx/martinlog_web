@@ -81,7 +81,7 @@ class _MenuViewState extends State<MenuView> {
               data['data']['company']['fantasyName'].toString().toUpperCase();
 
           final message =
-              "$fantasyName: Operação ${operationKey.substring(0, 8)} foi ${eventType == EventTypeEnum.OPERATION_UPDATED.description ? 'atualizada' : eventType == EventTypeEnum.OPERATION_FINISHED.description ? 'finalizada' : 'cancelada'}.";
+              "$fantasyName: Operação ${operationKey.substring(0, 8)} foi ${eventType == EventTypeEnum.OPERATION_UPDATED.description ? 'atualizada' : eventType == EventTypeEnum.OPERATION_FINISHED.description ? 'finalizada' : eventType == EventTypeEnum.OPERATION_CREATED.description ? 'criada' : 'cancelada'}.";
 
           BannerComponent(
             duration: 5.seconds,
