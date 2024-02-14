@@ -978,7 +978,7 @@ class _DetailsWidgetState extends State<DetailsWidget>
           children: [
             Positioned(
               left: 2.w,
-              top: 2.w,
+              top: 0.w,
               height: snap.maxHeight * .95,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1106,7 +1106,7 @@ class _DetailsWidgetState extends State<DetailsWidget>
               ),
             ),
             Positioned(
-              height: snap.maxWidth * .3,
+              height: snap.maxWidth * .25,
               width: snap.maxWidth * .3,
               right: 5.w,
               top: 1.w,
