@@ -1,5 +1,3 @@
-import 'dart:js_util';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
@@ -21,11 +19,11 @@ import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/view_models/user_view_model.dart';
-import 'package:martinlog_web/views/company_view.dart';
-import 'package:martinlog_web/views/dashboard_view.dart';
-import 'package:martinlog_web/views/dock_view.dart';
-import 'package:martinlog_web/views/operation_view.dart';
-import 'package:martinlog_web/views/users_view.dart';
+import 'package:martinlog_web/views/web/company_view.dart';
+import 'package:martinlog_web/views/web/dashboard_view.dart';
+import 'package:martinlog_web/views/web/dock_view.dart';
+import 'package:martinlog_web/views/web/operation_view.dart';
+import 'package:martinlog_web/views/web/users_view.dart';
 import 'package:martinlog_web/widgets/app_bar_widget.dart';
 import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';

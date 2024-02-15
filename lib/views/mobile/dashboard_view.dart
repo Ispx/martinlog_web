@@ -1,34 +1,38 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
-import 'package:martinlog_web/enums/dock_type_enum.dart';
-import 'package:martinlog_web/enums/operation_status_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
-import 'package:martinlog_web/state/app_state.dart';
-import 'package:martinlog_web/state/menu_state.dart';
-import 'package:martinlog_web/style/size/app_size.dart';
-import 'package:martinlog_web/style/text/app_text_style.dart';
-import 'package:martinlog_web/view_models/dashboard_view_model.dart';
-import 'package:martinlog_web/view_models/menu_view_model.dart';
-import 'package:martinlog_web/views/operation_view.dart';
-import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
-import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
-import 'package:martinlog_web/widgets/page_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class DashboardView extends StatefulWidget {
-  const DashboardView({super.key});
+import '../../core/dependencie_injection_manager/simple.dart';
+import '../../enums/dock_type_enum.dart';
+import '../../enums/operation_status_enum.dart';
+import '../../state/app_state.dart';
+import '../../state/menu_state.dart';
+import '../../style/size/app_size.dart';
+import '../../style/text/app_text_style.dart';
+import '../../view_models/dashboard_view_model.dart';
+import '../../view_models/menu_view_model.dart';
+import '../../widgets/circular_progress_indicator_widget.dart';
+import '../../widgets/icon_buttom_widget.dart';
+import '../../widgets/page_widget.dart';
+import 'operation_view_mobile.dart';
+
+class DashboardViewMobile extends StatefulWidget {
+  const DashboardViewMobile({super.key});
 
   @override
-  State<DashboardView> createState() => _DashboardViewState();
+  State<DashboardViewMobile> createState() => _DashboardViewMobileState();
 }
 
-class _DashboardViewState extends State<DashboardView> {
+class _DashboardViewMobileState extends State<DashboardViewMobile> {
   final DashboardViewModel controller = simple.get<DashboardViewModel>();
   late Worker worker;
+
   @override
   void initState() {
     worker = ever(controller.operations, (callback) {
@@ -46,51 +50,43 @@ class _DashboardViewState extends State<DashboardView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.appTheme.backgroundColor,
-      body: LayoutBuilder(builder: (context, snapshot) {
-        return Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: AppSize.padding * 2,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 2.w,
-                ),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: SizedBox(
-                    width: 15.w,
-                    child: IconButtonWidget(
-                      title: 'Nova operação',
-                      onTap: () => simple
-                          .get<MenuViewModel>()
-                          .changeMenu(MenuEnum.Operations),
-                      icon: const Icon(
-                        LineIcons.dolly,
+        backgroundColor: context.appTheme.backgroundColor,
+        body: LayoutBuilder(builder: (context, snapshot) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const Gap(8),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: SizedBox(
+                      width: 136,
+                      child: IconButtonWidget(
+                        title: 'Nova operação',
+                        onTap: () => simple.get<MenuViewModel>().changeMenu(MenuEnum.Operations),
+                        icon: const Icon(
+                          LineIcons.dolly,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 2.w,
-                ),
-                SizedBox(
-                  width: snapshot.maxWidth,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 2.w),
-                    child: Row(
+                  const Gap(16),
+                  SizedBox(
+                    width: snapshot.maxWidth,
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CardSummaryOperationWidget(
                           controller: controller,
                           dockType: DockType.RECEIPT,
                         ),
+                        const Gap(8),
                         CardSummaryOperationWidget(
                           controller: controller,
                           dockType: DockType.EXPEDITION,
                         ),
+                        const Gap(8),
                         CardSummaryOperationWidget(
                           controller: controller,
                           dockType: DockType.KAMIKAZE,
@@ -98,49 +94,41 @@ class _DashboardViewState extends State<DashboardView> {
                       ],
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 3.w,
-                ),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 1.w),
+                  const Gap(40),
+                  Align(
+                    alignment: Alignment.topLeft,
                     child: Text(
                       'Operações Recentes',
-                      style: AppTextStyle.displayLarge(context).copyWith(
+                      style: AppTextStyle.mobileDisplayLarge(context).copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                       textAlign: TextAlign.left,
                     ),
                   ),
-                ),
-                PageWidget(
-                  totalByPage: 5,
-                  itens: controller
-                      .getLastsOperations(5)
-                      .map(
-                        (operationModel) => Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: AppSize.padding / 2,
+                  PageWidget(
+                    totalByPage: 5,
+                    itens: controller
+                        .getLastsOperations(5)
+                        .map(
+                          (operationModel) => Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: AppSize.padding / 2,
+                            ),
+                            child: OperationWidgetMobile(
+                              key: ObjectKey(operationModel),
+                              operationModel: operationModel,
+                              onAction: () async => await controller.getAllOperations(),
+                            ),
                           ),
-                          child: OperationWidget(
-                            key: ObjectKey(operationModel),
-                            operationModel: operationModel,
-                            onAction: () async =>
-                                await controller.getAllOperations(),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                  onRefresh: () async => await controller.getAllOperations(),
-                ),
-              ],
+                        )
+                        .toList(),
+                    onRefresh: () async => await controller.getAllOperations(),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      }),
-    );
+          );
+        }));
   }
 }
 
@@ -176,12 +164,12 @@ class CardSummaryOperationWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       elevation: 6.0,
       child: Container(
-        width: 27.w,
+        width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
         ),
-        padding: EdgeInsets.only(left: 1.w, right: 1.w),
+        padding: EdgeInsets.only(left: kIsWeb ? 1.w : 8, right: kIsWeb ? 1.w : 8),
         child: LayoutBuilder(builder: (context, snapshot) {
           final width = snapshot.maxWidth / 4.5;
           return Column(
@@ -209,12 +197,10 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: 0.5.w,
-                  ),
+                  const SizedBox(width: 16),
                   Text(
                     dockType.description,
-                    style: AppTextStyle.displayLarge(context).copyWith(
+                    style: AppTextStyle.mobileDisplayMedium(context).copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -230,13 +216,11 @@ class CardSummaryOperationWidget extends StatelessWidget {
                   children: [
                     CardIndicatorWidget(
                       width: width,
-                      value: controller.filterOperations(
-                          idDockType: dockType.idDockType,
-                          status: [
-                            OperationStatusEnum.CREATED.idOperationStatus,
-                            OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                            OperationStatusEnum.FINISHED.idOperationStatus,
-                          ]).length,
+                      value: controller.filterOperations(idDockType: dockType.idDockType, status: [
+                        OperationStatusEnum.CREATED.idOperationStatus,
+                        OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                        OperationStatusEnum.FINISHED.idOperationStatus,
+                      ]).length,
                       isLoading: controller.appState.value is AppStateLoading,
                       title: "Total Geral",
                       backgroundColor: context.appTheme.secondColor,
@@ -245,13 +229,8 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       width: width,
                       value: controller.filterOperations(
                           idDockType: dockType.idDockType,
-                          dateFrom: DateTime(
-                                  DateTime.now().year, DateTime.now().month, 1)
-                              .toUtc(),
-                          dateUntil: DateTime(DateTime.now().year,
-                                  DateTime.now().month + 1, 1)
-                              .toUtc()
-                              .subtract(1.seconds),
+                          dateFrom: DateTime(DateTime.now().year, DateTime.now().month, 1).toUtc(),
+                          dateUntil: DateTime(DateTime.now().year, DateTime.now().month + 1, 1).toUtc().subtract(1.seconds),
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
@@ -265,17 +244,8 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       width: width,
                       value: controller.filterOperations(
                           idDockType: dockType.idDockType,
-                          dateFrom: DateTime(DateTime.now().year,
-                                  DateTime.now().month, DateTime.now().day)
-                              .toUtc(),
-                          dateUntil: DateTime(
-                                  DateTime.now().year,
-                                  DateTime.now().month,
-                                  DateTime.now().day,
-                                  23,
-                                  59,
-                                  59)
-                              .toUtc(),
+                          dateFrom: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toUtc(),
+                          dateUntil: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 23, 59, 59).toUtc(),
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
@@ -287,12 +257,10 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     ),
                     CardIndicatorWidget(
                       width: width,
-                      value: controller.filterOperations(
-                          idDockType: dockType.idDockType,
-                          status: [
-                            OperationStatusEnum.CREATED.idOperationStatus,
-                            OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                          ]).length,
+                      value: controller.filterOperations(idDockType: dockType.idDockType, status: [
+                        OperationStatusEnum.CREATED.idOperationStatus,
+                        OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                      ]).length,
                       isLoading: controller.appState.value is AppStateLoading,
                       title: "Em execução",
                       backgroundColor: context.appTheme.primaryVariant,
@@ -338,18 +306,20 @@ class CardIndicatorWidget extends StatelessWidget {
           color: backgroundColor,
           borderRadius: BorderRadius.circular(10),
         ),
-        padding: EdgeInsets.only(
-          top: 0.5.w,
-          bottom: 0.5.w,
-          left: 0.5.w,
-        ),
+        padding: kIsWeb
+            ? EdgeInsets.only(
+                top: 0.5.w,
+                bottom: 0.5.w,
+                left: 0.5.w,
+              )
+            : const EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: AppTextStyle.displaySmall(context).copyWith(
+              style: AppTextStyle.mobileDisplaySmall(context).copyWith(
                 overflow: TextOverflow.ellipsis,
                 color: Colors.white,
               ),
@@ -358,7 +328,7 @@ class CardIndicatorWidget extends StatelessWidget {
                 ? const CircularProgressIndicatorWidget()
                 : Text(
                     value.toString(),
-                    style: AppTextStyle.displayLarge(context).copyWith(
+                    style: AppTextStyle.mobileDisplayLarge(context).copyWith(
                       fontWeight: FontWeight.bold,
                       overflow: TextOverflow.ellipsis,
                       color: Colors.white,

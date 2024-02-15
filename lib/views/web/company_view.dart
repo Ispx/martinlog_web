@@ -20,7 +20,8 @@ import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:martinlog_web/widgets/page_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import '../view_models/company_view_model.dart';
+
+import '../../view_models/company_view_model.dart';
 
 class CompanyView extends StatefulWidget {
   const CompanyView({super.key});

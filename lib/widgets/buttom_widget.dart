@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 
@@ -71,7 +72,10 @@ class ButtomWidget extends StatelessWidget {
                 : Center(
                     child: Text(
                       title!,
-                      style: AppTextStyle.displayMedium(context).copyWith(
+                      style: kIsWeb ? AppTextStyle.displayMedium(context).copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: textColor ?? digitalAccountTheme.titleColor,
+                      ) : AppTextStyle.mobileDisplayMedium(context).copyWith(
                         fontWeight: FontWeight.bold,
                         color: textColor ?? digitalAccountTheme.titleColor,
                       ),

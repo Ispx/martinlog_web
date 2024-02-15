@@ -17,7 +17,7 @@ import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
-import 'package:martinlog_web/views/operation_view.dart';
+import 'package:martinlog_web/views/web/operation_view.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
 import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:martinlog_web/widgets/page_widget.dart';

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
@@ -28,8 +29,7 @@ class _PageWidgetState extends State<PageWidget> {
   var sublistItens = <Widget>[].obs;
   @override
   void initState() {
-    totalPages = widget.itens.length ~/ widget.totalByPage +
-        (widget.itens.length % widget.totalByPage > 0 ? 1 : 0);
+    totalPages = widget.itens.length ~/ widget.totalByPage + (widget.itens.length % widget.totalByPage > 0 ? 1 : 0);
     sublistItens.value = Utils.getWidgetsByPage(
       totalByPage: widget.totalByPage,
       currentIndexPage: currentIndexPage.value,
@@ -81,9 +81,7 @@ class _PageWidgetState extends State<PageWidget> {
                         onPressed: previousPage,
                         icon: Icon(
                           LineIcons.angleLeft,
-                          color: canPreviousPage
-                              ? Colors.black
-                              : context.appTheme.greyColor,
+                          color: canPreviousPage ? Colors.black : context.appTheme.greyColor,
                         ),
                         tooltip: "Página anterior",
                       ),
@@ -92,9 +90,7 @@ class _PageWidgetState extends State<PageWidget> {
                         onPressed: nextPage,
                         icon: Icon(
                           LineIcons.angleRight,
-                          color: canNextPage
-                              ? Colors.black
-                              : context.appTheme.greyColor,
+                          color: canNextPage ? Colors.black : context.appTheme.greyColor,
                         ),
                         tooltip: "Próxima página",
                       ),
@@ -146,6 +142,7 @@ class _PageWidgetState extends State<PageWidget> {
                 padding: EdgeInsets.symmetric(vertical: AppSize.padding),
                 child: Obx(() {
                   return ListView.builder(
+                    physics: !kIsWeb ? const NeverScrollableScrollPhysics() : null,
                     itemCount: sublistItens.length,
                     itemBuilder: (context, index) => sublistItens[index],
                   );
