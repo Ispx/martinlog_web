@@ -1044,6 +1044,7 @@ class _DetailsWidgetState extends State<DetailsWidget>
                               if (widget.operationModel.urlImage != null) {
                                 await launchUrl(
                                   Uri.parse(widget.operationModel.urlImage!),
+                                  mode: LaunchMode.externalApplication,
                                 );
                               }
                             },
