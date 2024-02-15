@@ -1260,14 +1260,15 @@ void showDialogDetailsOperation(
               title: 'Importar arquivo',
               onTap: () async {
                 final ImagePicker picker = ImagePicker();
-                final imageBytes =
+
+                final XFile? imageFile =
                     await picker.pickImage(source: ImageSource.gallery);
-                if (imageBytes == null) return;
+                if (imageFile == null) return;
                 await simple.get<OperationViewModel>().uploadFile(
                       operationKey: operationModel.operationKey,
-                      fileBytes: await imageBytes.readAsBytes(),
-                      filename: imageBytes.name,
-                      file: File(imageBytes.path),
+                      fileBytes: await imageFile.readAsBytes(),
+                      filename: imageFile.name,
+                      file: File(imageFile.path),
                     );
               },
             ),

@@ -326,7 +326,7 @@ packages:
     source: hosted
     version: "0.8.9+3"
   image_picker_for_web:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: image_picker_for_web
       sha256: e2423c53a68b579a7c37a1eda967b8ae536c3d98518e5db95ca1fe5719a730a3
