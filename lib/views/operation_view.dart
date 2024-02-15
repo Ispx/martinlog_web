@@ -41,6 +41,7 @@ import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:html' as html;
 
 class OperationView extends StatefulWidget {
   const OperationView({super.key});
@@ -1042,10 +1043,9 @@ class _DetailsWidgetState extends State<DetailsWidget>
                           recognizer: TapGestureRecognizer()
                             ..onTap = () async {
                               if (widget.operationModel.urlImage != null) {
-                                await launchUrl(
-                                  Uri.parse(widget.operationModel.urlImage!),
-                                  mode: LaunchMode.externalApplication,
-                                );
+                                html.window.open(
+                                    widget.operationModel.urlImage!,
+                                    'Arquivo anexado');
                               }
                             },
                           style: AppTextStyle.displayMedium(context).copyWith(
