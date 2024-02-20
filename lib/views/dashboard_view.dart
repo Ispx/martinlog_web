@@ -233,33 +233,28 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       width: width,
                       value: controller.filterOperations(
                           idDockType: dockType.idDockType,
+                          dateFrom: DateTime.now().day <= 15
+                              ? DateTime(DateTime.now().year,
+                                      DateTime.now().month, 1)
+                                  .toUtc()
+                              : DateTime(DateTime.now().year,
+                                      DateTime.now().month, 16)
+                                  .toUtc(),
+                          dateUntil: DateTime.now().day <= 15
+                              ? DateTime(DateTime.now().year,
+                                      DateTime.now().month, 15, 23, 59, 59)
+                                  .toUtc()
+                              : DateTime(DateTime.now().year,
+                                      DateTime.now().month + 1, 1)
+                                  .toUtc()
+                                  .subtract(1.seconds),
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
                             OperationStatusEnum.FINISHED.idOperationStatus,
                           ]).length,
                       isLoading: controller.appState.value is AppStateLoading,
-                      title: "Total Geral",
-                      backgroundColor: context.appTheme.secondColor,
-                    ),
-                    CardIndicatorWidget(
-                      width: width,
-                      value: controller.filterOperations(
-                          idDockType: dockType.idDockType,
-                          dateFrom: DateTime(
-                                  DateTime.now().year, DateTime.now().month, 1)
-                              .toUtc(),
-                          dateUntil: DateTime(DateTime.now().year,
-                                  DateTime.now().month + 1, 1)
-                              .toUtc()
-                              .subtract(1.seconds),
-                          status: [
-                            OperationStatusEnum.CREATED.idOperationStatus,
-                            OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                            OperationStatusEnum.FINISHED.idOperationStatus,
-                          ]).length,
-                      isLoading: controller.appState.value is AppStateLoading,
-                      title: "Mês",
+                      title: "Quinzena atual",
                       backgroundColor: Colors.blue,
                     ),
                     CardIndicatorWidget(
