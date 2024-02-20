@@ -6,7 +6,6 @@ import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_for_web/image_picker_for_web.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
@@ -40,7 +39,6 @@ import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'dart:html' as html;
 
 class OperationView extends StatefulWidget {
