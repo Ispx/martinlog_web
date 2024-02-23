@@ -184,7 +184,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
         ),
         padding: EdgeInsets.only(left: 1.w, right: 1.w),
         child: LayoutBuilder(builder: (context, snapshot) {
-          final width = snapshot.maxWidth / 4.5;
+          final width = snapshot.maxWidth / 4;
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,7 +227,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
               SizedBox(
                 width: snapshot.maxWidth,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     CardIndicatorWidget(
                       width: width,
@@ -257,6 +257,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       title: "Quinzena atual",
                       backgroundColor: Colors.blue,
                     ),
+                    SizedBox(width: width * .10),
                     CardIndicatorWidget(
                       width: width,
                       value: controller.filterOperations(
@@ -281,6 +282,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       title: "Hoje",
                       backgroundColor: context.appTheme.primaryColor,
                     ),
+                    SizedBox(width: width * .10),
                     CardIndicatorWidget(
                       width: width,
                       value: controller.filterOperations(
