@@ -10,7 +10,7 @@ extension DockTypeExt on DockType {
 
   String get description => switch (this) {
         DockType.UNDEFINED => "",
-        DockType.EXPEDITION => "Expedição",
+        DockType.EXPEDITION => "DL",
         DockType.RECEIPT => "Recebimento",
         DockType.KAMIKAZE => "Camicado"
       };
