@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_excel/excel.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
@@ -24,6 +27,11 @@ import 'package:martinlog_web/repositories/update_progress_operation_repository.
 import 'package:martinlog_web/repositories/upload_file_operation_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
+import 'package:s3_storage/s3_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as Path;
 
 abstract interface class IOperationViewModel {
   Future<void> create({
@@ -49,10 +57,9 @@ abstract interface class IOperationViewModel {
 
   Future<void> downloadFile(List<OperationModel> operations);
   Future<void> uploadFile({
-    required String operationKey,
-    required List<int> fileBytes,
+    required OperationModel operationModel,
     required String filename,
-    required File file,
+    required Uint8List imageBytes,
   });
 
   Future<void> filterByStatus(OperationStatusEnum statusEnum);
@@ -75,6 +82,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   final IGetOperationRepository getOperationRepository;
   final IUpdateOperationRepository updateOperationRepository;
   final IUploadFileOperationRepository uploadFileOperationRepository;
+  final _bucket = 'operations-file';
 
   OperationViewModel({
     required this.cancelOperationRepository,
@@ -181,6 +189,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         operationKey: operationModel.operationKey,
         progress: progress,
         additionalData: additionalData,
+        urlImage: null,
       );
       await FirebaseFirestore.instance.collection('operation_events').add({
         'data': operationModel.toJson(),
@@ -308,19 +317,23 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
 
   @override
   Future<void> uploadFile({
-    required String operationKey,
-    required List<int> fileBytes,
+   required OperationModel operationModel,
     required String filename,
-    required File file,
+    required Uint8List imageBytes,
   }) async {
     try {
       if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
-      await uploadFileOperationRepository(
-        operationKey: operationKey,
-        fileBytes: fileBytes,
-        filename: filename,
-        file: file,
+      final reference = FirebaseStorage.instance
+          .ref()
+          .child('images/${operationModel.operationKey}');
+      await reference.putData(imageBytes);
+      final url = await reference.getDownloadURL();
+      await updateOperationRepository(
+        operationKey: operationModel.operationKey,
+        progress: operationModel.progress,
+        additionalData: null,
+        urlImage: url,
       );
       await _internalGetAll();
       changeState(AppStateDone());

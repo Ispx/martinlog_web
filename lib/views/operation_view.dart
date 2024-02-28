@@ -245,6 +245,7 @@ class _OperationViewState extends State<OperationView> {
                     label: 'Pesquisar',
                     hint: 'Pesquise por transportadora ou doca',
                     onChange: (e) => textSearched.value = e,
+                    maxLines: 1,
                   ),
                 ),
                 SizedBox(
@@ -1259,15 +1260,14 @@ void showDialogDetailsOperation(
               title: 'Importar arquivo',
               onTap: () async {
                 final ImagePicker picker = ImagePicker();
-
                 final XFile? imageFile =
                     await picker.pickImage(source: ImageSource.gallery);
                 if (imageFile == null) return;
+
                 await simple.get<OperationViewModel>().uploadFile(
-                      operationKey: operationModel.operationKey,
-                      fileBytes: await imageFile.readAsBytes(),
+                      operationModel: operationModel,
+                      imageBytes: await imageFile.readAsBytes(),
                       filename: imageFile.name,
-                      file: File(imageFile.path),
                     );
               },
             ),

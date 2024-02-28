@@ -42,6 +42,9 @@ void main() async {
         appId: "1:1062375327946:web:3ae61c6e184e8e75130c33",
         messagingSenderId: "1062375327946",
         projectId: "martinlog-web",
+        storageBucket: 'martinlog-web.appspot.com',
+  authDomain: "martinlog-web.firebaseapp.com",
+  measurementId: "G-CWVH9LC3GF"
       ),
     );
   } else {
