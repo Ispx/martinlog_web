@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_excel/excel.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
@@ -27,10 +25,7 @@ import 'package:martinlog_web/repositories/update_progress_operation_repository.
 import 'package:martinlog_web/repositories/upload_file_operation_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
-import 'package:s3_storage/s3_storage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as Path;
 
 abstract interface class IOperationViewModel {
@@ -317,7 +312,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
 
   @override
   Future<void> uploadFile({
-   required OperationModel operationModel,
+    required OperationModel operationModel,
     required String filename,
     required Uint8List imageBytes,
   }) async {
@@ -327,7 +322,12 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       final reference = FirebaseStorage.instance
           .ref()
           .child('images/${operationModel.operationKey}');
-      await reference.putData(imageBytes);
+      await reference.putData(
+        imageBytes,
+        SettableMetadata(
+          contentType: "image/${Path.extension(filename).replaceAll(".", "")}",
+        ),
+      );
       final url = await reference.getDownloadURL();
       await updateOperationRepository(
         operationKey: operationModel.operationKey,

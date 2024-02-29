@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
@@ -1263,7 +1261,6 @@ void showDialogDetailsOperation(
                 final XFile? imageFile =
                     await picker.pickImage(source: ImageSource.gallery);
                 if (imageFile == null) return;
-
                 await simple.get<OperationViewModel>().uploadFile(
                       operationModel: operationModel,
                       imageBytes: await imageFile.readAsBytes(),
