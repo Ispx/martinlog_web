@@ -116,6 +116,7 @@ class _DashboardViewState extends State<DashboardView> {
                   ),
                 ),
                 PageWidget(
+                  key: ValueKey(DateTime.now()),
                   totalByPage: 5,
                   itens: controller
                       .getLastsOperations(5)

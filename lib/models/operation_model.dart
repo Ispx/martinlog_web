@@ -15,6 +15,9 @@ class OperationModel {
   DateTime createdAt;
   DateTime? finishedAt;
   String? description;
+  String? additionalData;
+  String? urlImage;
+
   OperationModel({
     required this.operationKey,
     this.dockModel,
@@ -26,6 +29,8 @@ class OperationModel {
     required this.createdAt,
     this.finishedAt,
     this.description,
+    this.additionalData,
+    this.urlImage,
   });
 
   Map<String, dynamic> toJson() {
@@ -45,19 +50,21 @@ class OperationModel {
 
   factory OperationModel.fromJson(Map data) {
     return OperationModel(
-      operationKey: data['operationKey'],
-      companyModel: CompanyModel.fromJson(data['company']),
-      idUser: data['idUser'],
-      liscensePlate: data['liscensePlate'],
-      dockModel: data['dock'] != null ? DockModel.fromJson(data['dock']) : null,
-      progress: data['progress'],
-      idOperationStatus: data['idOperationStatus'],
-      createdAt: data['createdAt'].toString().parseToDateTime()!,
-      finishedAt: data['finishedAt'] != null
-          ? data['finishedAt'].toString().parseToDateTime()!
-          : null,
-      description: data['description'],
-    );
+        operationKey: data['operationKey'],
+        companyModel: CompanyModel.fromJson(data['company']),
+        idUser: data['idUser'],
+        liscensePlate: data['liscensePlate'],
+        dockModel:
+            data['dock'] != null ? DockModel.fromJson(data['dock']) : null,
+        progress: data['progress'],
+        idOperationStatus: data['idOperationStatus'],
+        createdAt: data['createdAt'].toString().parseToDateTime()!,
+        finishedAt: data['finishedAt'] != null
+            ? data['finishedAt'].toString().parseToDateTime()!
+            : null,
+        description: data['description'],
+        additionalData: data['additionalData'],
+        urlImage: data['urlImage']);
   }
 
   OperationModel copyWith({

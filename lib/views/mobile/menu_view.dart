@@ -4,7 +4,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
-import 'package:martinlog_web/views/mobile/operation_view_mobile.dart';
+import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 import '../../core/dependencie_injection_manager/simple.dart';
@@ -203,61 +203,61 @@ class _DrawerMenuState extends State<DrawerMenu> {
                       });
                     },
                   ),
-                  SizedBox(height: AppSize.padding),
-                  MenuItem(
-                    icon: const Icon(
-                      LineIcons.warehouse,
-                      color: Colors.white,
-                    ),
-                    isOpen: isOpen,
-                    title: 'Docas',
-                    isSelected: widget.menuViewModel.menuState.value.menuEnum == MenuEnum.Dock,
-                    onTap: () {
-                      setState(() {
-                        widget.menuViewModel.changeMenu(MenuEnum.Dock);
-                        // widget.scaffoldKey.currentState!.closeDrawer();
-                      });
-                    },
-                    profiles: const [ProfileTypeEnum.MASTER],
-                  ),
-                  SizedBox(
-                    height: AppSize.padding,
-                  ),
-                  MenuItem(
-                    icon: const Icon(
-                      LineIcons.truck,
-                      color: Colors.white,
-                    ),
-                    isOpen: isOpen,
-                    isSelected: widget.menuViewModel.menuState.value.menuEnum == MenuEnum.Company,
-                    title: 'Transportadoras',
-                    onTap: () {
-                      setState(() {
-                        widget.menuViewModel.changeMenu(MenuEnum.Company);
-                        // widget.scaffoldKey.currentState!.closeDrawer();
-                      });
-                    },
-                    profiles: const [ProfileTypeEnum.MASTER],
-                  ),
-                  SizedBox(
-                    height: AppSize.padding,
-                  ),
-                  MenuItem(
-                    icon: const Icon(
-                      LineIcons.users,
-                      color: Colors.white,
-                    ),
-                    isOpen: isOpen,
-                    isSelected: widget.menuViewModel.menuState.value.menuEnum == MenuEnum.Users,
-                    title: 'Usuários',
-                    onTap: () {
-                      setState(() {
-                        widget.menuViewModel.changeMenu(MenuEnum.Users);
-                        // widget.scaffoldKey.currentState!.closeDrawer();
-                      });
-                    },
-                    profiles: const [ProfileTypeEnum.MASTER],
-                  ),
+                  // SizedBox(height: AppSize.padding),
+                  // MenuItem(
+                  //   icon: const Icon(
+                  //     LineIcons.warehouse,
+                  //     color: Colors.white,
+                  //   ),
+                  //   isOpen: isOpen,
+                  //   title: 'Docas',
+                  //   isSelected: widget.menuViewModel.menuState.value.menuEnum == MenuEnum.Dock,
+                  //   onTap: () {
+                  //     setState(() {
+                  //       widget.menuViewModel.changeMenu(MenuEnum.Dock);
+                  //       // widget.scaffoldKey.currentState!.closeDrawer();
+                  //     });
+                  //   },
+                  //   profiles: const [ProfileTypeEnum.MASTER],
+                  // ),
+                  // SizedBox(
+                  //   height: AppSize.padding,
+                  // ),
+                  // MenuItem(
+                  //   icon: const Icon(
+                  //     LineIcons.truck,
+                  //     color: Colors.white,
+                  //   ),
+                  //   isOpen: isOpen,
+                  //   isSelected: widget.menuViewModel.menuState.value.menuEnum == MenuEnum.Company,
+                  //   title: 'Transportadoras',
+                  //   onTap: () {
+                  //     setState(() {
+                  //       widget.menuViewModel.changeMenu(MenuEnum.Company);
+                  //       // widget.scaffoldKey.currentState!.closeDrawer();
+                  //     });
+                  //   },
+                  //   profiles: const [ProfileTypeEnum.MASTER],
+                  // ),
+                  // SizedBox(
+                  //   height: AppSize.padding,
+                  // ),
+                  // MenuItem(
+                  //   icon: const Icon(
+                  //     LineIcons.users,
+                  //     color: Colors.white,
+                  //   ),
+                  //   isOpen: isOpen,
+                  //   isSelected: widget.menuViewModel.menuState.value.menuEnum == MenuEnum.Users,
+                  //   title: 'Usuários',
+                  //   onTap: () {
+                  //     setState(() {
+                  //       widget.menuViewModel.changeMenu(MenuEnum.Users);
+                  //       // widget.scaffoldKey.currentState!.closeDrawer();
+                  //     });
+                  //   },
+                  //   profiles: const [ProfileTypeEnum.MASTER],
+                  // ),
                   SizedBox(
                     height: AppSize.padding,
                   ),

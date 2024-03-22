@@ -6,6 +6,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
+import 'package:martinlog_web/widgets/page_widget_mobile.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 import '../../core/dependencie_injection_manager/simple.dart';
@@ -19,8 +20,7 @@ import '../../view_models/dashboard_view_model.dart';
 import '../../view_models/menu_view_model.dart';
 import '../../widgets/circular_progress_indicator_widget.dart';
 import '../../widgets/icon_buttom_widget.dart';
-import '../../widgets/page_widget.dart';
-import 'operation_view_mobile.dart';
+import 'operation/views/operation_view_mobile.dart';
 
 class DashboardViewMobile extends StatefulWidget {
   const DashboardViewMobile({super.key});
@@ -32,7 +32,6 @@ class DashboardViewMobile extends StatefulWidget {
 class _DashboardViewMobileState extends State<DashboardViewMobile> {
   final DashboardViewModel controller = simple.get<DashboardViewModel>();
   late Worker worker;
-
   @override
   void initState() {
     worker = ever(controller.operations, (callback) {
@@ -58,18 +57,17 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
               child: Column(
                 children: [
                   const Gap(8),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: SizedBox(
-                      width: 136,
-                      child: IconButtonWidget(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButtonWidget(
                         title: 'Nova operação',
                         onTap: () => simple.get<MenuViewModel>().changeMenu(MenuEnum.Operations),
                         icon: const Icon(
                           LineIcons.dolly,
                         ),
                       ),
-                    ),
+                    ],
                   ),
                   const Gap(16),
                   SizedBox(
@@ -105,23 +103,20 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
                       textAlign: TextAlign.left,
                     ),
                   ),
-                  PageWidget(
+                  PageWidgetMobile(
                     totalByPage: 5,
-                    itens: controller
-                        .getLastsOperations(5)
-                        .map(
-                          (operationModel) => Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: AppSize.padding / 2,
-                            ),
-                            child: OperationWidgetMobile(
-                              key: ObjectKey(operationModel),
-                              operationModel: operationModel,
-                              onAction: () async => await controller.getAllOperations(),
-                            ),
-                          ),
-                        )
-                        .toList(),
+                    itens: controller.getLastsOperations(6).map((operationModel) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: AppSize.padding / 2,
+                        ),
+                        child: OperationWidgetMobile(
+                          key: ObjectKey(operationModel),
+                          operationModel: operationModel,
+                          onAction: () async => await controller.getAllOperations(),
+                        ),
+                      );
+                    }).toList(),
                     onRefresh: () async => await controller.getAllOperations(),
                   ),
                 ],

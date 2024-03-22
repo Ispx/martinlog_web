@@ -36,7 +36,7 @@ final class DashboardViewModel extends GetxController implements IDashboardViewM
   Future<void> getAllOperations() async {
     try {
       changeState(AppStateLoading());
-    operations.value = await getOperationsRepository();
+      operations.value = await getOperationsRepository();
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -76,6 +76,7 @@ final class DashboardViewModel extends GetxController implements IDashboardViewM
     if (operations.length < qtd) {
       return operations.toList();
     }
+
     return operations.sublist(0, qtd - 1);
   }
 }

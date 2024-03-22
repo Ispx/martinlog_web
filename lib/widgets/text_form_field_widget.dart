@@ -141,6 +141,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                 child: sufix,
               )
             : sufix,
+        // TODO: T can't be null
         enabledBorder: T == null
             ? InputBorder.none
             : T == OutlineInputBorder
@@ -157,6 +158,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                       color: digitalAccountTheme.borderColor,
                     ),
                   ),
+        // TODO: T can't be null
         disabledBorder: T == null
             ? InputBorder.none
             : T == OutlineInputBorder
@@ -173,6 +175,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                       color: digitalAccountTheme.borderColor.withOpacity(0.5),
                     ),
                   ),
+        // TODO: T can't be null
         border: T == null
             ? UnderlineInputBorder(
                 borderSide: BorderSide(width: 1, color: digitalAccountTheme.borderColor),
@@ -188,6 +191,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                 : UnderlineInputBorder(
                     borderSide: BorderSide(width: 0.5, color: digitalAccountTheme.borderColor),
                   ),
+        // TODO: T can't be null
         focusedBorder: T == null
             ? InputBorder.none
             : T == OutlineInputBorder
@@ -204,6 +208,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                       color: digitalAccountTheme.borderColor,
                     ),
                   ),
+        // TODO: T can't be null
         errorBorder: T == null
             ? InputBorder.none
             : T == OutlineInputBorder

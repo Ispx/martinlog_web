@@ -11,7 +11,7 @@ abstract interface class IHttp {
     required String url,
     required HttpMethod method,
     Map<String, dynamic>? headers,
-    Map<String, dynamic>? body,
+    dynamic body,
     Map<String, dynamic>? params,
   });
 }
@@ -29,7 +29,7 @@ class Http implements IHttp {
       {required String url,
       required HttpMethod method,
       Map<String, dynamic>? headers,
-      Map<String, dynamic>? body,
+      dynamic body,
       Map<String, dynamic>? params}) async {
     dio.options.headers = headers ?? {};
     dio.options.sendTimeout = 10.seconds;

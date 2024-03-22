@@ -10,7 +10,8 @@ import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/views/mobile/auth_view.dart';
 import 'package:martinlog_web/views/mobile/dashboard_view.dart';
 import 'package:martinlog_web/views/mobile/menu_view.dart';
-import 'package:martinlog_web/views/mobile/operation_view_mobile.dart';
+import 'package:martinlog_web/views/mobile/operation/views/operation_view_details_mobile.dart';
+import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile.dart';
 import 'package:martinlog_web/views/mobile/password_recovery.dart';
 import 'package:martinlog_web/views/web/auth_view.dart';
 import 'package:martinlog_web/views/web/company_view.dart';
@@ -74,6 +75,7 @@ class App extends StatelessWidget {
                 Routes.dashboard: (context) => const DashboardViewMobile(),
                 Routes.menu: (context) => const MenuViewMobile(),
                 Routes.passwordRecovery: (context) => const PasswordRecoveryMobileView(),
+                Routes.operationDetails: (context) => const OperationViewDetailsMobile(),
               },
       );
     });

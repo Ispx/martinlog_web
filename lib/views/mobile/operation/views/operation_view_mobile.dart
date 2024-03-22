@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/components/banner_component.dart';
+import 'package:martinlog_web/core/consts/routes.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/enums/operation_status_enum.dart';
@@ -13,29 +14,19 @@ import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
-import 'package:martinlog_web/extensions/profile_type_extension.dart';
-import 'package:martinlog_web/input_formaters/liscense_plate_input_formatter.dart';
 import 'package:martinlog_web/input_formaters/percentage_input_formatter.dart';
-import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
-import 'package:martinlog_web/mixins/validators_mixin.dart';
-import 'package:martinlog_web/models/company_model.dart';
-import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/models/operation_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
-import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
-import 'package:martinlog_web/view_models/company_view_model.dart';
-import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
+import 'package:martinlog_web/views/mobile/operation/widgets/new_operation_widget.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
-import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
-import 'package:martinlog_web/widgets/page_widget.dart';
+import 'package:martinlog_web/widgets/page_widget_mobile.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 
-import '../../navigator/go_to.dart';
+import '../../../../navigator/go_to.dart';
 
 class OperationViewMobile extends StatefulWidget {
   const OperationViewMobile({super.key});
@@ -308,7 +299,7 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                     ),
                   )
                   .toList();
-              return PageWidget(
+              return PageWidgetMobile(
                 key: ObjectKey(itens),
                 itens: itens,
                 onRefresh: () async => await controller.getAll(),
@@ -323,279 +314,10 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
   }
 }
 
-class CreateOperationWidget extends StatefulWidget {
-  const CreateOperationWidget({super.key});
-
-  @override
-  State<CreateOperationWidget> createState() => _CreateOperationWidgetState();
-}
-
-class _CreateOperationWidgetState extends State<CreateOperationWidget> with ValidatorsMixin {
-  DockType? dockTypeSelected = null;
-  DockModel? dockModelSelected = null;
-  CompanyModel? companyModelSelected = null;
-
-  var isLoading = false.obs;
-  var isOpen = false.obs;
-  late final List<CompanyModel> companies;
-  late TextEditingController liscensePlateEditingController;
-  late TextEditingController descriptionEditingController;
-  late TextEditingController dockTypeEditingController;
-  late TextEditingController dockCodeEditingController;
-  late TextEditingController companyEditingController;
-
-  late final GlobalKey<FormState> formState;
-  final controller = simple.get<OperationViewModel>();
-  @override
-  void initState() {
-    formState = GlobalKey<FormState>();
-    liscensePlateEditingController = TextEditingController();
-    descriptionEditingController = TextEditingController();
-    dockCodeEditingController = TextEditingController();
-    dockTypeEditingController = TextEditingController();
-    companyEditingController = TextEditingController();
-    companies = simple.get<AuthViewModel>().authModel?.idProfile == ProfileTypeEnum.MASTER.idProfileType
-        ? simple.get<CompanyViewModel>().companies.toList()
-        : [
-            simple.get<CompanyViewModel>().companyModel!,
-          ];
-    super.initState();
-  }
-
-  List<DockModel> getDocksByDockType() =>
-      simple.get<DockViewModel>().docks.where((e) => dockTypeSelected == null ? true : e.idDockType.getDockType() == dockTypeSelected).toList();
-
-  void clearFields() {
-    dockModelSelected = null;
-    companyModelSelected = null;
-    liscensePlateEditingController.clear();
-    descriptionEditingController.clear();
-    dockCodeEditingController.clear();
-    dockTypeEditingController.clear();
-    companyEditingController.clear();
-    setState(() {});
-  }
-
-  void open() {
-    isOpen.value = true;
-  }
-
-  void close() {
-    isOpen.value = false;
-  }
-
-  Future<void> start() async {
-    if (companyModelSelected == null || dockModelSelected == null) {
-      BannerComponent(
-        message: "Preencha todas as informações para criar uma operação",
-        backgroundColor: Colors.red,
-      );
-      return;
-    }
-    if (formState.currentState?.validate() ?? false) {
-      isLoading.value = true;
-      await controller.create(
-        companyModel: companyModelSelected!,
-        dockCode: dockModelSelected!.code,
-        liscensePlate: liscensePlateEditingController.text,
-        description: descriptionEditingController.text,
-      );
-      isLoading.value = false;
-      clearFields();
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      return !isOpen.value
-          ? Align(
-              alignment: Alignment.topRight,
-              child: SizedBox(
-                width: 136,
-                child: IconButtonWidget(
-                  title: 'Nova operação',
-                  onTap: open,
-                  icon: const Icon(
-                    LineIcons.dolly,
-                  ),
-                ),
-              ),
-            )
-          : SizedBox(
-              child: Container(
-                margin: EdgeInsets.zero,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: AppSize.padding * 1.5,
-                  ),
-                  child: Form(
-                    key: formState,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(
-                          height: 520,
-                          child: Column(
-                            children: [
-                              buildSelectable(
-                                context: context,
-                                title: "Tipo",
-                                child: DropBoxWidget<DockType>(
-                                  controller: dockTypeEditingController,
-                                  enable: controller.appState.value is! AppStateLoading,
-                                  width: MediaQuery.of(context).size.width - 16,
-                                  dropdownMenuEntries: DockType.values
-                                      .map(
-                                        (e) => DropdownMenuEntry<DockType>(
-                                          value: e,
-                                          label: e.description,
-                                        ),
-                                      )
-                                      .toList(),
-                                  onSelected: (DockType? e) {
-                                    dockTypeSelected = e;
-                                    dockModelSelected = null;
-                                    dockCodeEditingController.clear();
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
-                              const Gap(8),
-                              buildSelectable(
-                                context: context,
-                                title: "Doca",
-                                child: DropBoxWidget<DockModel>(
-                                  controller: dockCodeEditingController,
-                                  enable: controller.appState.value is! AppStateLoading,
-                                  width: MediaQuery.of(context).size.width - 16,
-                                  dropdownMenuEntries: getDocksByDockType()
-                                      .map(
-                                        (e) => DropdownMenuEntry<DockModel>(
-                                          value: e,
-                                          label: e.code,
-                                        ),
-                                      )
-                                      .toList(),
-                                  onSelected: (DockModel? e) {
-                                    dockModelSelected = e;
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
-                              const Gap(8),
-                              buildSelectable(
-                                context: context,
-                                title: "Placa",
-                                child: SizedBox(
-                                  width: MediaQuery.of(context).size.width - 16,
-                                  child: TextFormFieldWidget<OutlineInputBorder>(
-                                    controller: liscensePlateEditingController,
-                                    enable: controller.appState.value is! AppStateLoading,
-                                    validator: isNotLiscensePlate,
-                                    inputFormatters: [
-                                      UpperCaseTextFormatter(),
-                                      LiscensePlateInputFormatter(),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const Gap(8),
-                              buildSelectable(
-                                context: context,
-                                title: "Transportadora",
-                                child: DropBoxWidget<CompanyModel>(
-                                  width: MediaQuery.of(context).size.width - 16,
-                                  controller: companyEditingController,
-                                  enable: controller.appState.value is! AppStateLoading,
-                                  dropdownMenuEntries: companies
-                                      .map(
-                                        (e) => DropdownMenuEntry<CompanyModel>(
-                                          value: e,
-                                          label: e.fantasyName,
-                                        ),
-                                      )
-                                      .toList(),
-                                  onSelected: (CompanyModel? e) {
-                                    companyModelSelected = e;
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
-                              const Gap(32),
-                              buildSelectable(
-                                context: context,
-                                title: "Descrição",
-                                child: TextFormFieldWidget<OutlineInputBorder>(
-                                  controller: descriptionEditingController,
-                                  enable: controller.appState.value is! AppStateLoading,
-                                ),
-                              ),
-                              buildSelectable(
-                                context: context,
-                                title: "",
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                      child: IconButtonWidget(
-                                        onTap: close,
-                                        title: 'Fechar',
-                                        icon: const Icon(Icons.close),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: AppSize.padding * 2,
-                                    ),
-                                    Expanded(
-                                      child: IconButtonWidget(
-                                        onTap: () => isLoading.value ? null : start(),
-                                        title: 'Iniciar',
-                                        icon: const Icon(LineIcons.check),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-    });
-  }
-
-  Widget buildSelectable({required BuildContext context, required String title, required Widget child}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: AppTextStyle.mobileDisplayMedium(context).copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(
-          height: AppSize.padding,
-        ),
-        child,
-      ],
-    );
-  }
-}
 
 class OperationWidgetMobile extends StatefulWidget {
   final OperationModel operationModel;
-  final VoidCallback? onAction;
+  final Future<void> Function()? onAction;
   const OperationWidgetMobile({
     super.key,
     required this.operationModel,
@@ -609,14 +331,20 @@ class OperationWidgetMobile extends StatefulWidget {
 class _OperationWidgetMobileState extends State<OperationWidgetMobile> with SingleTickerProviderStateMixin {
   var progressObs = 0.obs;
   late final TextEditingController percentageEdittinController;
+
   final controller = simple.get<OperationViewModel>();
   late final Worker workerAppState;
   late final Worker workerProgress;
   late final AnimationController animationController;
   late Animation<double> progressAnimation;
   late final Animation<int> textAnimation;
+
+  late OperationModel operation;
+
   @override
   void initState() {
+    operation = widget.operationModel;
+
     animationController = AnimationController(vsync: this, duration: 1.seconds)
       ..addListener(() {
         progressObs.value = textAnimation.value;
@@ -657,17 +385,22 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
   }
 
   Future<void> downloadFile() async {
-    controller.downloadFile([widget.operationModel]);
+    controller.downloadFile([operation]);
   }
 
   Future<void> update() async {
-    await controller.updateProgress(
-      operationKey: widget.operationModel.operationKey,
+    await controller.updateOperation(
+      operationModel: operation,
       progress: progressObs.value,
+      additionalData: null,
     );
-    if (widget.onAction != null) {
-      widget.onAction!();
-    }
+    if (widget.onAction != null) await widget.onAction!();
+    getUpdatedOperation();
+  }
+
+  Future<void> getUpdatedOperation() async {
+    await controller.getAll();
+    operation = controller.operations.firstWhere((element) => element.liscensePlate == operation.liscensePlate);
   }
 
   @override
@@ -685,7 +418,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
     return Obx(() {
       return Container(
         margin: const EdgeInsets.only(bottom: 8),
-        height: 342,
+        height: 360,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -697,13 +430,13 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextActionButtom(
-                  title: widget.operationModel.operationKey.substring(0, 8),
+                  title: operation.operationKey.substring(0, 8),
                   backgroundColor: appTheme.primaryColor,
                   titleColor: appTheme.titleColor,
                   onAction: () {},
                 ),
                 OperationSubtitleTextWidget(
-                  text: Utils.fromServerToLocal(widget.operationModel.createdAt.toString()).ddMMyyyyHHmmss,
+                  text: operation.createdAt.toBrazillianHour.ddMMyyyyHHmmss,
                   textAlign: null,
                   width: null,
                 ),
@@ -715,19 +448,19 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
               children: [
                 if (simple.get<AuthViewModel>().authModel!.idProfile.getProfile() == ProfileTypeEnum.MASTER)
                   OperationSubtitleTextWidget(
-                    text: widget.operationModel.companyModel.fantasyName,
+                    text: operation.companyModel.fantasyName,
                     textAlign: null,
                     width: null,
                   ),
                 OperationSubtitleTextWidget(
-                  text: widget.operationModel.dockModel!.idDockType.getDockType().description,
+                  text: operation.dockModel!.idDockType.getDockType().description,
                   width: null,
                 ),
                 OperationSubtitleTextWidget(
-                  text: widget.operationModel.dockModel?.code ?? '',
+                  text: operation.dockModel?.code ?? '',
                 ),
                 OperationSubtitleTextWidget(
-                  text: widget.operationModel.liscensePlate,
+                  text: operation.liscensePlate,
                   width: null,
                 ),
               ],
@@ -738,7 +471,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
               children: [
                 Center(
                   child: Text(
-                    widget.operationModel.idOperationStatus.getOperationStatus().description,
+                    operation.idOperationStatus.getOperationStatus().description,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyle.mobileDisplayMedium(context).copyWith(
                       fontWeight: FontWeight.w600,
@@ -759,9 +492,8 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
                       ),
                       CircularProgressIndicator(
                         value: progressAnimation.value,
-                        color: widget.operationModel.idOperationStatus == OperationStatusEnum.CANCELED.idOperationStatus
-                            ? appTheme.greyColor
-                            : context.appTheme.primaryColor,
+                        color:
+                            operation.idOperationStatus == OperationStatusEnum.CANCELED.idOperationStatus ? appTheme.greyColor : context.appTheme.primaryColor,
                         backgroundColor: Colors.grey.shade200,
                         semanticsValue: progressObs.value.toString(),
                       ),
@@ -776,8 +508,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
               onChange: (e) => progressObs.value = e.isEmpty ? 0 : int.parse(RegExp(r'[0-9]').allMatches(e).map((e) => e[0]).join()),
               textAlign: TextAlign.center,
               fillColor: appTheme.greyColor.withOpacity(.2),
-              enable:
-                  controller.appState.value is! AppStateLoading && widget.operationModel.idOperationStatus == OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+              enable: controller.appState.value is! AppStateLoading && operation.idOperationStatus == OperationStatusEnum.IN_PROGRESS.idOperationStatus,
               maxLength: 4,
               inputFormatters: [
                 PercentageInputFormatter(),
@@ -790,13 +521,12 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
                 Row(
                   children: [
                     InkWell(
-                      onTap:
-                          widget.operationModel.idOperationStatus.getOperationStatus() == OperationStatusEnum.IN_PROGRESS ? () async => await update() : null,
+                      onTap: operation.idOperationStatus.getOperationStatus() == OperationStatusEnum.IN_PROGRESS ? () async => await update() : null,
                       borderRadius: BorderRadius.circular(100),
                       child: Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: widget.operationModel.idOperationStatus.getOperationStatus() == OperationStatusEnum.IN_PROGRESS
+                          color: operation.idOperationStatus.getOperationStatus() == OperationStatusEnum.IN_PROGRESS
                               ? context.appTheme.secondColor.withOpacity(.3)
                               : context.appTheme.greyColor,
                         ),
@@ -812,7 +542,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
                     const Gap(16),
                     TextActionButtom(
                       title: "Cancelar",
-                      isEnable: widget.operationModel.idOperationStatus.getOperationStatus() == OperationStatusEnum.IN_PROGRESS,
+                      isEnable: operation.idOperationStatus.getOperationStatus() == OperationStatusEnum.IN_PROGRESS,
                       backgroundColor: appTheme.redColor,
                       padding: EdgeInsets.symmetric(
                         vertical: AppSize.padding / 2,
@@ -820,7 +550,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
                       ),
                       onAction: () async {
                         if (controller.appState.value is AppStateLoading) return;
-                        await controller.cancel(operationKey: widget.operationModel.operationKey);
+                        await controller.cancel(operationModel: operation);
                         if (widget.onAction != null) {
                           widget.onAction!();
                         }
@@ -830,50 +560,11 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
                 ),
                 IconButton(
                   icon: const Icon(LineIcons.eye),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          surfaceTintColor: Colors.white,
-                          title: DetailsAlertDialogTitleWidget(operationModel: widget.operationModel),
-                          backgroundColor: Colors.white,
-                          content: SizedBox(
-                            height: 240,
-                            width: MediaQuery.of(context).size.width,
-                            child: DetailsWidget(
-                              operationModel: widget.operationModel,
-                            ),
-                          ),
-                          actions: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 142,
-                                  child: IconButtonWidget(
-                                    icon: const Icon(LineIcons.download),
-                                    radius: 10,
-                                    title: 'Baixar arquivo',
-                                    onTap: downloadFile,
-                                  ),
-                                ),
-                                const Gap(16),
-                                SizedBox(
-                                  width: 96,
-                                  child: IconButtonWidget(
-                                    icon: const Icon(Icons.close),
-                                    radius: 10,
-                                    title: 'Fechar',
-                                    onTap: () => GoTo.pop(),
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        );
-                      },
-                    );
+                  onPressed: () async {
+                    GoTo.goTo(Routes.operationDetails, arguments: [
+                      operation,
+                      () => getUpdatedOperation(),
+                    ]);
                   },
                 ),
               ],
@@ -882,97 +573,6 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
         ),
       );
     });
-  }
-}
-
-class DetailsAlertDialogTitleWidget extends StatefulWidget {
-  const DetailsAlertDialogTitleWidget({
-    super.key,
-    required this.operationModel,
-    this.onAction,
-  });
-
-  final OperationModel operationModel;
-  final VoidCallback? onAction;
-
-  @override
-  State<DetailsAlertDialogTitleWidget> createState() => _DetailsAlertDialogTitleWidgetState();
-}
-
-class _DetailsAlertDialogTitleWidgetState extends State<DetailsAlertDialogTitleWidget> with SingleTickerProviderStateMixin {
-  var progressObs = 0.obs;
-  late final TextEditingController percentageEdittinController;
-  late final AnimationController animationController;
-  late final Animation<double> progressAnimation;
-  late final Animation<int> textAnimation;
-  late final Worker workerAppState;
-
-  @override
-  void initState() {
-    animationController = AnimationController(vsync: this, duration: 2.seconds)
-      ..addListener(() {
-        progressObs.value = textAnimation.value;
-        setState(() {});
-      });
-    progressAnimation = Tween<double>(begin: 0.0, end: widget.operationModel.progress / 100).animate(
-      CurvedAnimation(parent: animationController, curve: Curves.decelerate),
-    );
-    textAnimation = IntTween(begin: 0, end: widget.operationModel.progress).animate(
-      CurvedAnimation(parent: animationController, curve: Curves.decelerate),
-    );
-    percentageEdittinController = TextEditingController(text: "${widget.operationModel.progress}%");
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Future.delayed(200.milliseconds).then(
-        (value) => animationController.forward(),
-      );
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    animationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          'Detalhes',
-          style: AppTextStyle.displayMedium(context).copyWith(
-            fontWeight: FontWeight.bold,
-            fontSize: 18.sp,
-          ),
-        ),
-        SizedBox(
-          height: 32,
-          width: 32,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Text(
-                "${progressObs.value}%",
-                style: AppTextStyle.mobileDisplaySmall(context).copyWith(fontWeight: FontWeight.w600),
-              ),
-              Positioned.fill(
-                child: CircularProgressIndicator(
-                  value: progressAnimation.value,
-                  strokeWidth: 4,
-                  color: widget.operationModel.idOperationStatus == OperationStatusEnum.CANCELED.idOperationStatus
-                      ? context.appTheme.greyColor
-                      : context.appTheme.primaryColor,
-                  backgroundColor: Colors.grey.shade200,
-                  semanticsValue: progressObs.value.toString(),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
   }
 }
 
@@ -1004,77 +604,6 @@ class OperationSubtitleTextWidget extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class DetailsWidget extends StatefulWidget {
-  final OperationModel operationModel;
-  const DetailsWidget({
-    super.key,
-    required this.operationModel,
-  });
-  @override
-  State<DetailsWidget> createState() => _DetailsWidgetState();
-}
-
-class _DetailsWidgetState extends State<DetailsWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, snap) {
-        return Stack(
-          children: [
-            Positioned(
-                left: 2.w,
-                top: 2.w,
-                height: snap.maxHeight * .8,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ValuesDetailsWidget(
-                      title: 'Transportadora:',
-                      value: widget.operationModel.companyModel.fantasyName,
-                    ),
-                    ValuesDetailsWidget(
-                      title: 'CNPJ:',
-                      value: widget.operationModel.companyModel.cnpj,
-                    ),
-                    ValuesDetailsWidget(
-                      title: 'Doca:',
-                      value: widget.operationModel.dockModel!.code,
-                    ),
-                    ValuesDetailsWidget(
-                      title: 'Tipo:',
-                      value: widget.operationModel.dockModel!.idDockType.getDockType().description,
-                    ),
-                    ValuesDetailsWidget(title: 'Status:', value: widget.operationModel.idOperationStatus.getOperationStatus().description),
-                    ValuesDetailsWidget(
-                      title: 'Data de início:',
-                      value: widget.operationModel.createdAt.ddMMyyyyHHmmss,
-                    ),
-                    ValuesDetailsWidget(
-                      title: 'Data da finalização:',
-                      value: widget.operationModel.finishedAt?.ddMMyyyyHHmmss ?? '',
-                    ),
-                    ValuesDetailsWidget(
-                      title: 'Placa:',
-                      value: widget.operationModel.liscensePlate,
-                    ),
-                    ValuesDetailsWidget(
-                      title: 'Descrição:',
-                      value: widget.operationModel.description ?? '',
-                    ),
-                    ValuesDetailsWidget(
-                      title: 'Chave da operação:',
-                      value: widget.operationModel.operationKey,
-                    ),
-                  ],
-                )),
-          ],
-        );
-      },
     );
   }
 }
