@@ -25,7 +25,9 @@ class AuthRepository implements IAuthRepository {
 
       return AuthModel.fromJson(Map.castFrom(response.data));
     } catch (e) {
-      throw Exception(e.toString());
+      var message = 'Falha inesperada';
+      message = e.toString().split(':').lastOrNull ?? message;
+      throw message;
     }
   }
 }
