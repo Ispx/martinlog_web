@@ -1,11 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
+import 'package:martinlog_web/enums/event_type_enum.dart';
 import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
+import 'package:martinlog_web/extensions/event_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
+import 'package:martinlog_web/extensions/profile_type_extension.dart';
 import 'package:martinlog_web/functions/futures.dart';
 import 'package:martinlog_web/images/app_images.dart';
 import 'package:martinlog_web/state/app_state.dart';
@@ -36,6 +41,8 @@ class MenuView extends StatefulWidget {
 }
 
 class _MenuViewState extends State<MenuView> {
+  final CollectionReference _collection =
+      FirebaseFirestore.instance.collection('operation_events');
   late final MenuViewModel menuViewModel;
   late final Worker worker;
 
@@ -48,6 +55,58 @@ class _MenuViewState extends State<MenuView> {
       };
   @override
   void initState() {
+    _collection.snapshots().where((event) {
+      for (var doc in event.docChanges) {
+        final data = doc.doc.data() as Map;
+        if (data['idUser'] == simple.get<AuthViewModel>().authModel?.idUser) {
+          return false;
+        }
+        if (data['data']['company']['cnpj'] !=
+                simple.get<CompanyViewModel>().companyModel?.cnpj &&
+            simple.get<AuthViewModel>().authModel?.idProfile !=
+                ProfileTypeEnum.MASTER.idProfileType) {
+          return false;
+        }
+      }
+      return true;
+    }).listen((event) async {
+      if (event.docChanges.length == 1) {
+        for (var doc in event.docChanges) {
+          final data = doc.doc.data() as Map;
+          final eventType = data['event_type'];
+          final operationKey = data['data']['operationKey'];
+          final fantasyName =
+              data['data']['company']['fantasyName'].toString().toUpperCase();
+
+          final message =
+              "$fantasyName: Operação ${operationKey.substring(0, 8)} foi ${eventType == EventTypeEnum.OPERATION_UPDATED.description ? 'atualizada' : eventType == EventTypeEnum.OPERATION_FINISHED.description ? 'finalizada' : eventType == EventTypeEnum.OPERATION_CREATED.description ? 'criada' : 'cancelada'}.";
+
+          BannerComponent(
+            duration: 5.seconds,
+            message: message,
+            // ignore: use_build_context_synchronously
+            backgroundColor: context.appTheme.primaryColor,
+            actions: [
+              TextActionButtom(
+                title: 'Ver detalhes',
+                onAction: () async {
+                  final operationViewModel = simple.get<OperationViewModel>();
+                  await operationViewModel.getOperation(
+                      operationKey: operationKey);
+                  final operationModel = operationViewModel.operationModel!;
+                  // ignore: use_build_context_synchronously
+                  showDialogDetailsOperation(
+                    context,
+                    operationModel,
+                  );
+                },
+              ),
+            ],
+          );
+        }
+      }
+    });
+
     worker = everAll([
       simple.get<OperationViewModel>().appState,
       simple.get<DockViewModel>().appState,
