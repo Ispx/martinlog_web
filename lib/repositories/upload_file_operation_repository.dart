@@ -6,7 +6,7 @@ import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/services/http/http.dart';
 
 abstract interface class IUploadFileOperationRepository {
-  Future<String> call({
+  Future<void> call({
     required String operationKey,
     required List<int> fileBytes,
     required String filename,
@@ -23,7 +23,7 @@ final class UploadFileOperationRepository
     required this.urlBase,
   });
   @override
-  Future<String> call({
+  Future<void> call({
     required String operationKey,
     required List<int> fileBytes,
     required String filename,
@@ -42,7 +42,7 @@ final class UploadFileOperationRepository
           Endpoints.operationUploadFile
               .replaceAll("<operationKey>", operationKey);
 
-      final response = await http.request<Response>(
+      await http.request<Response>(
         url: url,
         method: HttpMethod.POST,
         body: body,
@@ -50,7 +50,6 @@ final class UploadFileOperationRepository
           "Content-Type": "multipart/form-data",
         },
       );
-      return response.data['urlImage'];
     } catch (e) {
       throw "Ocorreu um erro ao fazer upload do arquivo";
     }

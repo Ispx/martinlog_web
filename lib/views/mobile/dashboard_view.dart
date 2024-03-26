@@ -62,7 +62,9 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
                     children: [
                       IconButtonWidget(
                         title: 'Nova operação',
-                        onTap: () => simple.get<MenuViewModel>().changeMenu(MenuEnum.Operations),
+                        onTap: () => simple
+                            .get<MenuViewModel>()
+                            .changeMenu(MenuEnum.Operations),
                         icon: const Icon(
                           LineIcons.dolly,
                         ),
@@ -72,24 +74,39 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
                   const Gap(16),
                   SizedBox(
                     width: snapshot.maxWidth,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CardSummaryOperationWidget(
-                          controller: controller,
-                          dockType: DockType.RECEIPT,
-                        ),
-                        const Gap(8),
-                        CardSummaryOperationWidget(
-                          controller: controller,
-                          dockType: DockType.EXPEDITION,
-                        ),
-                        const Gap(8),
-                        CardSummaryOperationWidget(
-                          controller: controller,
-                          dockType: DockType.KAMIKAZE,
-                        ),
-                      ],
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 2.w),
+                      child: LayoutBuilder(builder: (context, constraint) {
+                        final width = constraint.maxWidth;
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CardSummaryOperationWidget(
+                              width: width,
+                              controller: controller,
+                              dockType: DockType.RECEIPT,
+                            ),
+                            const Gap(16),
+                            CardSummaryOperationWidget(
+                              width: width,
+                              controller: controller,
+                              dockType: DockType.EXPEDITION,
+                            ),
+                            const Gap(16),
+                            CardSummaryOperationWidget(
+                              width: width,
+                              controller: controller,
+                              dockType: DockType.TRANSFER,
+                            ),
+                            const Gap(16),
+                            CardSummaryOperationWidget(
+                              width: width,
+                              controller: controller,
+                              dockType: DockType.KAMIKAZE,
+                            ),
+                          ],
+                        );
+                      }),
                     ),
                   ),
                   const Gap(40),
@@ -105,7 +122,8 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
                   ),
                   PageWidgetMobile(
                     totalByPage: 5,
-                    itens: controller.getLastsOperations(6).map((operationModel) {
+                    itens:
+                        controller.getLastsOperations(6).map((operationModel) {
                       return Padding(
                         padding: EdgeInsets.symmetric(
                           vertical: AppSize.padding / 2,
@@ -113,7 +131,8 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
                         child: OperationWidgetMobile(
                           key: ObjectKey(operationModel),
                           operationModel: operationModel,
-                          onAction: () async => await controller.getAllOperations(),
+                          onAction: () async =>
+                              await controller.getAllOperations(),
                         ),
                       );
                     }).toList(),
@@ -130,8 +149,10 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
 class CardSummaryOperationWidget extends StatelessWidget {
   final DockType dockType;
   final DashboardViewModel controller;
+  final double width;
   const CardSummaryOperationWidget({
     super.key,
+    required this.width,
     required this.dockType,
     required this.controller,
   });
@@ -139,7 +160,8 @@ class CardSummaryOperationWidget extends StatelessWidget {
     return switch (dockType) {
       DockType.EXPEDITION => Colors.blue,
       DockType.RECEIPT => Colors.green,
-      DockType.KAMIKAZE => Colors.orange,
+      DockType.TRANSFER => Colors.orange,
+      DockType.KAMIKAZE => Colors.red,
       _ => throw "Invalid icondata to dockType"
     };
   }
@@ -148,6 +170,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
     return switch (dockType) {
       DockType.EXPEDITION => LineIcons.arrowUp,
       DockType.RECEIPT => LineIcons.arrowDown,
+      DockType.TRANSFER => LineIcons.alternateExchange,
       DockType.KAMIKAZE => LineIcons.alternateArrows,
       _ => throw "Invalid icondata to dockType"
     };
@@ -159,14 +182,14 @@ class CardSummaryOperationWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       elevation: 6.0,
       child: Container(
-        width: MediaQuery.of(context).size.width,
+        width: width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
         ),
-        padding: EdgeInsets.only(left: kIsWeb ? 1.w : 8, right: kIsWeb ? 1.w : 8),
+        padding: EdgeInsets.only(left: 1.w, right: 1.w),
         child: LayoutBuilder(builder: (context, snapshot) {
-          final width = snapshot.maxWidth / 4.5;
+          final widthIndicator = snapshot.maxWidth / 3.5;
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,8 +200,8 @@ class CardSummaryOperationWidget extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 6.w,
+                    height: 6.w,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
                       color: getColorIconDockType(dockType),
@@ -188,14 +211,16 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       child: Icon(
                         getIconDataByDockType(dockType),
                         color: Colors.white,
-                        size: 30,
+                        size: 4.w,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(
+                    width: 1.w,
+                  ),
                   Text(
                     dockType.description,
-                    style: AppTextStyle.mobileDisplayMedium(context).copyWith(
+                    style: AppTextStyle.displayLarge(context).copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -205,42 +230,54 @@ class CardSummaryOperationWidget extends StatelessWidget {
                 height: 3.w,
               ),
               SizedBox(
-                width: snapshot.maxWidth,
+                width: width,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     CardIndicatorWidget(
-                      width: width,
-                      value: controller.filterOperations(idDockType: dockType.idDockType, status: [
-                        OperationStatusEnum.CREATED.idOperationStatus,
-                        OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                        OperationStatusEnum.FINISHED.idOperationStatus,
-                      ]).length,
-                      isLoading: controller.appState.value is AppStateLoading,
-                      title: "Total Geral",
-                      backgroundColor: context.appTheme.secondColor,
-                    ),
-                    CardIndicatorWidget(
-                      width: width,
+                      width: widthIndicator,
                       value: controller.filterOperations(
                           idDockType: dockType.idDockType,
-                          dateFrom: DateTime(DateTime.now().year, DateTime.now().month, 1).toUtc(),
-                          dateUntil: DateTime(DateTime.now().year, DateTime.now().month + 1, 1).toUtc().subtract(1.seconds),
+                          dateFrom: DateTime.now().day <= 15
+                              ? DateTime(DateTime.now().year,
+                                      DateTime.now().month, 1)
+                                  .toUtc()
+                              : DateTime(DateTime.now().year,
+                                      DateTime.now().month, 16)
+                                  .toUtc(),
+                          dateUntil: DateTime.now().day <= 15
+                              ? DateTime(DateTime.now().year,
+                                      DateTime.now().month, 15, 23, 59, 59)
+                                  .toUtc()
+                              : DateTime(DateTime.now().year,
+                                      DateTime.now().month + 1, 1)
+                                  .toUtc()
+                                  .subtract(1.seconds),
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
                             OperationStatusEnum.FINISHED.idOperationStatus,
                           ]).length,
                       isLoading: controller.appState.value is AppStateLoading,
-                      title: "Mês",
+                      title: "15º atual",
                       backgroundColor: Colors.blue,
                     ),
+                    SizedBox(width: width * .05),
                     CardIndicatorWidget(
-                      width: width,
+                      width: widthIndicator,
                       value: controller.filterOperations(
                           idDockType: dockType.idDockType,
-                          dateFrom: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toUtc(),
-                          dateUntil: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 23, 59, 59).toUtc(),
+                          dateFrom: DateTime(DateTime.now().year,
+                                  DateTime.now().month, DateTime.now().day)
+                              .toUtc(),
+                          dateUntil: DateTime(
+                                  DateTime.now().year,
+                                  DateTime.now().month,
+                                  DateTime.now().day,
+                                  23,
+                                  59,
+                                  59)
+                              .toUtc(),
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
@@ -250,12 +287,15 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       title: "Hoje",
                       backgroundColor: context.appTheme.primaryColor,
                     ),
+                    SizedBox(width: width * .05),
                     CardIndicatorWidget(
-                      width: width,
-                      value: controller.filterOperations(idDockType: dockType.idDockType, status: [
-                        OperationStatusEnum.CREATED.idOperationStatus,
-                        OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                      ]).length,
+                      width: widthIndicator,
+                      value: controller.filterOperations(
+                          idDockType: dockType.idDockType,
+                          status: [
+                            OperationStatusEnum.CREATED.idOperationStatus,
+                            OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                          ]).length,
                       isLoading: controller.appState.value is AppStateLoading,
                       title: "Em execução",
                       backgroundColor: context.appTheme.primaryVariant,

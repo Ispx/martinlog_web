@@ -73,6 +73,7 @@ class _DockViewState extends State<DockView> {
             const Gap(30),
             Obx(() {
               return PageWidget(
+                key: ValueKey(DateTime.now()),
                 itens: controller.docks.value
                     .map(
                       (dockModel) => Padding(

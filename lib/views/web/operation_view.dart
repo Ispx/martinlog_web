@@ -128,7 +128,8 @@ class _OperationViewState extends State<OperationView> {
                           dateRangeSelected = value;
                         },
                         quickDateRanges: [
-                          QuickDateRange(dateRange: null, label: "Limpar datas"),
+                          QuickDateRange(
+                              dateRange: null, label: "Limpar datas"),
                           QuickDateRange(
                             label: 'Últimos 7 dias',
                             dateRange: DateRange(
@@ -170,13 +171,15 @@ class _OperationViewState extends State<OperationView> {
                       dateRangeSelected!.start,
                       dateRangeSelected!.end,
                     );
-                    textDateRangeSelected.value = "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
+                    textDateRangeSelected.value =
+                        "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
                   }
                 },
                 icon: const Icon(Icons.date_range),
                 style: ButtonStyle(
                   shape: MaterialStateProperty.resolveWith(
-                    (states) => RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    (states) => RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
               ),
@@ -198,7 +201,8 @@ class _OperationViewState extends State<OperationView> {
                 dropdownMenuEntries: [
                   ...OperationStatusEnum.values
                       .map(
-                        (e) => DropdownMenuEntry(value: e, label: e.description),
+                        (e) =>
+                            DropdownMenuEntry(value: e, label: e.description),
                       )
                       .toList()
                 ],
@@ -216,7 +220,8 @@ class _OperationViewState extends State<OperationView> {
                 dropdownMenuEntries: [
                   ...DockType.values
                       .map(
-                        (e) => DropdownMenuEntry(value: e, label: e.description),
+                        (e) =>
+                            DropdownMenuEntry(value: e, label: e.description),
                       )
                       .toList()
                 ],
@@ -259,7 +264,8 @@ class _OperationViewState extends State<OperationView> {
               key: ObjectKey(itens),
               itens: itens,
               onRefresh: () async => await controller.getAll(),
-              onDownload: () async => await controller.downloadFile(controller.operationsFilted),
+              onDownload: () async =>
+                  await controller.downloadFile(controller.operationsFilted),
               totalByPage: 10,
             );
           }),
@@ -276,7 +282,8 @@ class CreateOperationWidget extends StatefulWidget {
   State<CreateOperationWidget> createState() => _CreateOperationWidgetState();
 }
 
-class _CreateOperationWidgetState extends State<CreateOperationWidget> with ValidatorsMixin {
+class _CreateOperationWidgetState extends State<CreateOperationWidget>
+    with ValidatorsMixin {
   DockType? dockTypeSelected = null;
   DockModel? dockModelSelected = null;
   CompanyModel? companyModelSelected = null;
@@ -300,7 +307,8 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
     dockCodeEditingController = TextEditingController();
     dockTypeEditingController = TextEditingController();
     companyEditingController = TextEditingController();
-    companies = simple.get<AuthViewModel>().authModel?.idProfile == ProfileTypeEnum.MASTER.idProfileType
+    companies = simple.get<AuthViewModel>().authModel?.idProfile ==
+            ProfileTypeEnum.MASTER.idProfileType
         ? simple.get<CompanyViewModel>().companies.toList()
         : [
             simple.get<CompanyViewModel>().companyModel!,
@@ -308,8 +316,13 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
     super.initState();
   }
 
-  List<DockModel> getDocksByDockType() =>
-      simple.get<DockViewModel>().docks.where((e) => dockTypeSelected == null ? true : e.idDockType.getDockType() == dockTypeSelected).toList();
+  List<DockModel> getDocksByDockType() => simple
+      .get<DockViewModel>()
+      .docks
+      .where((e) => dockTypeSelected == null
+          ? true
+          : e.idDockType.getDockType() == dockTypeSelected)
+      .toList();
 
   void clearFields() {
     dockModelSelected = null;
@@ -392,7 +405,8 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
                                 title: "Tipo",
                                 child: DropBoxWidget<DockType>(
                                   controller: dockTypeEditingController,
-                                  enable: controller.appState.value is! AppStateLoading,
+                                  enable: controller.appState.value
+                                      is! AppStateLoading,
                                   width: 15.w,
                                   dropdownMenuEntries: DockType.values
                                       .map(
@@ -417,7 +431,8 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
                                 title: "Doca",
                                 child: DropBoxWidget<DockModel>(
                                   controller: dockCodeEditingController,
-                                  enable: controller.appState.value is! AppStateLoading,
+                                  enable: controller.appState.value
+                                      is! AppStateLoading,
                                   width: 15.w,
                                   dropdownMenuEntries: getDocksByDockType()
                                       .map(
@@ -440,9 +455,11 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
                                 title: "Placa",
                                 child: SizedBox(
                                   width: 15.w,
-                                  child: TextFormFieldWidget<OutlineInputBorder>(
+                                  child:
+                                      TextFormFieldWidget<OutlineInputBorder>(
                                     controller: liscensePlateEditingController,
-                                    enable: controller.appState.value is! AppStateLoading,
+                                    enable: controller.appState.value
+                                        is! AppStateLoading,
                                     validator: isNotLiscensePlate,
                                     inputFormatters: [
                                       UpperCaseTextFormatter(),
@@ -459,7 +476,8 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
                                 child: DropBoxWidget<CompanyModel>(
                                   width: 20.w,
                                   controller: companyEditingController,
-                                  enable: controller.appState.value is! AppStateLoading,
+                                  enable: controller.appState.value
+                                      is! AppStateLoading,
                                   dropdownMenuEntries: companies
                                       .map(
                                         (e) => DropdownMenuEntry<CompanyModel>(
@@ -490,7 +508,8 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
                                 title: "Descrição",
                                 child: TextFormFieldWidget<OutlineInputBorder>(
                                   controller: descriptionEditingController,
-                                  enable: controller.appState.value is! AppStateLoading,
+                                  enable: controller.appState.value
+                                      is! AppStateLoading,
                                 ),
                               ),
                             ),
@@ -503,7 +522,8 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
                                   context: context,
                                   title: "",
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Expanded(
                                         child: IconButtonWidget(
@@ -517,7 +537,8 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
                                       ),
                                       Expanded(
                                         child: IconButtonWidget(
-                                          onTap: () => isLoading.value ? null : start(),
+                                          onTap: () =>
+                                              isLoading.value ? null : start(),
                                           title: 'Iniciar',
                                           icon: const Icon(LineIcons.check),
                                         ),
@@ -538,7 +559,10 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
     });
   }
 
-  Widget buildSelectable({required BuildContext context, required String title, required Widget child}) {
+  Widget buildSelectable(
+      {required BuildContext context,
+      required String title,
+      required Widget child}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -570,7 +594,8 @@ class OperationWidget extends StatefulWidget {
   State<OperationWidget> createState() => _OperationWidgetState();
 }
 
-class _OperationWidgetState extends State<OperationWidget> with SingleTickerProviderStateMixin {
+class _OperationWidgetState extends State<OperationWidget>
+    with SingleTickerProviderStateMixin {
   var progressObs = 0.obs;
   late final TextEditingController percentageEdittinController;
 
@@ -588,11 +613,14 @@ class _OperationWidgetState extends State<OperationWidget> with SingleTickerProv
         percentageEdittinController.text = "${progressObs.value}%";
         setState(() {});
       });
-    progressAnimation = Tween<double>(begin: 0.0, end: widget.operationModel.progress / 100).animate(
+    progressAnimation =
+        Tween<double>(begin: 0.0, end: widget.operationModel.progress / 100)
+            .animate(
       CurvedAnimation(parent: animationController, curve: Curves.decelerate),
     );
 
-    textAnimation = IntTween(begin: 0, end: widget.operationModel.progress).animate(
+    textAnimation =
+        IntTween(begin: 0, end: widget.operationModel.progress).animate(
       CurvedAnimation(parent: animationController, curve: Curves.decelerate),
     );
     percentageEdittinController = TextEditingController();
@@ -606,7 +634,8 @@ class _OperationWidgetState extends State<OperationWidget> with SingleTickerProv
       }
     });
     workerProgress = ever(progressObs, (newProgress) {
-      progressAnimation = Tween<double>(begin: 0.0, end: newProgress / 100).animate(
+      progressAnimation =
+          Tween<double>(begin: 0.0, end: newProgress / 100).animate(
         CurvedAnimation(parent: animationController, curve: Curves.decelerate),
       );
       setState(() {});
@@ -673,7 +702,9 @@ class _OperationWidgetState extends State<OperationWidget> with SingleTickerProv
               Flexible(
                 flex: 2,
                 child: Text(
-                  Utils.fromServerToLocal(widget.operationModel.createdAt.toString()).ddMMyyyyHHmmss,
+                  Utils.fromServerToLocal(
+                          widget.operationModel.createdAt.toString())
+                      .ddMMyyyyHHmmss,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.displayMedium(context).copyWith(
                     fontWeight: FontWeight.w600,
@@ -681,7 +712,8 @@ class _OperationWidgetState extends State<OperationWidget> with SingleTickerProv
                   ),
                 ),
               ),
-              simple.get<AuthViewModel>().authModel!.idProfile.getProfile() == ProfileTypeEnum.MASTER
+              simple.get<AuthViewModel>().authModel!.idProfile.getProfile() ==
+                      ProfileTypeEnum.MASTER
                   ? SizedBox(
                       width: 10.w,
                       child: Text(
@@ -698,7 +730,9 @@ class _OperationWidgetState extends State<OperationWidget> with SingleTickerProv
                 width: 8.w,
                 child: Center(
                   child: Text(
-                    widget.operationModel.dockModel!.idDockType.getDockType().description,
+                    widget.operationModel.dockModel!.idDockType
+                        .getDockType()
+                        .description,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyle.displayMedium(context).copyWith(
                       fontWeight: FontWeight.w600,
@@ -740,7 +774,9 @@ class _OperationWidgetState extends State<OperationWidget> with SingleTickerProv
                 width: 8.w,
                 child: Center(
                   child: Text(
-                    widget.operationModel.idOperationStatus.getOperationStatus().description,
+                    widget.operationModel.idOperationStatus
+                        .getOperationStatus()
+                        .description,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyle.displayMedium(context).copyWith(
                       fontWeight: FontWeight.w600,
@@ -762,7 +798,8 @@ class _OperationWidgetState extends State<OperationWidget> with SingleTickerProv
                     ),
                     CircularProgressIndicator(
                       value: progressAnimation.value,
-                      color: widget.operationModel.idOperationStatus == OperationStatusEnum.CANCELED.idOperationStatus
+                      color: widget.operationModel.idOperationStatus ==
+                              OperationStatusEnum.CANCELED.idOperationStatus
                           ? appTheme.greyColor
                           : context.appTheme.primaryColor,
                       backgroundColor: Colors.grey.shade200,
@@ -774,11 +811,17 @@ class _OperationWidgetState extends State<OperationWidget> with SingleTickerProv
               Flexible(
                 child: TextFormFieldWidget<OutlineInputBorder>(
                   controller: percentageEdittinController,
-                  onChange: (e) => progressObs.value = e.isEmpty ? 0 : int.parse(RegExp(r'[0-9]').allMatches(e).map((e) => e[0]).join()),
+                  onChange: (e) => progressObs.value = e.isEmpty
+                      ? 0
+                      : int.parse(RegExp(r'[0-9]')
+                          .allMatches(e)
+                          .map((e) => e[0])
+                          .join()),
                   textAlign: TextAlign.center,
                   fillColor: appTheme.greyColor.withOpacity(.2),
                   enable: controller.appState.value is! AppStateLoading &&
-                      widget.operationModel.idOperationStatus == OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                      widget.operationModel.idOperationStatus ==
+                          OperationStatusEnum.IN_PROGRESS.idOperationStatus,
                   maxLength: 4,
                   inputFormatters: [
                     PercentageInputFormatter(),
@@ -786,12 +829,18 @@ class _OperationWidgetState extends State<OperationWidget> with SingleTickerProv
                 ),
               ),
               InkWell(
-                onTap: widget.operationModel.idOperationStatus.getOperationStatus() == OperationStatusEnum.IN_PROGRESS ? () async => await update() : null,
+                onTap: widget.operationModel.idOperationStatus
+                            .getOperationStatus() ==
+                        OperationStatusEnum.IN_PROGRESS
+                    ? () async => await update()
+                    : null,
                 borderRadius: BorderRadius.circular(100),
                 child: Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: widget.operationModel.idOperationStatus.getOperationStatus() == OperationStatusEnum.IN_PROGRESS
+                    color: widget.operationModel.idOperationStatus
+                                .getOperationStatus() ==
+                            OperationStatusEnum.IN_PROGRESS
                         ? context.appTheme.secondColor.withOpacity(.3)
                         : context.appTheme.greyColor,
                   ),
@@ -806,7 +855,9 @@ class _OperationWidgetState extends State<OperationWidget> with SingleTickerProv
               ),
               TextActionButtom(
                 title: "Cancelar",
-                isEnable: widget.operationModel.idOperationStatus.getOperationStatus() == OperationStatusEnum.IN_PROGRESS,
+                isEnable: widget.operationModel.idOperationStatus
+                        .getOperationStatus() ==
+                    OperationStatusEnum.IN_PROGRESS,
                 backgroundColor: appTheme.redColor,
                 padding: EdgeInsets.symmetric(
                   vertical: AppSize.padding / 2,
@@ -814,7 +865,8 @@ class _OperationWidgetState extends State<OperationWidget> with SingleTickerProv
                 ),
                 onAction: () async {
                   if (controller.appState.value is AppStateLoading) return;
-                  await controller.cancel(operationModel: widget.operationModel);
+                  await controller.cancel(
+                      operationModel: widget.operationModel);
                   if (widget.onAction != null) {
                     widget.onAction!();
                   }
@@ -844,7 +896,8 @@ class DetailsWidget extends StatefulWidget {
   State<DetailsWidget> createState() => _DetailsWidgetState();
 }
 
-class _DetailsWidgetState extends State<DetailsWidget> with SingleTickerProviderStateMixin {
+class _DetailsWidgetState extends State<DetailsWidget>
+    with SingleTickerProviderStateMixin {
   var additionalData = ''.obs;
   var progressObs = 0.obs;
   late final TextEditingController percentageEdittinController;
@@ -858,7 +911,8 @@ class _DetailsWidgetState extends State<DetailsWidget> with SingleTickerProvider
   final controller = simple.get<OperationViewModel>();
   @override
   void initState() {
-    additionalDataEdittinController = TextEditingController(text: widget.operationModel.additionalData);
+    additionalDataEdittinController =
+        TextEditingController(text: widget.operationModel.additionalData);
     additionalData.update((val) {
       if (widget.operationModel.additionalData != null) {
         additionalData.value = widget.operationModel.additionalData!;
@@ -882,13 +936,17 @@ class _DetailsWidgetState extends State<DetailsWidget> with SingleTickerProvider
         progressObs.value = textAnimation.value;
         setState(() {});
       });
-    progressAnimation = Tween<double>(begin: 0.0, end: widget.operationModel.progress / 100).animate(
+    progressAnimation =
+        Tween<double>(begin: 0.0, end: widget.operationModel.progress / 100)
+            .animate(
       CurvedAnimation(parent: animationController, curve: Curves.decelerate),
     );
-    textAnimation = IntTween(begin: 0, end: widget.operationModel.progress).animate(
+    textAnimation =
+        IntTween(begin: 0, end: widget.operationModel.progress).animate(
       CurvedAnimation(parent: animationController, curve: Curves.decelerate),
     );
-    percentageEdittinController = TextEditingController(text: "${widget.operationModel.progress}%");
+    percentageEdittinController =
+        TextEditingController(text: "${widget.operationModel.progress}%");
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(200.milliseconds).then(
         (value) => animationController.forward(),
@@ -931,16 +989,27 @@ class _DetailsWidgetState extends State<DetailsWidget> with SingleTickerProvider
                   ),
                   ValuesDetailsWidget(
                     title: 'Tipo:',
-                    value: widget.operationModel.dockModel!.idDockType.getDockType().description,
+                    value: widget.operationModel.dockModel!.idDockType
+                        .getDockType()
+                        .description,
                   ),
-                  ValuesDetailsWidget(title: 'Status:', value: widget.operationModel.idOperationStatus.getOperationStatus().description),
+                  ValuesDetailsWidget(
+                      title: 'Status:',
+                      value: widget.operationModel.idOperationStatus
+                          .getOperationStatus()
+                          .description),
                   ValuesDetailsWidget(
                     title: 'Data de início:',
-                    value: widget.operationModel.createdAt.toLocal().ddMMyyyyHHmmss,
+                    value: widget.operationModel.createdAt
+                        .toLocal()
+                        .ddMMyyyyHHmmss,
                   ),
                   ValuesDetailsWidget(
                     title: 'Data da finalização:',
-                    value: widget.operationModel.finishedAt?.toLocal().ddMMyyyyHHmmss ?? '',
+                    value: widget.operationModel.finishedAt
+                            ?.toLocal()
+                            .ddMMyyyyHHmmss ??
+                        '',
                   ),
                   ValuesDetailsWidget(
                     title: 'Placa:',
@@ -958,13 +1027,17 @@ class _DetailsWidgetState extends State<DetailsWidget> with SingleTickerProvider
                       ),
                       children: [
                         TextSpan(
-                          text: widget.operationModel.urlImage != null ? '${widget.operationModel.urlImage!.substring(0, 50)}...' : '',
+                          text: widget.operationModel.urlImage != null
+                              ? '${widget.operationModel.urlImage!.substring(0, 50)}...'
+                              : '',
                           recognizer: TapGestureRecognizer()
                             ..onTap = () async {
                               if (widget.operationModel.urlImage != null) {
-                                await launchUrl(
-                                  Uri.parse(widget.operationModel.urlImage!),
-                                );
+                                /*
+                                html.window.open(
+                                    widget.operationModel.urlImage!,
+                                    'Arquivo anexado');
+                                    */
                               }
                             },
                           style: AppTextStyle.displayMedium(context).copyWith(
@@ -993,7 +1066,9 @@ class _DetailsWidgetState extends State<DetailsWidget> with SingleTickerProvider
                     padding: const EdgeInsets.all(8),
                     child: TextField(
                       controller: additionalDataEdittinController,
-                      enabled: widget.operationModel.idOperationStatus == OperationStatusEnum.IN_PROGRESS.idOperationStatus &&
+                      enabled: widget.operationModel.idOperationStatus ==
+                              OperationStatusEnum
+                                  .IN_PROGRESS.idOperationStatus &&
                           controller.appState is! AppStateLoading,
                       maxLength: 255,
                       maxLines: 10,
@@ -1009,7 +1084,8 @@ class _DetailsWidgetState extends State<DetailsWidget> with SingleTickerProvider
                         focusedErrorBorder: InputBorder.none,
                         errorBorder: InputBorder.none,
                         disabledBorder: InputBorder.none,
-                        helperStyle: AppTextStyle.displayMedium(context).copyWith(
+                        helperStyle:
+                            AppTextStyle.displayMedium(context).copyWith(
                           fontWeight: FontWeight.w500,
                           color: Colors.black,
                         ),
@@ -1032,13 +1108,15 @@ class _DetailsWidgetState extends State<DetailsWidget> with SingleTickerProvider
                 children: [
                   Text(
                     "${progressObs.value}%",
-                    style: AppTextStyle.displaySmall(context).copyWith(fontWeight: FontWeight.w600, fontSize: 22.sp),
+                    style: AppTextStyle.displaySmall(context)
+                        .copyWith(fontWeight: FontWeight.w600, fontSize: 22.sp),
                   ),
                   Positioned.fill(
                     child: CircularProgressIndicator(
                       value: progressAnimation.value,
                       strokeWidth: 15,
-                      color: widget.operationModel.idOperationStatus == OperationStatusEnum.CANCELED.idOperationStatus
+                      color: widget.operationModel.idOperationStatus ==
+                              OperationStatusEnum.CANCELED.idOperationStatus
                           ? context.appTheme.greyColor
                           : context.appTheme.primaryColor,
                       backgroundColor: Colors.grey.shade200,
@@ -1115,7 +1193,9 @@ class TextActionButtom extends StatelessWidget {
           ),
         ),
         backgroundColor: MaterialStateProperty.resolveWith(
-          (states) => isLoading || !isEnable ? Colors.grey : backgroundColor ?? Colors.transparent,
+          (states) => isLoading || !isEnable
+              ? Colors.grey
+              : backgroundColor ?? Colors.transparent,
         ),
       ),
       child: Padding(
@@ -1143,7 +1223,8 @@ class TextActionButtom extends StatelessWidget {
   }
 }
 
-void showDialogDetailsOperation(BuildContext context, OperationModel operationModel) {
+void showDialogDetailsOperation(
+    BuildContext context, OperationModel operationModel) {
   showDialog(
     context: context,
     builder: (context) {
@@ -1171,7 +1252,7 @@ void showDialogDetailsOperation(BuildContext context, OperationModel operationMo
               radius: 10,
               title: 'Importar arquivo',
               onTap: () async {
-                 final ImagePicker picker = ImagePicker();
+                final ImagePicker picker = ImagePicker();
                 final XFile? imageFile =
                     await picker.pickImage(source: ImageSource.gallery);
                 if (imageFile == null) return;
@@ -1193,7 +1274,9 @@ void showDialogDetailsOperation(BuildContext context, OperationModel operationMo
               icon: const Icon(LineIcons.download),
               radius: 10,
               title: 'Baixar arquivo',
-              onTap: () => simple.get<OperationViewModel>().downloadFile([operationModel]),
+              onTap: () => simple
+                  .get<OperationViewModel>()
+                  .downloadFile([operationModel]),
             ),
           ),
           SizedBox(

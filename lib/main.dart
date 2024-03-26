@@ -192,8 +192,10 @@ void main() async {
       );
       i.addSingleton<PasswordRecoveryViewModel>(
         () => PasswordRecoveryViewModel(
-          startPasswordRecoveryRepository: i.get<StartPasswordRecoveryRepository>(),
-          completePasswordRecoveryRepository: i.get<CompletePasswordRecoveryRepository>(),
+          startPasswordRecoveryRepository:
+              i.get<StartPasswordRecoveryRepository>(),
+          completePasswordRecoveryRepository:
+              i.get<CompletePasswordRecoveryRepository>(),
         ),
       );
       i.addSingleton<DashboardViewModel>(

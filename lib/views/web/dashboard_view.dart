@@ -80,23 +80,34 @@ class _DashboardViewState extends State<DashboardView> {
                   width: snapshot.maxWidth,
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 2.w),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CardSummaryOperationWidget(
-                          controller: controller,
-                          dockType: DockType.RECEIPT,
-                        ),
-                        CardSummaryOperationWidget(
-                          controller: controller,
-                          dockType: DockType.EXPEDITION,
-                        ),
-                        CardSummaryOperationWidget(
-                          controller: controller,
-                          dockType: DockType.KAMIKAZE,
-                        ),
-                      ],
-                    ),
+                    child: LayoutBuilder(builder: (context, constraint) {
+                      final width = constraint.maxWidth / 4.5;
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CardSummaryOperationWidget(
+                            width: width,
+                            controller: controller,
+                            dockType: DockType.RECEIPT,
+                          ),
+                          CardSummaryOperationWidget(
+                            width: width,
+                            controller: controller,
+                            dockType: DockType.EXPEDITION,
+                          ),
+                          CardSummaryOperationWidget(
+                            width: width,
+                            controller: controller,
+                            dockType: DockType.TRANSFER,
+                          ),
+                          CardSummaryOperationWidget(
+                            width: width,
+                            controller: controller,
+                            dockType: DockType.KAMIKAZE,
+                          ),
+                        ],
+                      );
+                    }),
                   ),
                 ),
                 SizedBox(
@@ -148,8 +159,10 @@ class _DashboardViewState extends State<DashboardView> {
 class CardSummaryOperationWidget extends StatelessWidget {
   final DockType dockType;
   final DashboardViewModel controller;
+  final double width;
   const CardSummaryOperationWidget({
     super.key,
+    required this.width,
     required this.dockType,
     required this.controller,
   });
@@ -157,7 +170,8 @@ class CardSummaryOperationWidget extends StatelessWidget {
     return switch (dockType) {
       DockType.EXPEDITION => Colors.blue,
       DockType.RECEIPT => Colors.green,
-      DockType.KAMIKAZE => Colors.orange,
+      DockType.TRANSFER => Colors.orange,
+      DockType.KAMIKAZE => Colors.red,
       _ => throw "Invalid icondata to dockType"
     };
   }
@@ -166,6 +180,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
     return switch (dockType) {
       DockType.EXPEDITION => LineIcons.arrowUp,
       DockType.RECEIPT => LineIcons.arrowDown,
+      DockType.TRANSFER => LineIcons.alternateExchange,
       DockType.KAMIKAZE => LineIcons.alternateArrows,
       _ => throw "Invalid icondata to dockType"
     };
@@ -177,14 +192,14 @@ class CardSummaryOperationWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       elevation: 6.0,
       child: Container(
-        width: 27.w,
+        width: width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
         ),
         padding: EdgeInsets.only(left: 1.w, right: 1.w),
         child: LayoutBuilder(builder: (context, snapshot) {
-          final width = snapshot.maxWidth / 4.5;
+          final widthIndicator = snapshot.maxWidth / 3.5;
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,8 +210,8 @@ class CardSummaryOperationWidget extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 3.w,
+                    height: 3.w,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
                       color: getColorIconDockType(dockType),
@@ -206,7 +221,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       child: Icon(
                         getIconDataByDockType(dockType),
                         color: Colors.white,
-                        size: 30,
+                        size: 2.w,
                       ),
                     ),
                   ),
@@ -225,45 +240,41 @@ class CardSummaryOperationWidget extends StatelessWidget {
                 height: 3.w,
               ),
               SizedBox(
-                width: snapshot.maxWidth,
+                width: width,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     CardIndicatorWidget(
-                      width: width,
+                      width: widthIndicator,
                       value: controller.filterOperations(
                           idDockType: dockType.idDockType,
+                          dateFrom: DateTime.now().day <= 15
+                              ? DateTime(DateTime.now().year,
+                                      DateTime.now().month, 1)
+                                  .toUtc()
+                              : DateTime(DateTime.now().year,
+                                      DateTime.now().month, 16)
+                                  .toUtc(),
+                          dateUntil: DateTime.now().day <= 15
+                              ? DateTime(DateTime.now().year,
+                                      DateTime.now().month, 15, 23, 59, 59)
+                                  .toUtc()
+                              : DateTime(DateTime.now().year,
+                                      DateTime.now().month + 1, 1)
+                                  .toUtc()
+                                  .subtract(1.seconds),
                           status: [
                             OperationStatusEnum.CREATED.idOperationStatus,
                             OperationStatusEnum.IN_PROGRESS.idOperationStatus,
                             OperationStatusEnum.FINISHED.idOperationStatus,
                           ]).length,
                       isLoading: controller.appState.value is AppStateLoading,
-                      title: "Total Geral",
-                      backgroundColor: context.appTheme.secondColor,
-                    ),
-                    CardIndicatorWidget(
-                      width: width,
-                      value: controller.filterOperations(
-                          idDockType: dockType.idDockType,
-                          dateFrom: DateTime(
-                                  DateTime.now().year, DateTime.now().month, 1)
-                              .toUtc(),
-                          dateUntil: DateTime(DateTime.now().year,
-                                  DateTime.now().month + 1, 1)
-                              .toUtc()
-                              .subtract(1.seconds),
-                          status: [
-                            OperationStatusEnum.CREATED.idOperationStatus,
-                            OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                            OperationStatusEnum.FINISHED.idOperationStatus,
-                          ]).length,
-                      isLoading: controller.appState.value is AppStateLoading,
-                      title: "Mês",
+                      title: "15º atual",
                       backgroundColor: Colors.blue,
                     ),
+                    SizedBox(width: width * .05),
                     CardIndicatorWidget(
-                      width: width,
+                      width: widthIndicator,
                       value: controller.filterOperations(
                           idDockType: dockType.idDockType,
                           dateFrom: DateTime(DateTime.now().year,
@@ -286,8 +297,9 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       title: "Hoje",
                       backgroundColor: context.appTheme.primaryColor,
                     ),
+                    SizedBox(width: width * .05),
                     CardIndicatorWidget(
-                      width: width,
+                      width: widthIndicator,
                       value: controller.filterOperations(
                           idDockType: dockType.idDockType,
                           status: [

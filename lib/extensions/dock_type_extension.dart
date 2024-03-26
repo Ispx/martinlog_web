@@ -5,13 +5,15 @@ extension DockTypeExt on DockType {
         DockType.UNDEFINED => -1,
         DockType.EXPEDITION => 1,
         DockType.RECEIPT => 2,
-        DockType.KAMIKAZE => 3
+        DockType.KAMIKAZE => 3,
+        DockType.TRANSFER => 4,
       };
 
   String get description => switch (this) {
         DockType.UNDEFINED => "",
-        DockType.EXPEDITION => "Expedição",
+        DockType.EXPEDITION => "DL",
         DockType.RECEIPT => "Recebimento",
-        DockType.KAMIKAZE => "Camicado"
+        DockType.KAMIKAZE => "Camicado",
+        DockType.TRANSFER => "Transferência",
       };
 }

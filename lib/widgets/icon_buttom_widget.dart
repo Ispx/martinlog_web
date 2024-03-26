@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
@@ -27,10 +29,16 @@ class IconButtonWidget extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(radius),
-          color: onTap == null ? context.appTheme.disableColor : buttomColor ?? context.appTheme.buttonEnableColor,
+          color: onTap == null
+              ? context.appTheme.disableColor
+              : buttomColor ?? context.appTheme.buttonEnableColor,
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: AppSize.padding, horizontal: AppSize.padding / 2),
+          padding: EdgeInsets.symmetric(
+              vertical: AppSize.padding,
+              horizontal: Platform.isAndroid
+                  ? AppSize.padding * 2
+                  : AppSize.padding / 2),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [

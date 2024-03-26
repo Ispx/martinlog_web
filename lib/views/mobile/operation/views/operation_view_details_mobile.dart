@@ -26,14 +26,19 @@ class OperationViewDetailsMobile extends StatefulWidget {
   const OperationViewDetailsMobile({super.key});
 
   @override
-  State<OperationViewDetailsMobile> createState() => _OperationViewDetailsMobileState();
+  State<OperationViewDetailsMobile> createState() =>
+      _OperationViewDetailsMobileState();
 }
 
-class _OperationViewDetailsMobileState extends State<OperationViewDetailsMobile> {
-  final TextEditingController additionalDataEdittinController = TextEditingController();
+class _OperationViewDetailsMobileState
+    extends State<OperationViewDetailsMobile> {
+  final TextEditingController additionalDataEdittinController =
+      TextEditingController();
   var additionalData = ''.obs;
 
-  OperationModel? get operationModel => (ModalRoute.of(context)?.settings.arguments as List<Object>?)?[0] as OperationModel;
+  OperationModel? get operationModel =>
+      (ModalRoute.of(context)?.settings.arguments as List<Object>?)?[0]
+          as OperationModel;
 
   OperationViewModel get controller => simple.get<OperationViewModel>();
 
@@ -41,7 +46,8 @@ class _OperationViewDetailsMobileState extends State<OperationViewDetailsMobile>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      additionalDataEdittinController.text = operationModel!.additionalData ?? '';
+      additionalDataEdittinController.text =
+          operationModel!.additionalData ?? '';
       additionalData.update((val) {
         if (operationModel!.additionalData != null) {
           additionalData.value = operationModel!.additionalData!;
@@ -61,7 +67,8 @@ class _OperationViewDetailsMobileState extends State<OperationViewDetailsMobile>
 
   Future<void> _doImportFile() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? imageFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? imageFile =
+        await picker.pickImage(source: ImageSource.gallery);
     if (imageFile == null) return;
 
     await simple.get<OperationViewModel>().uploadFile(
@@ -87,7 +94,8 @@ class _OperationViewDetailsMobileState extends State<OperationViewDetailsMobile>
         );
   }
 
-  Widget _sendImageOptionsButton({required VoidCallback onTap, required String title}) {
+  Widget _sendImageOptionsButton(
+      {required VoidCallback onTap, required String title}) {
     return TextButton(
       onPressed: onTap,
       style: TextButton.styleFrom(
@@ -151,7 +159,9 @@ class _OperationViewDetailsMobileState extends State<OperationViewDetailsMobile>
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvoked: (didPop) async {
-        final updatedOperationFunction = (ModalRoute.of(context)?.settings.arguments as List<Object>?)?[1] as Function;
+        final updatedOperationFunction =
+            (ModalRoute.of(context)?.settings.arguments as List<Object>?)?[1]
+                as Function;
         await updatedOperationFunction();
       },
       child: Scaffold(
@@ -199,17 +209,22 @@ class _OperationViewDetailsMobileState extends State<OperationViewDetailsMobile>
                       const Gap(8),
                       ValuesDetailsWidget(
                         title: 'Tipo:',
-                        value: operationModel!.dockModel!.idDockType.getDockType().description,
+                        value: operationModel!.dockModel!.idDockType
+                            .getDockType()
+                            .description,
                       ),
                       const Gap(8),
                       ValuesDetailsWidget(
                         title: 'Status:',
-                        value: operationModel!.idOperationStatus.getOperationStatus().description,
+                        value: operationModel!.idOperationStatus
+                            .getOperationStatus()
+                            .description,
                       ),
                       const Gap(8),
                       ValuesDetailsWidget(
                         title: 'Data de início:',
-                        value: operationModel!.createdAt.toBrazillianHour.ddMMyyyyHHmmss,
+                        value: operationModel!
+                            .createdAt.toBrazillianHour.ddMMyyyyHHmmss,
                       ),
                       const Gap(8),
                       ValuesDetailsWidget(
@@ -230,12 +245,15 @@ class _OperationViewDetailsMobileState extends State<OperationViewDetailsMobile>
                       Text.rich(
                         TextSpan(
                           text: 'Anexo: ',
-                          style: AppTextStyle.mobileDisplayMedium(context).copyWith(
+                          style: AppTextStyle.mobileDisplayMedium(context)
+                              .copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                           children: [
                             TextSpan(
-                              text: operationModel!.urlImage != null ? '${operationModel!.urlImage!.substring(0, 40)}...' : '',
+                              text: operationModel!.urlImage != null
+                                  ? '${operationModel!.urlImage!.substring(0, 40)}...'
+                                  : '',
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () async {
                                   if (operationModel!.urlImage != null) {
@@ -244,7 +262,8 @@ class _OperationViewDetailsMobileState extends State<OperationViewDetailsMobile>
                                     );
                                   }
                                 },
-                              style: AppTextStyle.mobileDisplayMedium(context).copyWith(
+                              style: AppTextStyle.mobileDisplayMedium(context)
+                                  .copyWith(
                                 fontWeight: FontWeight.w500,
                                 decoration: TextDecoration.underline,
                                 decorationColor: Colors.blueAccent,
@@ -275,11 +294,14 @@ class _OperationViewDetailsMobileState extends State<OperationViewDetailsMobile>
                             padding: const EdgeInsets.all(8),
                             child: TextField(
                               controller: additionalDataEdittinController,
-                              enabled: operationModel!.idOperationStatus == OperationStatusEnum.IN_PROGRESS.idOperationStatus &&
+                              enabled: operationModel!.idOperationStatus ==
+                                      OperationStatusEnum
+                                          .IN_PROGRESS.idOperationStatus &&
                                   controller.appState is! AppStateLoading,
                               maxLength: 255,
                               maxLines: 10,
-                              style: AppTextStyle.mobileDisplayMedium(context).copyWith(
+                              style: AppTextStyle.mobileDisplayMedium(context)
+                                  .copyWith(
                                 fontWeight: FontWeight.w500,
                                 color: Colors.black,
                               ),
@@ -291,7 +313,9 @@ class _OperationViewDetailsMobileState extends State<OperationViewDetailsMobile>
                                 focusedErrorBorder: InputBorder.none,
                                 errorBorder: InputBorder.none,
                                 disabledBorder: InputBorder.none,
-                                helperStyle: AppTextStyle.mobileDisplayMedium(context).copyWith(
+                                helperStyle:
+                                    AppTextStyle.mobileDisplayMedium(context)
+                                        .copyWith(
                                   fontWeight: FontWeight.w500,
                                   color: Colors.black,
                                 ),
@@ -308,7 +332,8 @@ class _OperationViewDetailsMobileState extends State<OperationViewDetailsMobile>
                               height: 40,
                               child: ButtomWidget(
                                 elevation: 0,
-                                isLoading: controller.appState.value is AppStateLoading,
+                                isLoading: controller.appState.value
+                                    is AppStateLoading,
                                 radius: 10,
                                 title: 'Salvar',
                                 onTap: () => _doSaveDescription(),
@@ -319,41 +344,34 @@ class _OperationViewDetailsMobileState extends State<OperationViewDetailsMobile>
                       ),
                     ],
                   ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                  const Gap(18),
+                  IconButtonWidget(
+                    icon: const Icon(LineIcons.upload),
+                    radius: 5,
+                    title: 'Enviar Imagem',
+                    onTap: () => _sendImageOptions(context),
+                  ),
+                  const Gap(18),
+                  Expanded(
+                    child: Row(
                       children: [
-                        IconButtonWidget(
-                          icon: const Icon(LineIcons.upload),
-                          radius: 10,
-                          title: 'Enviar Imagem',
-                          onTap: () => _sendImageOptions(context),
+                        Expanded(
+                          child: IconButtonWidget(
+                            icon: const Icon(LineIcons.download),
+                            radius: 5,
+                            title: 'Baixar arquivo',
+                            onTap: () async => await _downloadFile(),
+                          ),
                         ),
                         const Gap(8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: IconButtonWidget(
-                                icon: const Icon(LineIcons.download),
-                                radius: 10,
-                                title: 'Baixar arquivo',
-                                onTap: () async => await _downloadFile(),
-                              ),
-                            ),
-                            const Gap(8),
-                            Expanded(
-                              child: IconButtonWidget(
-                                icon: const Icon(Icons.close),
-                                radius: 10,
-                                title: 'Fechar',
-                                onTap: () => GoTo.pop(),
-                              ),
-                            ),
-                          ],
+                        Expanded(
+                          child: IconButtonWidget(
+                            icon: const Icon(Icons.close),
+                            radius: 5,
+                            title: 'Fechar',
+                            onTap: () => GoTo.pop(),
+                          ),
                         ),
-                        const Gap(24),
                       ],
                     ),
                   ),
@@ -376,10 +394,12 @@ class OperationProgressWidget extends StatefulWidget {
   final OperationModel operationModel;
 
   @override
-  State<OperationProgressWidget> createState() => _OperationProgressWidgetState();
+  State<OperationProgressWidget> createState() =>
+      _OperationProgressWidgetState();
 }
 
-class _OperationProgressWidgetState extends State<OperationProgressWidget> with SingleTickerProviderStateMixin {
+class _OperationProgressWidgetState extends State<OperationProgressWidget>
+    with SingleTickerProviderStateMixin {
   late final AnimationController animationController;
   late final Animation<double> progressAnimation;
   late final Animation<int> textAnimation;
@@ -387,15 +407,19 @@ class _OperationProgressWidgetState extends State<OperationProgressWidget> with 
   @override
   void initState() {
     super.initState();
-    animationController = AnimationController(vsync: this, duration: const Duration(seconds: 2))
-      ..addListener(() {
-        setState(() {});
-      });
+    animationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2))
+          ..addListener(() {
+            setState(() {});
+          });
 
-    progressAnimation = Tween<double>(begin: 0.0, end: widget.operationModel.progress / 100).animate(
+    progressAnimation =
+        Tween<double>(begin: 0.0, end: widget.operationModel.progress / 100)
+            .animate(
       CurvedAnimation(parent: animationController, curve: Curves.decelerate),
     );
-    textAnimation = IntTween(begin: 0, end: widget.operationModel.progress).animate(
+    textAnimation =
+        IntTween(begin: 0, end: widget.operationModel.progress).animate(
       CurvedAnimation(parent: animationController, curve: Curves.decelerate),
     );
 
@@ -419,13 +443,15 @@ class _OperationProgressWidgetState extends State<OperationProgressWidget> with 
         children: [
           Text(
             "${textAnimation.value}%",
-            style: AppTextStyle.mobileDisplaySmall(context).copyWith(fontWeight: FontWeight.w600),
+            style: AppTextStyle.mobileDisplaySmall(context)
+                .copyWith(fontWeight: FontWeight.w600),
           ),
           Positioned.fill(
             child: CircularProgressIndicator(
               value: progressAnimation.value,
               strokeWidth: 4,
-              color: widget.operationModel.idOperationStatus == OperationStatusEnum.CANCELED.idOperationStatus
+              color: widget.operationModel.idOperationStatus ==
+                      OperationStatusEnum.CANCELED.idOperationStatus
                   ? context.appTheme.greyColor
                   : context.appTheme.primaryColor,
               backgroundColor: Colors.grey.shade200,
