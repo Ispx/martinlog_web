@@ -31,18 +31,13 @@ class DashboardViewMobile extends StatefulWidget {
 
 class _DashboardViewMobileState extends State<DashboardViewMobile> {
   final DashboardViewModel controller = simple.get<DashboardViewModel>();
-  late Worker worker;
   @override
   void initState() {
-    worker = ever(controller.operations, (callback) {
-      setState(() {});
-    });
     super.initState();
   }
 
   @override
   void dispose() {
-    worker.dispose();
     super.dispose();
   }
 
@@ -137,7 +132,7 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
                       );
                     }).toList(),
                     onRefresh: () async => await controller.getAllOperations(),
-                  ),
+                  )
                 ],
               ),
             ),

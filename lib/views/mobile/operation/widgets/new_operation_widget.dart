@@ -32,12 +32,12 @@ class CreateOperationWidget extends StatefulWidget {
   State<CreateOperationWidget> createState() => _CreateOperationWidgetState();
 }
 
-class _CreateOperationWidgetState extends State<CreateOperationWidget> with ValidatorsMixin {
+class _CreateOperationWidgetState extends State<CreateOperationWidget>
+    with ValidatorsMixin {
   DockType? dockTypeSelected;
   DockModel? dockModelSelected;
   CompanyModel? companyModelSelected;
 
-  RxBool isOpen = false.obs;
   RxBool isLoading = false.obs;
 
   Map<String, TextEditingController> textControllers = {
@@ -51,11 +51,13 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
   late final List<CompanyModel> companies;
   late final GlobalKey<FormState> formState;
   final controller = simple.get<OperationViewModel>();
+  RxBool isOpen = false.obs;
 
   @override
   void initState() {
     formState = GlobalKey<FormState>();
-    bool isProfileMaster = simple.get<AuthViewModel>().authModel?.idProfile == ProfileTypeEnum.MASTER.idProfileType;
+    bool isProfileMaster = simple.get<AuthViewModel>().authModel?.idProfile ==
+        ProfileTypeEnum.MASTER.idProfileType;
 
     companies = isProfileMaster
         ? simple.get<CompanyViewModel>().companies.toList()
@@ -70,7 +72,13 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
   void close() => isOpen.value = false;
 
   List<DockModel> getDocksByDockType() {
-    return simple.get<DockViewModel>().docks.where((e) => dockTypeSelected == null ? true : e.idDockType.getDockType() == dockTypeSelected).toList();
+    return simple
+        .get<DockViewModel>()
+        .docks
+        .where((e) => dockTypeSelected == null
+            ? true
+            : e.idDockType.getDockType() == dockTypeSelected)
+        .toList();
   }
 
   void clearFields() {
@@ -104,7 +112,10 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
     }
   }
 
-  Widget buildSelectable({required BuildContext context, required String title, required Widget child}) {
+  Widget buildSelectable(
+      {required BuildContext context,
+      required String title,
+      required Widget child}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -127,151 +138,151 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget> with Vali
     return Obx(() {
       return !isOpen.value
           ? Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButtonWidget(
-                title: 'Nova operação',
-                onTap: open,
-                icon: const Icon(
-                  LineIcons.dolly,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButtonWidget(
+                  title: 'Nova operação',
+                  onTap: open,
+                  icon: const Icon(
+                    LineIcons.dolly,
+                  ),
                 ),
-              ),
-            ],
-          )
+              ],
+            )
           : Container(
-            margin: EdgeInsets.zero,
-            padding: EdgeInsets.symmetric(
+              margin: EdgeInsets.zero,
+              padding: EdgeInsets.symmetric(
                 vertical: AppSize.padding * 1.5,
               ),
-            child: Form(
-              key: formState,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  buildSelectable(
-                    context: context,
-                    title: "Tipo",
-                    child: DropBoxWidget<DockType>(
-                      controller: textControllers['dockType']!,
-                      enable: controller.appState.value is! AppStateLoading,
-                      width: MediaQuery.of(context).size.width - 16,
-                      dropdownMenuEntries: DockType.values
-                          .map(
-                            (e) => DropdownMenuEntry<DockType>(
-                              value: e,
-                              label: e.description,
-                            ),
-                          )
-                          .toList(),
-                      onSelected: (DockType? e) {
-                        dockTypeSelected = e;
-                        dockModelSelected = null;
-                        textControllers['dockCode']!.clear();
-                        setState(() {});
-                      },
-                    ),
-                  ),
-                  const Gap(8),
-                  buildSelectable(
-                    context: context,
-                    title: "Doca",
-                    child: DropBoxWidget<DockModel>(
-                      controller: textControllers['dockCode']!,
-                      enable: controller.appState.value is! AppStateLoading,
-                      width: MediaQuery.of(context).size.width - 16,
-                      dropdownMenuEntries: getDocksByDockType()
-                          .map(
-                            (e) => DropdownMenuEntry<DockModel>(
-                              value: e,
-                              label: e.code,
-                            ),
-                          )
-                          .toList(),
-                      onSelected: (DockModel? e) {
-                        dockModelSelected = e;
-                        setState(() {});
-                      },
-                    ),
-                  ),
-                  const Gap(8),
-                  buildSelectable(
-                    context: context,
-                    title: "Placa",
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width - 16,
-                      child: TextFormFieldWidget<OutlineInputBorder>(
-                        controller: textControllers['licensePlate']!,
+              child: Form(
+                key: formState,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    buildSelectable(
+                      context: context,
+                      title: "Tipo",
+                      child: DropBoxWidget<DockType>(
+                        controller: textControllers['dockType']!,
                         enable: controller.appState.value is! AppStateLoading,
-                        validator: isNotLiscensePlate,
-                        inputFormatters: [
-                          UpperCaseTextFormatter(),
-                          LiscensePlateInputFormatter(),
+                        width: MediaQuery.of(context).size.width - 16,
+                        dropdownMenuEntries: DockType.values
+                            .map(
+                              (e) => DropdownMenuEntry<DockType>(
+                                value: e,
+                                label: e.description,
+                              ),
+                            )
+                            .toList(),
+                        onSelected: (DockType? e) {
+                          dockTypeSelected = e;
+                          dockModelSelected = null;
+                          textControllers['dockCode']!.clear();
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                    const Gap(8),
+                    buildSelectable(
+                      context: context,
+                      title: "Doca",
+                      child: DropBoxWidget<DockModel>(
+                        controller: textControllers['dockCode']!,
+                        enable: controller.appState.value is! AppStateLoading,
+                        width: MediaQuery.of(context).size.width - 16,
+                        dropdownMenuEntries: getDocksByDockType()
+                            .map(
+                              (e) => DropdownMenuEntry<DockModel>(
+                                value: e,
+                                label: e.code,
+                              ),
+                            )
+                            .toList(),
+                        onSelected: (DockModel? e) {
+                          dockModelSelected = e;
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                    const Gap(8),
+                    buildSelectable(
+                      context: context,
+                      title: "Placa",
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width - 16,
+                        child: TextFormFieldWidget<OutlineInputBorder>(
+                          controller: textControllers['licensePlate']!,
+                          enable: controller.appState.value is! AppStateLoading,
+                          validator: isNotLiscensePlate,
+                          inputFormatters: [
+                            UpperCaseTextFormatter(),
+                            LiscensePlateInputFormatter(),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Gap(8),
+                    buildSelectable(
+                      context: context,
+                      title: "Transportadora",
+                      child: DropBoxWidget<CompanyModel>(
+                        width: MediaQuery.of(context).size.width - 16,
+                        controller: textControllers['company']!,
+                        enable: controller.appState.value is! AppStateLoading,
+                        dropdownMenuEntries: companies
+                            .map(
+                              (e) => DropdownMenuEntry<CompanyModel>(
+                                value: e,
+                                label: e.fantasyName,
+                              ),
+                            )
+                            .toList(),
+                        onSelected: (CompanyModel? e) {
+                          companyModelSelected = e;
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                    const Gap(32),
+                    buildSelectable(
+                      context: context,
+                      title: "Descrição",
+                      child: TextFormFieldWidget<OutlineInputBorder>(
+                        controller: textControllers['description']!,
+                        enable: controller.appState.value is! AppStateLoading,
+                      ),
+                    ),
+                    buildSelectable(
+                      context: context,
+                      title: "",
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: IconButtonWidget(
+                              onTap: close,
+                              title: 'Fechar',
+                              icon: const Icon(Icons.close),
+                            ),
+                          ),
+                          SizedBox(
+                            width: AppSize.padding * 2,
+                          ),
+                          Expanded(
+                            child: IconButtonWidget(
+                              onTap: () => isLoading.value ? null : start(),
+                              title: 'Iniciar',
+                              icon: const Icon(LineIcons.check),
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  ),
-                  const Gap(8),
-                  buildSelectable(
-                    context: context,
-                    title: "Transportadora",
-                    child: DropBoxWidget<CompanyModel>(
-                      width: MediaQuery.of(context).size.width - 16,
-                      controller: textControllers['company']!,
-                      enable: controller.appState.value is! AppStateLoading,
-                      dropdownMenuEntries: companies
-                          .map(
-                            (e) => DropdownMenuEntry<CompanyModel>(
-                              value: e,
-                              label: e.fantasyName,
-                            ),
-                          )
-                          .toList(),
-                      onSelected: (CompanyModel? e) {
-                        companyModelSelected = e;
-                        setState(() {});
-                      },
-                    ),
-                  ),
-                  const Gap(32),
-                  buildSelectable(
-                    context: context,
-                    title: "Descrição",
-                    child: TextFormFieldWidget<OutlineInputBorder>(
-                      controller: textControllers['description']!,
-                      enable: controller.appState.value is! AppStateLoading,
-                    ),
-                  ),
-                  buildSelectable(
-                    context: context,
-                    title: "",
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: IconButtonWidget(
-                            onTap: close,
-                            title: 'Fechar',
-                            icon: const Icon(Icons.close),
-                          ),
-                        ),
-                        SizedBox(
-                          width: AppSize.padding * 2,
-                        ),
-                        Expanded(
-                          child: IconButtonWidget(
-                            onTap: () => isLoading.value ? null : start(),
-                            title: 'Iniciar',
-                            icon: const Icon(LineIcons.check),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
+            );
     });
   }
 }

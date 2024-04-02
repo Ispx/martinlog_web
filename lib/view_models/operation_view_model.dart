@@ -27,6 +27,7 @@ import 'package:martinlog_web/repositories/update_progress_operation_repository.
 import 'package:martinlog_web/repositories/upload_file_operation_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
+import 'package:martinlog_web/views/mobile/operation/widgets/new_operation_widget.dart';
 import 'package:path/path.dart' as Path;
 
 abstract interface class IOperationViewModel {
@@ -44,7 +45,8 @@ abstract interface class IOperationViewModel {
 
   Future<void> cancel({required OperationModel operationModel});
 
-  Future<void> getAll({DateTime? dateFrom, DateTime? dateUntil, List<int>? status});
+  Future<void> getAll(
+      {DateTime? dateFrom, DateTime? dateUntil, List<int>? status});
 
   Future<void> getOperation({
     required String operationKey,
@@ -110,11 +112,18 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   }
 
   @override
-  Future<void> create({required String dockCode, required CompanyModel companyModel, required String liscensePlate, required String description}) async {
+  Future<void> create(
+      {required String dockCode,
+      required CompanyModel companyModel,
+      required String liscensePlate,
+      required String description}) async {
     try {
       changeState(AppStateLoading());
-      final operationModel =
-          await createOperationRepository(companyModel: companyModel, dockCode: dockCode, liscensePlate: liscensePlate, description: description);
+      final operationModel = await createOperationRepository(
+          companyModel: companyModel,
+          dockCode: dockCode,
+          liscensePlate: liscensePlate,
+          description: description);
       await FirebaseFirestore.instance.collection('operation_events').add({
         'data': operationModel.toJson(),
         'event_type': EventTypeEnum.OPERATION_CREATED.description,
@@ -133,11 +142,13 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   }
 
   @override
-  Future<void> getAll({DateTime? dateFrom, DateTime? dateUntil, List<int>? status}) async {
+  Future<void> getAll(
+      {DateTime? dateFrom, DateTime? dateUntil, List<int>? status}) async {
     try {
       if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
-      final result = await getOperationsRepository(dateFrom: dateFrom, dateUntil: dateUntil, status: status);
+      final result = await getOperationsRepository(
+          dateFrom: dateFrom, dateUntil: dateUntil, status: status);
       operations.value = result;
       operationsFilted.value = result;
       changeState(AppStateDone());
@@ -179,7 +190,9 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       );
       await FirebaseFirestore.instance.collection('operation_events').add({
         'data': operationModel.toJson(),
-        'event_type': progress == 100 ? EventTypeEnum.OPERATION_FINISHED.description : EventTypeEnum.OPERATION_UPDATED.description,
+        'event_type': progress == 100
+            ? EventTypeEnum.OPERATION_FINISHED.description
+            : EventTypeEnum.OPERATION_UPDATED.description,
         'idUser': simple.get<AuthViewModel>().authModel!.idUser,
       });
       await _internalGetAll();
@@ -198,33 +211,47 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     changeState(AppStateLoading());
     final excel = Excel.createExcel();
     const sheetName = "Operações";
-    excel.updateCell(sheetName, CellIndex.indexByString("A1"), "TRANSPORTADORA");
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("A1"), "TRANSPORTADORA");
     excel.updateCell(sheetName, CellIndex.indexByString("B1"), "CNPJ");
     excel.updateCell(sheetName, CellIndex.indexByString("C1"), "DOCA");
     excel.updateCell(sheetName, CellIndex.indexByString("D1"), "Tipo");
     excel.updateCell(sheetName, CellIndex.indexByString("E1"), "Status");
-    excel.updateCell(sheetName, CellIndex.indexByString("F1"), "Data de início");
-    excel.updateCell(sheetName, CellIndex.indexByString("G1"), "Data de finalização");
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("F1"), "Data de início");
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("G1"), "Data de finalização");
     excel.updateCell(sheetName, CellIndex.indexByString("H1"), "Placa");
     excel.updateCell(sheetName, CellIndex.indexByString("I1"), "Descrição");
-    excel.updateCell(sheetName, CellIndex.indexByString("J1"), "Chave da operação");
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("J1"), "Chave da operação");
     for (int i = 0; i < operationsFilted.length; i++) {
       var index = i + 2;
       final operationModel = operationsFilted[i];
 
-      excel.updateCell(sheetName, CellIndex.indexByString("A$index"), operationModel.companyModel.fantasyName);
+      excel.updateCell(sheetName, CellIndex.indexByString("A$index"),
+          operationModel.companyModel.fantasyName);
 
-      excel.updateCell(sheetName, CellIndex.indexByString("B$index"), operationModel.companyModel.cnpj);
-      excel.updateCell(sheetName, CellIndex.indexByString("C$index"), operationModel.dockModel?.code);
-      excel.updateCell(sheetName, CellIndex.indexByString("D$index"), operationModel.dockModel?.idDockType.getDockType().description);
-      excel.updateCell(sheetName, CellIndex.indexByString("E$index"), operationModel.idOperationStatus.getOperationStatus().description);
+      excel.updateCell(sheetName, CellIndex.indexByString("B$index"),
+          operationModel.companyModel.cnpj);
+      excel.updateCell(sheetName, CellIndex.indexByString("C$index"),
+          operationModel.dockModel?.code);
+      excel.updateCell(sheetName, CellIndex.indexByString("D$index"),
+          operationModel.dockModel?.idDockType.getDockType().description);
+      excel.updateCell(sheetName, CellIndex.indexByString("E$index"),
+          operationModel.idOperationStatus.getOperationStatus().description);
 
-      excel.updateCell(sheetName, CellIndex.indexByString("F$index"), operationModel.createdAt.ddMMyyyyHHmmss);
+      excel.updateCell(sheetName, CellIndex.indexByString("F$index"),
+          operationModel.createdAt.ddMMyyyyHHmmss);
 
-      excel.updateCell(sheetName, CellIndex.indexByString("G$index"), operationModel.finishedAt?.ddMMyyyyHHmmss ?? '');
-      excel.updateCell(sheetName, CellIndex.indexByString("H$index"), operationModel.liscensePlate);
-      excel.updateCell(sheetName, CellIndex.indexByString("I$index"), operationModel.description);
-      excel.updateCell(sheetName, CellIndex.indexByString("J$index"), operationModel.operationKey);
+      excel.updateCell(sheetName, CellIndex.indexByString("G$index"),
+          operationModel.finishedAt?.ddMMyyyyHHmmss ?? '');
+      excel.updateCell(sheetName, CellIndex.indexByString("H$index"),
+          operationModel.liscensePlate);
+      excel.updateCell(sheetName, CellIndex.indexByString("I$index"),
+          operationModel.description);
+      excel.updateCell(sheetName, CellIndex.indexByString("J$index"),
+          operationModel.operationKey);
     }
 
     excel.setDefaultSheet(sheetName);
@@ -238,12 +265,18 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       operationsFilted.value = operations;
       return;
     }
-    operationsFilted.value = operationsFilted.where((p0) => p0.dockModel!.idDockType == dockType.idDockType).toList();
+    operationsFilted.value = operationsFilted
+        .where((p0) => p0.dockModel!.idDockType == dockType.idDockType)
+        .toList();
   }
 
   @override
   Future<void> search(String text) async {
-    operationsFilted.value = operationsFilted.where((p0) => p0.companyModel.fantasyName.contains(text) || p0.dockModel!.code.contains(text)).toList();
+    operationsFilted.value = operationsFilted
+        .where((p0) =>
+            p0.companyModel.fantasyName.contains(text) ||
+            p0.dockModel!.code.contains(text))
+        .toList();
   }
 
   @override
@@ -252,7 +285,9 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       operationsFilted.value = operations;
       return;
     }
-    operationsFilted.value = operationsFilted.where((p0) => p0.idOperationStatus == statusEnum.idOperationStatus).toList();
+    operationsFilted.value = operationsFilted
+        .where((p0) => p0.idOperationStatus == statusEnum.idOperationStatus)
+        .toList();
   }
 
   @override
@@ -265,8 +300,10 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     try {
       if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
-      final operations =
-          await getOperationsRepository(dateFrom: start.toUtc(), dateUntil: DateTime(end.year, end.month, end.day, 23, 59, 59).toUtc(), status: null);
+      final operations = await getOperationsRepository(
+          dateFrom: start.toUtc(),
+          dateUntil: DateTime(end.year, end.month, end.day, 23, 59, 59).toUtc(),
+          status: null);
       operations.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 0 : 1);
       operationsFilted.value = operations;
       changeState(AppStateDone());
@@ -284,7 +321,9 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     try {
       if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
-      final reference = FirebaseStorage.instance.ref().child('images/${operationModel.operationKey}');
+      final reference = FirebaseStorage.instance
+          .ref()
+          .child('images/${operationModel.operationKey}');
       await reference.putData(
         imageBytes,
         SettableMetadata(

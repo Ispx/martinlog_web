@@ -101,7 +101,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
         dateRangeSelected!.start,
         dateRangeSelected!.end,
       );
-      textDateRangeSelected.value = "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
+      textDateRangeSelected.value =
+          "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
     }
   }
 
@@ -171,7 +172,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                         dropdownMenuEntries: [
                           ...OperationStatusEnum.values
                               .map(
-                                (e) => DropdownMenuEntry(value: e, label: e.description),
+                                (e) => DropdownMenuEntry(
+                                    value: e, label: e.description),
                               )
                               .toList()
                         ],
@@ -188,7 +190,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                         dropdownMenuEntries: [
                           ...DockType.values
                               .map(
-                                (e) => DropdownMenuEntry(value: e, label: e.description),
+                                (e) => DropdownMenuEntry(
+                                    value: e, label: e.description),
                               )
                               .toList()
                         ],
@@ -225,7 +228,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       selected: selected == 1,
                       onAction: () async => await _selectDate(7, 1),
                       selectedColor: appTheme.primaryColor,
-                      backgroundColor: selected == 1 ? Colors.white : appTheme.primaryColor,
+                      backgroundColor:
+                          selected == 1 ? Colors.white : appTheme.primaryColor,
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -234,7 +238,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       selected: selected == 2,
                       onAction: () async => await _selectDate(30, 2),
                       selectedColor: appTheme.primaryColor,
-                      backgroundColor: selected == 2 ? Colors.white : appTheme.primaryColor,
+                      backgroundColor:
+                          selected == 2 ? Colors.white : appTheme.primaryColor,
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -243,7 +248,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       selected: selected == 3,
                       onAction: () async => await _selectDate(60, 3),
                       selectedColor: appTheme.primaryColor,
-                      backgroundColor: selected == 3 ? Colors.white : appTheme.primaryColor,
+                      backgroundColor:
+                          selected == 3 ? Colors.white : appTheme.primaryColor,
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -252,7 +258,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       selected: selected == 4,
                       onAction: () async => await _selectDate(90, 4),
                       selectedColor: appTheme.primaryColor,
-                      backgroundColor: selected == 4 ? Colors.white : appTheme.primaryColor,
+                      backgroundColor:
+                          selected == 4 ? Colors.white : appTheme.primaryColor,
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -269,14 +276,17 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                         );
                         setState(() {
                           selected = 5;
-                          dateRangeSelected = date != null ? DateRange(date.start, date.end) : null;
+                          dateRangeSelected = date != null
+                              ? DateRange(date.start, date.end)
+                              : null;
                           if (date == null) selected = 0;
                         });
 
                         await _setDateRangeText();
                       },
                       selectedColor: appTheme.primaryColor,
-                      backgroundColor: selected == 5 ? Colors.white : appTheme.primaryColor,
+                      backgroundColor:
+                          selected == 5 ? Colors.white : appTheme.primaryColor,
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -302,8 +312,11 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
               return PageWidgetMobile(
                 key: ObjectKey(itens),
                 itens: itens,
-                onRefresh: () async => await controller.getAll(),
-                onDownload: () async => await controller.downloadFile(controller.operationsFilted),
+                onRefresh: () async {
+                  await controller.getAll();
+                },
+                onDownload: () async =>
+                    await controller.downloadFile(controller.operationsFilted),
                 totalByPage: 10,
               );
             }),
@@ -313,7 +326,6 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
     );
   }
 }
-
 
 class OperationWidgetMobile extends StatefulWidget {
   final OperationModel operationModel;
@@ -328,7 +340,8 @@ class OperationWidgetMobile extends StatefulWidget {
   State<OperationWidgetMobile> createState() => _OperationWidgetMobileState();
 }
 
-class _OperationWidgetMobileState extends State<OperationWidgetMobile> with SingleTickerProviderStateMixin {
+class _OperationWidgetMobileState extends State<OperationWidgetMobile>
+    with SingleTickerProviderStateMixin {
   var progressObs = 0.obs;
   late final TextEditingController percentageEdittinController;
 
@@ -351,11 +364,14 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
         percentageEdittinController.text = "${progressObs.value}%";
         setState(() {});
       });
-    progressAnimation = Tween<double>(begin: 0.0, end: widget.operationModel.progress / 100).animate(
+    progressAnimation =
+        Tween<double>(begin: 0.0, end: widget.operationModel.progress / 100)
+            .animate(
       CurvedAnimation(parent: animationController, curve: Curves.decelerate),
     );
 
-    textAnimation = IntTween(begin: 0, end: widget.operationModel.progress).animate(
+    textAnimation =
+        IntTween(begin: 0, end: widget.operationModel.progress).animate(
       CurvedAnimation(parent: animationController, curve: Curves.decelerate),
     );
     percentageEdittinController = TextEditingController();
@@ -369,7 +385,8 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
       }
     });
     workerProgress = ever(progressObs, (newProgress) {
-      progressAnimation = Tween<double>(begin: 0.0, end: newProgress / 100).animate(
+      progressAnimation =
+          Tween<double>(begin: 0.0, end: newProgress / 100).animate(
         CurvedAnimation(parent: animationController, curve: Curves.decelerate),
       );
       setState(() {});
@@ -377,7 +394,11 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(100.milliseconds).then(
-        (value) => animationController.forward(),
+        (value) {
+          if (animationController.isDismissed) {
+            animationController.forward();
+          }
+        },
       );
     });
 
@@ -400,7 +421,8 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
 
   Future<void> getUpdatedOperation() async {
     await controller.getAll();
-    operation = controller.operations.firstWhere((element) => element.liscensePlate == operation.liscensePlate);
+    operation = controller.operations.firstWhere(
+        (element) => element.liscensePlate == operation.liscensePlate);
   }
 
   @override
@@ -446,14 +468,20 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (simple.get<AuthViewModel>().authModel!.idProfile.getProfile() == ProfileTypeEnum.MASTER)
+                if (simple
+                        .get<AuthViewModel>()
+                        .authModel!
+                        .idProfile
+                        .getProfile() ==
+                    ProfileTypeEnum.MASTER)
                   OperationSubtitleTextWidget(
                     text: operation.companyModel.fantasyName,
                     textAlign: null,
                     width: null,
                   ),
                 OperationSubtitleTextWidget(
-                  text: operation.dockModel!.idDockType.getDockType().description,
+                  text:
+                      operation.dockModel!.idDockType.getDockType().description,
                   width: null,
                 ),
                 OperationSubtitleTextWidget(
@@ -471,7 +499,9 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
               children: [
                 Center(
                   child: Text(
-                    operation.idOperationStatus.getOperationStatus().description,
+                    operation.idOperationStatus
+                        .getOperationStatus()
+                        .description,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyle.mobileDisplayMedium(context).copyWith(
                       fontWeight: FontWeight.w600,
@@ -486,14 +516,17 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
                     children: [
                       Text(
                         "${progressObs.value}%",
-                        style: AppTextStyle.mobileDisplaySmall(context).copyWith(
+                        style:
+                            AppTextStyle.mobileDisplaySmall(context).copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       CircularProgressIndicator(
                         value: progressAnimation.value,
-                        color:
-                            operation.idOperationStatus == OperationStatusEnum.CANCELED.idOperationStatus ? appTheme.greyColor : context.appTheme.primaryColor,
+                        color: operation.idOperationStatus ==
+                                OperationStatusEnum.CANCELED.idOperationStatus
+                            ? appTheme.greyColor
+                            : context.appTheme.primaryColor,
                         backgroundColor: Colors.grey.shade200,
                         semanticsValue: progressObs.value.toString(),
                       ),
@@ -505,10 +538,15 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
             const Gap(40),
             TextFormFieldWidget<OutlineInputBorder>(
               controller: percentageEdittinController,
-              onChange: (e) => progressObs.value = e.isEmpty ? 0 : int.parse(RegExp(r'[0-9]').allMatches(e).map((e) => e[0]).join()),
+              onChange: (e) => progressObs.value = e.isEmpty
+                  ? 0
+                  : int.parse(
+                      RegExp(r'[0-9]').allMatches(e).map((e) => e[0]).join()),
               textAlign: TextAlign.center,
               fillColor: appTheme.greyColor.withOpacity(.2),
-              enable: controller.appState.value is! AppStateLoading && operation.idOperationStatus == OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+              enable: controller.appState.value is! AppStateLoading &&
+                  operation.idOperationStatus ==
+                      OperationStatusEnum.IN_PROGRESS.idOperationStatus,
               maxLength: 4,
               inputFormatters: [
                 PercentageInputFormatter(),
@@ -521,12 +559,17 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
                 Row(
                   children: [
                     InkWell(
-                      onTap: operation.idOperationStatus.getOperationStatus() == OperationStatusEnum.IN_PROGRESS ? () async => await update() : null,
+                      onTap: operation.idOperationStatus.getOperationStatus() ==
+                              OperationStatusEnum.IN_PROGRESS
+                          ? () async => await update()
+                          : null,
                       borderRadius: BorderRadius.circular(100),
                       child: Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: operation.idOperationStatus.getOperationStatus() == OperationStatusEnum.IN_PROGRESS
+                          color: operation.idOperationStatus
+                                      .getOperationStatus() ==
+                                  OperationStatusEnum.IN_PROGRESS
                               ? context.appTheme.secondColor.withOpacity(.3)
                               : context.appTheme.greyColor,
                         ),
@@ -542,14 +585,17 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile> with Sing
                     const Gap(16),
                     TextActionButtom(
                       title: "Cancelar",
-                      isEnable: operation.idOperationStatus.getOperationStatus() == OperationStatusEnum.IN_PROGRESS,
+                      isEnable:
+                          operation.idOperationStatus.getOperationStatus() ==
+                              OperationStatusEnum.IN_PROGRESS,
                       backgroundColor: appTheme.redColor,
                       padding: EdgeInsets.symmetric(
                         vertical: AppSize.padding / 2,
                         horizontal: AppSize.padding,
                       ),
                       onAction: () async {
-                        if (controller.appState.value is AppStateLoading) return;
+                        if (controller.appState.value is AppStateLoading)
+                          return;
                         await controller.cancel(operationModel: operation);
                         if (widget.onAction != null) {
                           widget.onAction!();
@@ -662,12 +708,16 @@ class TextActionButtom extends StatelessWidget {
   });
 
   ButtonStyle get _buttonStyle => TextButton.styleFrom(
-        backgroundColor: isLoading || !isEnable ? Colors.grey : backgroundColor ?? Colors.transparent,
+        backgroundColor: isLoading || !isEnable
+            ? Colors.grey
+            : backgroundColor ?? Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: selected != null
               ? BorderSide(
-                  color: isLoading || !isEnable ? Colors.grey : selectedColor ?? backgroundColor ?? Colors.transparent,
+                  color: isLoading || !isEnable
+                      ? Colors.grey
+                      : selectedColor ?? backgroundColor ?? Colors.transparent,
                   width: 2,
                 )
               : BorderSide.none,

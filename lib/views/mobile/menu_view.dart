@@ -38,7 +38,7 @@ class MenuViewMobile extends StatefulWidget {
 
 class _MenuViewMobileState extends State<MenuViewMobile> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  late final Future<dynamic> _future;
   late final MenuViewModel menuViewModel;
   late final Worker worker;
 
@@ -51,6 +51,7 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
       };
   @override
   void initState() {
+    _future = funcGetAccountInfo();
     worker = everAll([
       simple.get<OperationViewModel>().appState,
       simple.get<DockViewModel>().appState,
@@ -78,13 +79,16 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
       child: SafeArea(
         child: Scaffold(
           key: _scaffoldKey,
-          drawer: DrawerMenu(menuViewModel: menuViewModel, scaffoldKey: _scaffoldKey),
+          drawer: DrawerMenu(
+              menuViewModel: menuViewModel, scaffoldKey: _scaffoldKey),
           backgroundColor: context.appTheme.backgroundColor,
           body: FutureBuilder(
-            future: funcGetAccountInfo(),
+            future: _future,
             builder: (_, snapshot) {
-              if (snapshot.hasError) return Center(child: Text(snapshot.error.toString()));
-              if (!snapshot.hasData) return const Center(child: CircularProgressIndicatorWidget());
+              if (snapshot.hasError)
+                return Center(child: Text(snapshot.error.toString()));
+              if (!snapshot.hasData)
+                return const Center(child: CircularProgressIndicatorWidget());
 
               return Obx(() {
                 return Column(
@@ -99,9 +103,12 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
                       backgroundColor: context.appTheme.backgroundColor,
                       title: menuViewModel.menuState.value.menuEnum.title,
                       content: const Center(),
-                      isLoading: menuViewModel.menuState.value.appState is AppStateLoading,
+                      isLoading: menuViewModel.menuState.value.appState
+                          is AppStateLoading,
                     ),
-                    Expanded(child: getViewByMenu(menuViewModel.menuState.value.menuEnum)),
+                    Expanded(
+                        child: getViewByMenu(
+                            menuViewModel.menuState.value.menuEnum)),
                   ],
                 );
               });
@@ -116,7 +123,8 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
 class DrawerMenu extends StatefulWidget {
   final MenuViewModel menuViewModel;
   final GlobalKey<ScaffoldState> scaffoldKey;
-  const DrawerMenu({super.key, required this.menuViewModel, required this.scaffoldKey});
+  const DrawerMenu(
+      {super.key, required this.menuViewModel, required this.scaffoldKey});
 
   @override
   State<DrawerMenu> createState() => _DrawerMenuState();
@@ -179,7 +187,8 @@ class _DrawerMenuState extends State<DrawerMenu> {
                     ),
                     isOpen: isOpen,
                     title: 'Dashboard',
-                    isSelected: widget.menuViewModel.menuState.value.menuEnum == MenuEnum.Dashboard,
+                    isSelected: widget.menuViewModel.menuState.value.menuEnum ==
+                        MenuEnum.Dashboard,
                     onTap: () {
                       setState(() {
                         widget.menuViewModel.changeMenu(MenuEnum.Dashboard);
@@ -195,7 +204,8 @@ class _DrawerMenuState extends State<DrawerMenu> {
                     ),
                     isOpen: isOpen,
                     title: 'Operações',
-                    isSelected: widget.menuViewModel.menuState.value.menuEnum == MenuEnum.Operations,
+                    isSelected: widget.menuViewModel.menuState.value.menuEnum ==
+                        MenuEnum.Operations,
                     onTap: () {
                       setState(() {
                         widget.menuViewModel.changeMenu(MenuEnum.Operations);
@@ -298,7 +308,12 @@ class MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return (profiles?.contains(simple.get<AuthViewModel>().authModel!.idProfile.getProfile()) ?? true)
+    return (profiles?.contains(simple
+                .get<AuthViewModel>()
+                .authModel!
+                .idProfile
+                .getProfile()) ??
+            true)
         ? InkWell(
             onTap: onTap,
             splashColor: context.appTheme.primaryColor,
@@ -332,9 +347,13 @@ class MenuItem extends StatelessWidget {
                             ? Expanded(
                                 child: Text(
                                   title,
-                                  style: AppTextStyle.mobileDisplayMedium(context).copyWith(
+                                  style:
+                                      AppTextStyle.mobileDisplayMedium(context)
+                                          .copyWith(
                                     color: Colors.white,
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w300,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.w300,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
