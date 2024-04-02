@@ -21,6 +21,7 @@ import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
+import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
 import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
@@ -107,6 +108,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
         liscensePlate: textControllers['licensePlate']!.text,
         description: textControllers['description']!.text,
       );
+      pageWidgetMobileKey += "${DateTime.now().millisecond}";
       isLoading.value = false;
       clearFields();
     }

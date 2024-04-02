@@ -28,6 +28,8 @@ import 'package:martinlog_web/widgets/text_form_field_widget.dart';
 
 import '../../../../navigator/go_to.dart';
 
+var pageWidgetMobileKey = 'state_key';
+
 class OperationViewMobile extends StatefulWidget {
   const OperationViewMobile({super.key});
 
@@ -310,7 +312,7 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                   )
                   .toList();
               return PageWidgetMobile(
-                key: ObjectKey(itens),
+                key: ValueKey(pageWidgetMobileKey),
                 itens: itens,
                 onRefresh: () async {
                   await controller.getAll();
@@ -417,6 +419,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
     );
     if (widget.onAction != null) await widget.onAction!();
     getUpdatedOperation();
+    pageWidgetMobileKey += "${DateTime.now().millisecond}";
   }
 
   Future<void> getUpdatedOperation() async {
@@ -594,9 +597,12 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
                         horizontal: AppSize.padding,
                       ),
                       onAction: () async {
-                        if (controller.appState.value is AppStateLoading)
+                        if (controller.appState.value is AppStateLoading) {
                           return;
+                        }
                         await controller.cancel(operationModel: operation);
+                        pageWidgetMobileKey += "${DateTime.now().millisecond}";
+                        setState(() {});
                         if (widget.onAction != null) {
                           widget.onAction!();
                         }
