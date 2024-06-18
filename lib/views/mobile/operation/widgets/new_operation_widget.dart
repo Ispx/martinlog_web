@@ -112,9 +112,10 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
         liscensePlate: textControllers['licensePlate']!.text,
         description: textControllers['description']!.text,
       );
-      pageWidgetMobileKey += "${DateTime.now().millisecond}";
+      pageWidgetMobileKey += "${DateTime.now().millisecondsSinceEpoch}";
       isLoading.value = false;
       clearFields();
+      setState(() {});
     }
   }
 
@@ -185,7 +186,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                           dockTypeSelected = e;
                           dockModelSelected = null;
                           textControllers['dockCode']!.clear();
-                          setState(() {});
+                          // setState(() {});
                         },
                       ),
                     ),
@@ -193,25 +194,22 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                     buildSelectable(
                       context: context,
                       title: "Doca",
-                      child: SizedBox(
-                        height: 30.h,
-                        child: DropBoxWidget<DockModel>(
-                          controller: textControllers['dockCode']!,
-                          enable: controller.appState.value is! AppStateLoading,
-                          width: MediaQuery.of(context).size.width - 16,
-                          dropdownMenuEntries: getDocksByDockType()
-                              .map(
-                                (e) => DropdownMenuEntry<DockModel>(
-                                  value: e,
-                                  label: e.code,
-                                ),
-                              )
-                              .toList(),
-                          onSelected: (DockModel? e) {
-                            dockModelSelected = e;
-                            setState(() {});
-                          },
-                        ),
+                      child: DropBoxWidget<DockModel>(
+                        controller: textControllers['dockCode']!,
+                        enable: controller.appState.value is! AppStateLoading,
+                        width: MediaQuery.of(context).size.width - 16,
+                        dropdownMenuEntries: getDocksByDockType()
+                            .map(
+                              (e) => DropdownMenuEntry<DockModel>(
+                                value: e,
+                                label: e.code,
+                              ),
+                            )
+                            .toList(),
+                        onSelected: (DockModel? e) {
+                          dockModelSelected = e;
+                          // setState(() {});
+                        },
                       ),
                     ),
                     const Gap(8),
@@ -249,7 +247,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                             .toList(),
                         onSelected: (CompanyModel? e) {
                           companyModelSelected = e;
-                          setState(() {});
+                          // setState(() {});
                         },
                       ),
                     ),
