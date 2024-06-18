@@ -12,7 +12,7 @@
                 "--dart-define",
                 "ENV=dev",
                 "--dart-define",
-                "URL_BASE=http://localhost",
+                "URL_BASE=https://api.martinlog.com.br",
                 "--dart-define",
                 "APP_NAME=Plataforma Martin log",
             ],

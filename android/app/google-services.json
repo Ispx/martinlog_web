@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1062375327946",
+    "project_id": "martinlog-web",
+    "storage_bucket": "martinlog-web.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1062375327946:android:8bf4f50358510f78130c33",
+        "android_client_info": {
+          "package_name": "com.martinlog.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcT4dveUp36yGY2qmIz8-ynZPV8Brr2lk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

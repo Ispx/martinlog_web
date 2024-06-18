@@ -13,4 +13,16 @@ abstract class AppTextStyle {
   static TextStyle displaySmall(BuildContext context) {
     return Theme.of(context).textTheme.displaySmall!.copyWith(fontSize: 10.sp);
   }
+
+  static TextStyle mobileDisplayLarge(BuildContext context) {
+    return Theme.of(context).textTheme.displayLarge!.copyWith(fontSize: 20.sp);
+  }
+
+  static TextStyle mobileDisplayMedium(BuildContext context) {
+    return Theme.of(context).textTheme.displayMedium!.copyWith(fontSize: 16.sp);
+  }
+
+  static TextStyle mobileDisplaySmall(BuildContext context) {
+    return Theme.of(context).textTheme.displaySmall!.copyWith(fontSize: 14.sp);
+  }
 }

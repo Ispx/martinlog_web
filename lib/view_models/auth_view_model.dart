@@ -27,6 +27,7 @@ class AuthViewModel implements IAuthViewModel {
   Future<void> login(String document, String password) async {
     try {
       changeState(AppStateLoading());
+
       authModel = await authRepository(document, password);
       simple.update<AuthViewModel>(() => this);
       changeState(AppStateDone());

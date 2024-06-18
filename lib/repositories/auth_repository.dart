@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
-import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/models/auth_model.dart';
+import 'package:martinlog_web/services/http/http.dart';
 
 abstract interface class IAuthRepository {
   Future<AuthModel> call(String document, String password);

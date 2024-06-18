@@ -13,7 +13,7 @@ import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/dashboard_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
-import 'package:martinlog_web/views/operation_view.dart';
+import 'package:martinlog_web/views/web/operation_view.dart';
 import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
 import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:martinlog_web/widgets/page_widget.dart';

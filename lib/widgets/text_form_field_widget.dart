@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
@@ -91,9 +92,13 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
       enabled: enable,
       onFieldSubmitted: submited,
       inputFormatters: inputFormatters,
-      style: AppTextStyle.displayMedium(context).copyWith(
-        fontWeight: FontWeight.bold,
-      ),
+      style: kIsWeb
+          ? AppTextStyle.displayMedium(context).copyWith(
+              fontWeight: FontWeight.bold,
+            )
+          : AppTextStyle.mobileDisplayMedium(context).copyWith(
+              fontWeight: FontWeight.bold,
+            ),
       onChanged: onChange,
       textCapitalization: textCapitalization,
       decoration: InputDecoration(
@@ -105,24 +110,38 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
           color: Colors.red,
         ),
         labelText: label,
-        prefixStyle: AppTextStyle.displayMedium(context).copyWith(
-          fontWeight: FontWeight.bold,
-        ),
-        labelStyle: AppTextStyle.displayMedium(context).copyWith(
-          fontWeight: FontWeight.bold,
-        ),
+        prefixStyle: kIsWeb
+            ? AppTextStyle.displayMedium(context).copyWith(
+                fontWeight: FontWeight.bold,
+              )
+            : AppTextStyle.mobileDisplayMedium(context).copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        labelStyle: kIsWeb
+            ? AppTextStyle.displayMedium(context).copyWith(
+                fontWeight: FontWeight.bold,
+              )
+            : AppTextStyle.mobileDisplayMedium(context).copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         prefixText: prefixText,
         hintText: hint,
-        hintStyle: AppTextStyle.displayMedium(context).copyWith(
-          fontWeight: FontWeight.bold,
-          color: digitalAccountTheme.hintFieldColor,
-        ),
+        hintStyle: kIsWeb
+            ? AppTextStyle.displayMedium(context).copyWith(
+                fontWeight: FontWeight.bold,
+                color: digitalAccountTheme.hintFieldColor,
+              )
+            : AppTextStyle.mobileDisplayMedium(context).copyWith(
+                fontWeight: FontWeight.bold,
+                color: digitalAccountTheme.hintFieldColor,
+              ),
         suffixIcon: sufix != null
             ? Padding(
                 padding: EdgeInsets.all(AppSize.padding),
                 child: sufix,
               )
             : sufix,
+        // TODO: T can't be null
         enabledBorder: T == null
             ? InputBorder.none
             : T == OutlineInputBorder
@@ -139,6 +158,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                       color: digitalAccountTheme.borderColor,
                     ),
                   ),
+        // TODO: T can't be null
         disabledBorder: T == null
             ? InputBorder.none
             : T == OutlineInputBorder
@@ -155,10 +175,10 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                       color: digitalAccountTheme.borderColor.withOpacity(0.5),
                     ),
                   ),
+        // TODO: T can't be null
         border: T == null
             ? UnderlineInputBorder(
-                borderSide: BorderSide(
-                    width: 1, color: digitalAccountTheme.borderColor),
+                borderSide: BorderSide(width: 1, color: digitalAccountTheme.borderColor),
               )
             : T == OutlineInputBorder
                 ? OutlineInputBorder(
@@ -169,9 +189,9 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                     ),
                   )
                 : UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        width: 0.5, color: digitalAccountTheme.borderColor),
+                    borderSide: BorderSide(width: 0.5, color: digitalAccountTheme.borderColor),
                   ),
+        // TODO: T can't be null
         focusedBorder: T == null
             ? InputBorder.none
             : T == OutlineInputBorder
@@ -188,6 +208,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
                       color: digitalAccountTheme.borderColor,
                     ),
                   ),
+        // TODO: T can't be null
         errorBorder: T == null
             ? InputBorder.none
             : T == OutlineInputBorder

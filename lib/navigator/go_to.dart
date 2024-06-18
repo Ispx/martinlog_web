@@ -15,7 +15,7 @@ class GoTo {
           {Object? arguments}) async =>
       _navigatorState.currentState?.pushNamedAndRemoveUntil(
         routeName,
-        (e) => true,
+        (e) => false,
         arguments: arguments,
       );
   static Future<T?> removeAllPreviousAndGoTo<T>(String routeName,
