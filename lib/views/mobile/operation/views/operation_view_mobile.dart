@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:gap/gap.dart';
@@ -39,7 +40,6 @@ class OperationViewMobile extends StatefulWidget {
 
 class _OperationViewMobileState extends State<OperationViewMobile> {
   late final Worker worker;
-  late final Worker workerSearch;
 
   final controller = simple.get<OperationViewModel>();
   late final TextEditingController operationStatusEditingController;
@@ -66,7 +66,7 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
   void initState() {
     operationStatusEditingController = TextEditingController();
     dockTypeEditingController = TextEditingController();
-    workerSearch = debounce(textSearched, controller.search);
+
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
         BannerComponent(
@@ -87,7 +87,6 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
 
   @override
   void dispose() {
-    workerSearch.dispose();
     worker.dispose();
     super.dispose();
   }
@@ -143,81 +142,103 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
             const Gap(8),
             const Divider(),
             const Gap(8),
-            SizedBox(
-              height: 249,
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: AppSize.padding,
+            Column(
+              children: [
+                Row(
+                  children: [
+                    SizedBox(
+                      width: AppSize.padding,
+                    ),
+                    Obx(() {
+                      return Text(
+                        textDateRangeSelected.value,
+                        style: AppTextStyle.mobileDisplayMedium(context),
+                      );
+                    }),
+                    SizedBox(
+                      width: AppSize.padding,
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    DropBoxWidget<OperationStatusEnum>(
+                      width: MediaQuery.of(context).size.width - 32,
+                      controller: operationStatusEditingController,
+                      label: 'Status',
+                      dropdownMenuEntries: [
+                        ...OperationStatusEnum.values
+                            .map(
+                              (e) => DropdownMenuEntry(
+                                  value: e, label: e.description),
+                            )
+                            .toList()
+                      ],
+                      onSelected: (e) {
+                        if (e == null) return;
+                        simple.get<OperationViewModel>().filterByStatus(e);
+                        pageWidgetMobileKey +=
+                            "${DateTime.now().millisecondsSinceEpoch}";
+                        setState(() {});
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    DropBoxWidget<DockType>(
+                      width: MediaQuery.of(context).size.width - 32,
+                      controller: dockTypeEditingController,
+                      label: 'Tipo',
+                      dropdownMenuEntries: [
+                        ...DockType.values
+                            .map(
+                              (e) => DropdownMenuEntry(
+                                  value: e, label: e.description),
+                            )
+                            .toList()
+                      ],
+                      onSelected: (e) {
+                        if (e == null) return;
+                        simple.get<OperationViewModel>().filterByDock(e);
+                        pageWidgetMobileKey +=
+                            "${DateTime.now().millisecondsSinceEpoch}";
+                        setState(() {});
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 8.0),
+                  child: TextFormFieldWidget<OutlineInputBorder>(
+                    label: 'Pesquisar',
+                    hint: 'Pesquise por transportadora ou doca',
+                    maxLines: 1,
+                    onChange: (e) {
+                      textSearched.value = e;
+                      if (e.isEmpty) {
+                        controller.search('');
+                      }
+                    },
+                    sufix: IconButton(
+                      onPressed: () async {
+                        await controller.search(textSearched.value);
+                        pageWidgetMobileKey +=
+                            "${DateTime.now().millisecondsSinceEpoch}";
+                        setState(() {});
+                        FocusScope.of(context).unfocus();
+                      },
+                      icon: const Icon(
+                        Icons.search,
                       ),
-                      Obx(() {
-                        return Text(
-                          textDateRangeSelected.value,
-                          style: AppTextStyle.mobileDisplayMedium(context),
-                        );
-                      }),
-                      SizedBox(
-                        width: AppSize.padding,
-                      ),
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      DropBoxWidget<OperationStatusEnum>(
-                        width: MediaQuery.of(context).size.width - 32,
-                        controller: operationStatusEditingController,
-                        label: 'Status',
-                        dropdownMenuEntries: [
-                          ...OperationStatusEnum.values
-                              .map(
-                                (e) => DropdownMenuEntry(
-                                    value: e, label: e.description),
-                              )
-                              .toList()
-                        ],
-                        onSelected: (e) {
-                          if (e == null) return;
-                          simple.get<OperationViewModel>().filterByStatus(e);
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                      DropBoxWidget<DockType>(
-                        width: MediaQuery.of(context).size.width - 32,
-                        controller: dockTypeEditingController,
-                        label: 'Tipo',
-                        dropdownMenuEntries: [
-                          ...DockType.values
-                              .map(
-                                (e) => DropdownMenuEntry(
-                                    value: e, label: e.description),
-                              )
-                              .toList()
-                        ],
-                        onSelected: (e) {
-                          if (e == null) return;
-                          simple.get<OperationViewModel>().filterByDock(e);
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: TextFormFieldWidget<OutlineInputBorder>(
-                      label: 'Pesquisar',
-                      hint: 'Pesquise por transportadora ou doca',
-                      onChange: (e) => textSearched.value = e,
                     ),
                   ),
-                  SizedBox(
-                    width: AppSize.padding,
-                  ),
-                ],
-              ),
+                ),
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+              ],
             ),
             Padding(
               padding: const EdgeInsets.only(left: 8.0, top: 8),
@@ -312,10 +333,21 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                   )
                   .toList();
               return PageWidgetMobile(
-                key: ValueKey(pageWidgetMobileKey),
+                key: ValueKey(pageWidgetMobileKey
+
+                    /*
+                key: ValueKey(
+                  textSearched.isEmpty
+                      ? pageWidgetMobileKey
+                      : DateTime.now().millisecondsSinceEpoch,
+                      */
+                    ),
                 itens: itens,
                 onRefresh: () async {
                   await controller.getAll();
+                  pageWidgetMobileKey +=
+                      "${DateTime.now().millisecondsSinceEpoch}";
+                  setState(() {});
                 },
                 onDownload: () async =>
                     await controller.downloadFile(controller.operationsFilted),

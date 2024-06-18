@@ -72,6 +72,7 @@ class OperationModel {
     int? idOperationStatus,
     DateTime? finishedAt,
     DockModel? dockModel,
+    String? additionalData,
   }) {
     return OperationModel(
       operationKey: operationKey,
@@ -84,6 +85,7 @@ class OperationModel {
       createdAt: createdAt,
       finishedAt: finishedAt ?? this.finishedAt,
       description: description,
+      additionalData: additionalData ?? this.additionalData,
     );
   }
 }

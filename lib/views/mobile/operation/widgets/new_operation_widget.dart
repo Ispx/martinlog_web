@@ -25,6 +25,7 @@ import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
 import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class CreateOperationWidget extends StatefulWidget {
   const CreateOperationWidget({super.key});
@@ -70,7 +71,10 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
   }
 
   void open() => isOpen.value = true;
-  void close() => isOpen.value = false;
+  void close() {
+    clearFields();
+    isOpen.value = false;
+  }
 
   List<DockModel> getDocksByDockType() {
     return simple
@@ -189,22 +193,25 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                     buildSelectable(
                       context: context,
                       title: "Doca",
-                      child: DropBoxWidget<DockModel>(
-                        controller: textControllers['dockCode']!,
-                        enable: controller.appState.value is! AppStateLoading,
-                        width: MediaQuery.of(context).size.width - 16,
-                        dropdownMenuEntries: getDocksByDockType()
-                            .map(
-                              (e) => DropdownMenuEntry<DockModel>(
-                                value: e,
-                                label: e.code,
-                              ),
-                            )
-                            .toList(),
-                        onSelected: (DockModel? e) {
-                          dockModelSelected = e;
-                          setState(() {});
-                        },
+                      child: SizedBox(
+                        height: 30.h,
+                        child: DropBoxWidget<DockModel>(
+                          controller: textControllers['dockCode']!,
+                          enable: controller.appState.value is! AppStateLoading,
+                          width: MediaQuery.of(context).size.width - 16,
+                          dropdownMenuEntries: getDocksByDockType()
+                              .map(
+                                (e) => DropdownMenuEntry<DockModel>(
+                                  value: e,
+                                  label: e.code,
+                                ),
+                              )
+                              .toList(),
+                          onSelected: (DockModel? e) {
+                            dockModelSelected = e;
+                            setState(() {});
+                          },
+                        ),
                       ),
                     ),
                     const Gap(8),

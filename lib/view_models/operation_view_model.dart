@@ -27,7 +27,6 @@ import 'package:martinlog_web/repositories/update_progress_operation_repository.
 import 'package:martinlog_web/repositories/upload_file_operation_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
-import 'package:martinlog_web/views/mobile/operation/widgets/new_operation_widget.dart';
 import 'package:path/path.dart' as Path;
 
 abstract interface class IOperationViewModel {
@@ -129,8 +128,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         'event_type': EventTypeEnum.OPERATION_CREATED.description,
         'idUser': simple.get<AuthViewModel>().authModel!.idUser,
       });
-      operations.add(operationModel);
-      await _internalGetAll();
+      operations.insert(0, operationModel);
       BannerComponent(
         message: "Operação criada com sucesso",
         backgroundColor: Colors.green,
@@ -155,6 +153,13 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     } catch (e) {
       changeState(AppStateError(e.toString()));
     }
+  }
+
+  void sort() {
+    List<OperationModel> operations = <OperationModel>[];
+    operations.addAll(this.operations);
+    operations.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 1 : 0);
+    this.operations.value = operations;
   }
 
   Future<void> _internalGetAll() async {
@@ -188,6 +193,18 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         additionalData: additionalData,
         urlImage: null,
       );
+      List<OperationModel> operations = <OperationModel>[];
+      operations.addAll(this.operations);
+      operations.removeWhere(
+          (element) => element.operationKey == operationModel.operationKey);
+      operations.add(
+        operationModel.copyWith(
+          progress: progress,
+          additionalData: additionalData,
+        ),
+      );
+      this.operations.value = operations;
+      sort();
       await FirebaseFirestore.instance.collection('operation_events').add({
         'data': operationModel.toJson(),
         'event_type': progress == 100
@@ -195,7 +212,6 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
             : EventTypeEnum.OPERATION_UPDATED.description,
         'idUser': simple.get<AuthViewModel>().authModel!.idUser,
       });
-      await _internalGetAll();
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -265,18 +281,38 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       operationsFilted.value = operations;
       return;
     }
-    operationsFilted.value = operationsFilted
-        .where((p0) => p0.dockModel!.idDockType == dockType.idDockType)
-        .toList();
+    if (operationsFilted.isNotEmpty) {
+      operationsFilted.value = operationsFilted
+          .where((p0) => p0.dockModel!.idDockType == dockType.idDockType)
+          .toList();
+    } else {
+      operationsFilted.value = operations
+          .where((p0) => p0.dockModel!.idDockType == dockType.idDockType)
+          .toList();
+    }
   }
 
   @override
   Future<void> search(String text) async {
-    operationsFilted.value = operationsFilted
-        .where((p0) =>
-            p0.companyModel.fantasyName.contains(text) ||
-            p0.dockModel!.code.contains(text))
-        .toList();
+    try {
+      List<OperationModel> operations = <OperationModel>[];
+      operations.addAll(this.operations);
+      if (text.isEmpty) {
+        resetFilter();
+        return;
+      }
+
+      operationsFilted.value = operations
+          .where((p0) =>
+              p0.companyModel.fantasyName
+                  .toString()
+                  .toLowerCase()
+                  .startsWith(text.toLowerCase()) ||
+              p0.dockModel!.code.compareTo(text) == 0)
+          .toList();
+    } catch (e) {
+      operationsFilted.value = [];
+    }
   }
 
   @override
@@ -285,9 +321,15 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       operationsFilted.value = operations;
       return;
     }
-    operationsFilted.value = operationsFilted
-        .where((p0) => p0.idOperationStatus == statusEnum.idOperationStatus)
-        .toList();
+    if (operationsFilted.isNotEmpty) {
+      operationsFilted.value = operationsFilted
+          .where((p0) => p0.idOperationStatus == statusEnum.idOperationStatus)
+          .toList();
+    } else {
+      operationsFilted.value = operations
+          .where((p0) => p0.idOperationStatus == statusEnum.idOperationStatus)
+          .toList();
+    }
   }
 
   @override
