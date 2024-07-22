@@ -47,6 +47,8 @@ abstract interface class IOperationViewModel {
   Future<void> getAll(
       {DateTime? dateFrom, DateTime? dateUntil, List<int>? status});
 
+  Future<void> nextPage();
+  Future<void> peviousPage();
   Future<void> getOperation({
     required String operationKey,
   });
@@ -63,6 +65,7 @@ abstract interface class IOperationViewModel {
   Future<void> filterByDate(DateTime start, DateTime end);
 
   Future<void> search(String text);
+  Future<void> onRefresh();
   void resetFilter();
 }
 
@@ -79,6 +82,8 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   final IUpdateOperationRepository updateOperationRepository;
   final IUploadFileOperationRepository uploadFileOperationRepository;
   final _bucket = 'operations-file';
+  final limitPaginationOffset = 20;
+  var currentIndexPage = 0.obs;
 
   OperationViewModel({
     required this.cancelOperationRepository,
@@ -146,27 +151,34 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   Future<void> getAll(
       {DateTime? dateFrom, DateTime? dateUntil, List<int>? status}) async {
     try {
-      if (appState is AppStateLoading) return;
-      changeState(AppStateLoading());
+      if (appState is AppStateLoading || appState is AppStateLoadingMore) {
+        return;
+      }
+      changeState(AppStateLoadingMore());
       final result = await getOperationsRepository(
-          dateFrom: dateFrom, dateUntil: dateUntil, status: status);
-      operations.value = result;
-      operationsFilted.value = result;
+        dateFrom: dateFrom,
+        dateUntil: dateUntil,
+        status: status,
+        limit: limitPaginationOffset,
+        skip: operations.length,
+      );
+      if (result.isEmpty) {
+        changeState(AppStateEmpity());
+        return;
+      }
+      operations.value = [...operations, ...result];
+      operationsFilted.value = operations;
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
     }
   }
 
-  void sort() {
-    List<OperationModel> operations = <OperationModel>[];
-    operations.addAll(this.operations);
-    operations.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 1 : 0);
-    this.operations.value = operations;
-  }
-
   Future<void> _internalGetAll() async {
-    final result = await getOperationsRepository();
+    final result = await getOperationsRepository(
+      limit: limitPaginationOffset,
+      skip: 0,
+    );
     operations.value = result;
     operationsFilted.value = result;
   }
@@ -196,18 +208,6 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         additionalData: additionalData,
         urlImage: null,
       );
-      List<OperationModel> operations = <OperationModel>[];
-      operations.addAll(this.operations);
-      operations.removeWhere(
-          (element) => element.operationKey == operationModel.operationKey);
-      operations.add(
-        operationModel.copyWith(
-          progress: progress,
-          additionalData: additionalData,
-        ),
-      );
-      this.operations.value = operations;
-      sort();
       await FirebaseFirestore.instance.collection('operation_events').add({
         'data': operationModel.toJson(),
         'event_type': progress == 100
@@ -346,10 +346,10 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
       final operations = await getOperationsRepository(
-          dateFrom: start.toUtc(),
+          dateFrom:
+              DateTime(start.year, start.month, start.day, 00, 00, 00).toUtc(),
           dateUntil: DateTime(end.year, end.month, end.day, 23, 59, 59).toUtc(),
           status: null);
-      operations.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 0 : 1);
       operationsFilted.value = operations;
       changeState(AppStateDone());
     } catch (e) {
@@ -387,5 +387,29 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     } catch (e) {
       changeState(AppStateError(e.toString()));
     }
+  }
+
+  @override
+  Future<void> nextPage() async {
+    if (currentIndexPage.value ==
+        (operations.length ~/ limitPaginationOffset) - 1) {
+      currentIndexPage++;
+      getAll();
+    } else {
+      currentIndexPage++;
+    }
+  }
+
+  @override
+  Future<void> peviousPage() async {
+    if (currentIndexPage.value == 0) return;
+    currentIndexPage--;
+  }
+
+  @override
+  Future<void> onRefresh() async {
+    operations.clear();
+    operationsFilted.clear();
+    await getAll();
   }
 }

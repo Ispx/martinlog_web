@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -82,6 +83,12 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
         );
       }
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (mounted) {
+        controller.getAll();
+      }
+    });
     super.initState();
   }
 
@@ -123,6 +130,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
       });
     }
     await _setDateRangeText();
+    pageWidgetMobileKey += "${DateTime.now().millisecondsSinceEpoch}";
+    setState(() {});
   }
 
   @override
@@ -172,7 +181,18 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                         ...OperationStatusEnum.values
                             .map(
                               (e) => DropdownMenuEntry(
-                                  value: e, label: e.description),
+                                value: e,
+                                label: e.description,
+                                style: ButtonStyle(
+                                  textStyle: MaterialStateProperty.resolveWith(
+                                    (states) =>
+                                        AppTextStyle.displayLarge(context)
+                                            .copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             )
                             .toList()
                       ],
@@ -193,7 +213,18 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                         ...DockType.values
                             .map(
                               (e) => DropdownMenuEntry(
-                                  value: e, label: e.description),
+                                value: e,
+                                label: e.description,
+                                style: ButtonStyle(
+                                  textStyle: MaterialStateProperty.resolveWith(
+                                    (states) =>
+                                        AppTextStyle.displayLarge(context)
+                                            .copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             )
                             .toList()
                       ],
@@ -326,32 +357,26 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                         vertical: AppSize.padding / 2,
                       ),
                       child: OperationWidgetMobile(
-                        key: ObjectKey(operationModel),
+                        key: ValueKey(operationModel.operationKey),
                         operationModel: operationModel,
                       ),
                     ),
                   )
                   .toList();
               return PageWidgetMobile(
-                key: ValueKey(pageWidgetMobileKey
-
-                    /*
-                key: ValueKey(
-                  textSearched.isEmpty
-                      ? pageWidgetMobileKey
-                      : DateTime.now().millisecondsSinceEpoch,
-                      */
-                    ),
+                key: ValueKey(pageWidgetMobileKey),
                 itens: itens,
                 onRefresh: () async {
-                  await controller.getAll();
+                  await controller.onRefresh();
                   pageWidgetMobileKey +=
                       "${DateTime.now().millisecondsSinceEpoch}";
-                  setState(() {});
                 },
                 onDownload: () async =>
                     await controller.downloadFile(controller.operationsFilted),
-                totalByPage: 10,
+                totalByPage: controller.limitPaginationOffset,
+                isLoadingItens:
+                    controller.appState.value is AppStateLoadingMore,
+                onLoadMoreItens: controller.nextPage,
               );
             }),
           ],
@@ -375,7 +400,7 @@ class OperationWidgetMobile extends StatefulWidget {
 }
 
 class _OperationWidgetMobileState extends State<OperationWidgetMobile>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, KeepAliveParentDataMixin {
   var progressObs = 0.obs;
   late final TextEditingController percentageEdittinController;
 
@@ -450,14 +475,12 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
       additionalData: null,
     );
     if (widget.onAction != null) await widget.onAction!();
-    getUpdatedOperation();
-    pageWidgetMobileKey += "${DateTime.now().millisecond}";
+    //getUpdatedOperation();
   }
 
   Future<void> getUpdatedOperation() async {
-    await controller.getAll();
     operation = controller.operations.firstWhere(
-        (element) => element.liscensePlate == operation.liscensePlate);
+        (element) => element.operationKey == operation.operationKey);
   }
 
   @override
@@ -658,6 +681,14 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
       );
     });
   }
+
+  @override
+  void detach() {
+    setState(() {});
+  }
+
+  @override
+  bool get keptAlive => true;
 }
 
 class OperationSubtitleTextWidget extends StatelessWidget {

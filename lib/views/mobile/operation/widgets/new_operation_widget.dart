@@ -6,6 +6,7 @@ import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/enums/profile_type_enum.dart';
+import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/profile_type_extension.dart';
@@ -179,6 +180,15 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                               (e) => DropdownMenuEntry<DockType>(
                                 value: e,
                                 label: e.description,
+                                style: ButtonStyle(
+                                  textStyle: MaterialStateProperty.resolveWith(
+                                    (states) =>
+                                        AppTextStyle.displayLarge(context)
+                                            .copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
                               ),
                             )
                             .toList(),
@@ -203,6 +213,15 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                               (e) => DropdownMenuEntry<DockModel>(
                                 value: e,
                                 label: e.code,
+                                style: ButtonStyle(
+                                  textStyle: MaterialStateProperty.resolveWith(
+                                    (states) =>
+                                        AppTextStyle.displayLarge(context)
+                                            .copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
                               ),
                             )
                             .toList(),
@@ -242,6 +261,15 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                               (e) => DropdownMenuEntry<CompanyModel>(
                                 value: e,
                                 label: e.fantasyName,
+                                style: ButtonStyle(
+                                  textStyle: MaterialStateProperty.resolveWith(
+                                    (states) =>
+                                        AppTextStyle.displayLarge(context)
+                                            .copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
                               ),
                             )
                             .toList(),

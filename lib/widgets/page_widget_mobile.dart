@@ -5,18 +5,23 @@ import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/utils/utils.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PageWidgetMobile extends StatefulWidget {
   final List<Widget> itens;
   final int totalByPage;
   final VoidCallback? onRefresh;
   final VoidCallback? onDownload;
+  final VoidCallback? onLoadMoreItens;
+  final bool isLoadingItens;
   const PageWidgetMobile({
     Key? key,
     required this.itens,
     required this.totalByPage,
     this.onDownload,
     this.onRefresh,
+    this.onLoadMoreItens,
+    this.isLoadingItens = false,
   }) : super(key: key);
 
   @override
@@ -25,37 +30,39 @@ class PageWidgetMobile extends StatefulWidget {
 
 class _PageWidgetMobileState extends State<PageWidgetMobile> {
   var currentIndexPage = 0.obs;
-  late final int totalPages;
-  var sublistItens = <Widget>[].obs;
+  int get totalPages =>
+      widget.itens.length ~/ widget.totalByPage +
+      (widget.itens.length % widget.totalByPage > 0 ? 1 : 0);
   @override
   void initState() {
-    totalPages = widget.itens.length ~/ widget.totalByPage + (widget.itens.length % widget.totalByPage > 0 ? 1 : 0);
-    sublistItens.value = Utils.getWidgetsByPage(
-      totalByPage: widget.totalByPage,
-      currentIndexPage: currentIndexPage.value,
-      widgets: widget.itens,
-    );
     super.initState();
   }
 
+  List<Widget> get sublistItens => Utils.getWidgetsByPage(
+        totalByPage: widget.totalByPage,
+        currentIndexPage: currentIndexPage.value,
+        widgets: widget.itens,
+      );
   void nextPage() {
+    if (currentIndexPage.value < totalPages - 1) {
+      currentIndexPage.value++;
+      setState(() {});
+      return;
+    }
+    if (widget.onLoadMoreItens != null) {
+      currentIndexPage.value++;
+      widget.onLoadMoreItens!();
+      return;
+    }
     if (currentIndexPage.value == totalPages - 1) return;
     currentIndexPage.value++;
-    sublistItens.value = Utils.getWidgetsByPage(
-      totalByPage: widget.totalByPage,
-      currentIndexPage: currentIndexPage.value,
-      widgets: widget.itens,
-    );
+    setState(() {});
   }
 
   void previousPage() {
     if (currentIndexPage.value == 0) return;
     currentIndexPage.value--;
-    sublistItens.value = Utils.getWidgetsByPage(
-      totalByPage: widget.totalByPage,
-      currentIndexPage: currentIndexPage.value,
-      widgets: widget.itens,
-    );
+    setState(() {});
   }
 
   @override
@@ -70,7 +77,10 @@ class _PageWidgetMobileState extends State<PageWidgetMobile> {
         children: [
           Obx(() {
             final bool canPreviousPage = currentIndexPage.value > 0;
-            final bool canNextPage = currentIndexPage.value < totalPages - 1;
+            final bool canNextPage = widget.onLoadMoreItens != null
+                ? true
+                : currentIndexPage.value < totalPages - 1;
+
             return Row(
               children: [
                 const Expanded(child: SizedBox.shrink()),
@@ -80,7 +90,9 @@ class _PageWidgetMobileState extends State<PageWidgetMobile> {
                       onPressed: previousPage,
                       icon: Icon(
                         LineIcons.angleLeft,
-                        color: canPreviousPage ? Colors.black : context.appTheme.greyColor,
+                        color: canPreviousPage
+                            ? Colors.black
+                            : context.appTheme.greyColor,
                       ),
                       tooltip: "Página anterior",
                     ),
@@ -89,7 +101,9 @@ class _PageWidgetMobileState extends State<PageWidgetMobile> {
                       onPressed: nextPage,
                       icon: Icon(
                         LineIcons.angleRight,
-                        color: canNextPage ? Colors.black : context.appTheme.greyColor,
+                        color: canNextPage
+                            ? Colors.black
+                            : context.appTheme.greyColor,
                       ),
                       tooltip: "Próxima página",
                     ),
@@ -138,17 +152,67 @@ class _PageWidgetMobileState extends State<PageWidgetMobile> {
           }),
           Padding(
             padding: EdgeInsets.symmetric(vertical: AppSize.padding),
-            child: Obx(() {
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: !kIsWeb ? const NeverScrollableScrollPhysics() : null,
-                itemCount: sublistItens.length,
-                itemBuilder: (context, index) => sublistItens[index],
-              );
-            }),
+            child: widget.isLoadingItens
+                ? SizedBox(
+                  height: 800,
+                  child: ListView.builder(
+                      itemCount: 10,
+                      physics:
+                          !kIsWeb ? const NeverScrollableScrollPhysics() : null,
+                      itemBuilder: (context, index) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.white,
+                              child: const OperatioSkeleton(),
+                            ),
+                          )),
+                )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    physics:
+                        !kIsWeb ? const NeverScrollableScrollPhysics() : null,
+                    itemCount: sublistItens.length,
+                    itemBuilder: (context, index) => sublistItens[index],
+                  ),
           ),
         ],
       ),
     );
+  }
+}
+
+class OperatioSkeleton extends StatelessWidget {
+  const OperatioSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return kIsWeb
+        ? SizedBox(
+            width: Get.width,
+            child: Card(
+              elevation: 0.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              color: Colors.white,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: AppSize.padding * 1.5,
+                  horizontal: AppSize.padding,
+                ),
+              ),
+            ),
+          )
+        : Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            height: 360,
+            width: double.maxFinite,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
+            ),
+          );
   }
 }

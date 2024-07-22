@@ -1,4 +1,4 @@
-import 'package:get/state_manager.dart';
+import 'package:get/get.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/models/operation_model.dart';
@@ -17,7 +17,8 @@ abstract interface class IDashboardViewModel {
   List<OperationModel> getLastsOperations(int qtd);
 }
 
-final class DashboardViewModel extends GetxController implements IDashboardViewModel {
+final class DashboardViewModel extends GetxController
+    implements IDashboardViewModel {
   final IGetOperationsRepository getOperationsRepository;
   var companies = <CompanyModel>[].obs;
   var operations = <OperationModel>[].obs;
@@ -36,7 +37,10 @@ final class DashboardViewModel extends GetxController implements IDashboardViewM
   Future<void> getAllOperations() async {
     try {
       changeState(AppStateLoading());
-      operations.value = await getOperationsRepository();
+      operations.value = await getOperationsRepository(
+        dateFrom: DateTime.now().subtract(16.days).toUtc(),
+        dateUntil: DateTime.now().toUtc(),
+      );
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -55,7 +59,8 @@ final class DashboardViewModel extends GetxController implements IDashboardViewM
         return false;
       }
       if (dateFrom != null && dateUntil != null) {
-        if (element.createdAt.isAfter(dateFrom) && element.createdAt.isBefore(dateUntil)) {
+        if (element.createdAt.isAfter(dateFrom) &&
+            element.createdAt.isBefore(dateUntil)) {
           if (status != null) {
             return status.contains(element.idOperationStatus);
           }
