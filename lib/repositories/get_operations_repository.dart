@@ -45,7 +45,13 @@ class GetOperationsRepository implements IGetOperationsRepository {
         }
       }
       if (status != null) {
-        params.addAll({for (int st in status) "status": st});
+        for (var st in status) {
+          if (url.contains('?')) {
+            url += "&status=$st";
+          } else {
+            url += "?status=$st";
+          }
+        }
       }
       final response = await http.request<Response>(
         url: url,

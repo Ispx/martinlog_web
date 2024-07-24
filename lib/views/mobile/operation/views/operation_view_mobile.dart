@@ -98,7 +98,7 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
     super.dispose();
   }
 
-  int selected = 0;
+  int selected = -2;
   Future<void> _setDateRangeText() async {
     if (dateRangeSelected == null) {
       controller.resetFilter();
@@ -112,6 +112,22 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
       textDateRangeSelected.value =
           "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
     }
+  }
+
+  Future<void> _getPending() async {
+    selected = -1;
+    setState(() {});
+    await controller.getPending();
+    pageWidgetMobileKey += "${DateTime.now().millisecondsSinceEpoch}";
+    setState(() {});
+  }
+
+  Future<void> _getAll() async {
+    selected = -2;
+    setState(() {});
+    await controller.getAll();
+    pageWidgetMobileKey += "${DateTime.now().millisecondsSinceEpoch}";
+    setState(() {});
   }
 
   Future<void> _selectDate(int days, int buttonNumber) async {
@@ -278,12 +294,41 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                 child: Row(
                   children: [
                     TextActionButtom(
+                      title: 'Todos',
+                      selected: selected == -2,
+                      onAction: () async => await _getAll(),
+                      selectedColor: selected == -2
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == -2
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      titleColor: appTheme.titleColor,
+                    ),
+                    const Gap(8),
+                    TextActionButtom(
+                      title: 'Em operação',
+                      selected: selected == -1,
+                      onAction: () async => await _getPending(),
+                      selectedColor: selected == -1
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == -1
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      titleColor: appTheme.titleColor,
+                    ),
+                    const Gap(8),
+                    TextActionButtom(
                       title: 'Últimos 7 dias',
                       selected: selected == 1,
                       onAction: () async => await _selectDate(7, 1),
-                      selectedColor: appTheme.primaryColor,
-                      backgroundColor:
-                          selected == 1 ? Colors.white : appTheme.primaryColor,
+                      selectedColor: selected == 1
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == 1
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -291,9 +336,12 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       title: 'Últimos 30 dias',
                       selected: selected == 2,
                       onAction: () async => await _selectDate(30, 2),
-                      selectedColor: appTheme.primaryColor,
-                      backgroundColor:
-                          selected == 2 ? Colors.white : appTheme.primaryColor,
+                      selectedColor: selected == 2
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == 2
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -301,9 +349,12 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       title: 'Últimos 60 dias',
                       selected: selected == 3,
                       onAction: () async => await _selectDate(60, 3),
-                      selectedColor: appTheme.primaryColor,
-                      backgroundColor:
-                          selected == 3 ? Colors.white : appTheme.primaryColor,
+                      selectedColor: selected == 3
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == 3
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -311,9 +362,12 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       title: 'Últimos 90 dias',
                       selected: selected == 4,
                       onAction: () async => await _selectDate(90, 4),
-                      selectedColor: appTheme.primaryColor,
-                      backgroundColor:
-                          selected == 4 ? Colors.white : appTheme.primaryColor,
+                      selectedColor: selected == 4
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == 4
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -338,9 +392,12 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
 
                         await _setDateRangeText();
                       },
-                      selectedColor: appTheme.primaryColor,
-                      backgroundColor:
-                          selected == 5 ? Colors.white : appTheme.primaryColor,
+                      selectedColor: selected == 5
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == 5
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -368,15 +425,19 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                 itens: itens,
                 onRefresh: () async {
                   await controller.onRefresh();
+                  selected = -2;
                   pageWidgetMobileKey +=
                       "${DateTime.now().millisecondsSinceEpoch}";
+                  setState(() {});
                 },
                 onDownload: () async =>
                     await controller.downloadFile(controller.operationsFilted),
                 totalByPage: controller.limitPaginationOffset,
                 isLoadingItens:
                     controller.appState.value is AppStateLoadingMore,
-                onLoadMoreItens: controller.nextPage,
+                onLoadMoreItens: controller.isEnableLoadMoreItens.value
+                    ? controller.nextPage
+                    : null,
               );
             }),
           ],

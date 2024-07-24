@@ -82,7 +82,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
         .get<DockViewModel>()
         .docks
         .where((e) => dockTypeSelected == null
-            ? true
+            ? false
             : e.idDockType.getDockType() == dockTypeSelected)
         .toList();
   }
@@ -196,7 +196,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                           dockTypeSelected = e;
                           dockModelSelected = null;
                           textControllers['dockCode']!.clear();
-                          // setState(() {});
+                          setState(() {});
                         },
                       ),
                     ),
@@ -227,7 +227,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                             .toList(),
                         onSelected: (DockModel? e) {
                           dockModelSelected = e;
-                          // setState(() {});
+                          setState(() {});
                         },
                       ),
                     ),
@@ -275,7 +275,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                             .toList(),
                         onSelected: (CompanyModel? e) {
                           companyModelSelected = e;
-                          // setState(() {});
+                          setState(() {});
                         },
                       ),
                     ),

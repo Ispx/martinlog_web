@@ -15,6 +15,7 @@ import 'package:martinlog_web/repositories/get_companies_repository.dart';
 import 'package:martinlog_web/repositories/get_company_repositoy.dart';
 import 'package:martinlog_web/repositories/get_docks_repository.dart';
 import 'package:martinlog_web/repositories/get_operation_repository.dart';
+import 'package:martinlog_web/repositories/get_operations_pending_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_repository.dart';
 import 'package:martinlog_web/repositories/get_users_repository.dart';
 import 'package:martinlog_web/repositories/start_password_recovery_repository.dart';
@@ -155,6 +156,12 @@ void main() async {
           urlBase: EnvConfig.urlBase,
         ),
       );
+      i.addFactory<GetOperationsPedingRepository>(
+        () => GetOperationsPedingRepository(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
       i.addSingleton<AuthViewModel>(
         () => AuthViewModel(
           authRepository: i.get<AuthRepository>(),
@@ -181,6 +188,7 @@ void main() async {
           getOperationsRepository: i.get<GetOperationsRepository>(),
           getOperationRepository: i.get<GetOperationRepository>(),
           updateOperationRepository: i.get<UpdateOperationRepository>(),
+          getOperationsPedingRepository: i.get<GetOperationsPedingRepository>(),
         ),
       );
       i.addSingleton<UserViewModel>(
