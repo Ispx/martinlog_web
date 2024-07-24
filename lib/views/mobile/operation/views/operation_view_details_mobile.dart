@@ -58,9 +58,10 @@ class _OperationViewDetailsMobileState
   }
 
   Future<void> _doSaveDescription() async {
+    await controller.getOperation(operationKey: operationModel!.operationKey);
     await controller.updateOperation(
       operationModel: operationModel!,
-      progress: operationModel!.progress,
+      progress: controller.operationModel!.progress,
       additionalData: additionalData.value,
     );
   }

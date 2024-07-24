@@ -11,9 +11,11 @@ class Endpoints {
   static const user = "/user";
   static const userAll = "$user/all";
   static const dockAll = "$dock/all";
-  static const operation = "/operation";
-  static const operationAll = "$operation/all";
-  static const operationCancel = "$operation/cancel/<operationKey>";
-  static const operationUpdate = "$operation/<operationKey>";
-  static const operationUploadFile = "$operation/<operationKey>/upload/file";
+  static const operation = '/operation';
+  static const getOperation = '$operation/<operationKey>';
+  static const operationPending = '$operation/pending/all';
+  static const operationCancel = '$operation/<operationKey>/cancel';
+  static const operationUpdate = '$operation/<operationKey>/update';
+  static const operationUploadFile = '$operation/<operationKey>/upload';
+  static const operationAll = '$operation/all';
 }

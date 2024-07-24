@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -82,6 +83,12 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
         );
       }
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (mounted) {
+        controller.getAll();
+      }
+    });
     super.initState();
   }
 
@@ -91,7 +98,7 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
     super.dispose();
   }
 
-  int selected = 0;
+  int selected = -2;
   Future<void> _setDateRangeText() async {
     if (dateRangeSelected == null) {
       controller.resetFilter();
@@ -105,6 +112,22 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
       textDateRangeSelected.value =
           "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
     }
+  }
+
+  Future<void> _getPending() async {
+    selected = -1;
+    setState(() {});
+    await controller.getPending();
+    pageWidgetMobileKey += "${DateTime.now().millisecondsSinceEpoch}";
+    setState(() {});
+  }
+
+  Future<void> _getAll() async {
+    selected = -2;
+    setState(() {});
+    await controller.getAll();
+    pageWidgetMobileKey += "${DateTime.now().millisecondsSinceEpoch}";
+    setState(() {});
   }
 
   Future<void> _selectDate(int days, int buttonNumber) async {
@@ -123,6 +146,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
       });
     }
     await _setDateRangeText();
+    pageWidgetMobileKey += "${DateTime.now().millisecondsSinceEpoch}";
+    setState(() {});
   }
 
   @override
@@ -172,7 +197,18 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                         ...OperationStatusEnum.values
                             .map(
                               (e) => DropdownMenuEntry(
-                                  value: e, label: e.description),
+                                value: e,
+                                label: e.description,
+                                style: ButtonStyle(
+                                  textStyle: MaterialStateProperty.resolveWith(
+                                    (states) =>
+                                        AppTextStyle.displayLarge(context)
+                                            .copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             )
                             .toList()
                       ],
@@ -193,7 +229,18 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                         ...DockType.values
                             .map(
                               (e) => DropdownMenuEntry(
-                                  value: e, label: e.description),
+                                value: e,
+                                label: e.description,
+                                style: ButtonStyle(
+                                  textStyle: MaterialStateProperty.resolveWith(
+                                    (states) =>
+                                        AppTextStyle.displayLarge(context)
+                                            .copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             )
                             .toList()
                       ],
@@ -247,12 +294,41 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                 child: Row(
                   children: [
                     TextActionButtom(
+                      title: 'Todos',
+                      selected: selected == -2,
+                      onAction: () async => await _getAll(),
+                      selectedColor: selected == -2
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == -2
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      titleColor: appTheme.titleColor,
+                    ),
+                    const Gap(8),
+                    TextActionButtom(
+                      title: 'Em operação',
+                      selected: selected == -1,
+                      onAction: () async => await _getPending(),
+                      selectedColor: selected == -1
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == -1
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      titleColor: appTheme.titleColor,
+                    ),
+                    const Gap(8),
+                    TextActionButtom(
                       title: 'Últimos 7 dias',
                       selected: selected == 1,
                       onAction: () async => await _selectDate(7, 1),
-                      selectedColor: appTheme.primaryColor,
-                      backgroundColor:
-                          selected == 1 ? Colors.white : appTheme.primaryColor,
+                      selectedColor: selected == 1
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == 1
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -260,9 +336,12 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       title: 'Últimos 30 dias',
                       selected: selected == 2,
                       onAction: () async => await _selectDate(30, 2),
-                      selectedColor: appTheme.primaryColor,
-                      backgroundColor:
-                          selected == 2 ? Colors.white : appTheme.primaryColor,
+                      selectedColor: selected == 2
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == 2
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -270,9 +349,12 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       title: 'Últimos 60 dias',
                       selected: selected == 3,
                       onAction: () async => await _selectDate(60, 3),
-                      selectedColor: appTheme.primaryColor,
-                      backgroundColor:
-                          selected == 3 ? Colors.white : appTheme.primaryColor,
+                      selectedColor: selected == 3
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == 3
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -280,9 +362,12 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       title: 'Últimos 90 dias',
                       selected: selected == 4,
                       onAction: () async => await _selectDate(90, 4),
-                      selectedColor: appTheme.primaryColor,
-                      backgroundColor:
-                          selected == 4 ? Colors.white : appTheme.primaryColor,
+                      selectedColor: selected == 4
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == 4
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -307,9 +392,12 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
 
                         await _setDateRangeText();
                       },
-                      selectedColor: appTheme.primaryColor,
-                      backgroundColor:
-                          selected == 5 ? Colors.white : appTheme.primaryColor,
+                      selectedColor: selected == 5
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
+                      backgroundColor: selected == 5
+                          ? appTheme.primaryColor
+                          : appTheme.primaryColor.withOpacity(0.3),
                       titleColor: appTheme.titleColor,
                     ),
                     const Gap(8),
@@ -326,32 +414,30 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                         vertical: AppSize.padding / 2,
                       ),
                       child: OperationWidgetMobile(
-                        key: ObjectKey(operationModel),
+                        key: ValueKey(operationModel.operationKey),
                         operationModel: operationModel,
                       ),
                     ),
                   )
                   .toList();
               return PageWidgetMobile(
-                key: ValueKey(pageWidgetMobileKey
-
-                    /*
-                key: ValueKey(
-                  textSearched.isEmpty
-                      ? pageWidgetMobileKey
-                      : DateTime.now().millisecondsSinceEpoch,
-                      */
-                    ),
+                key: ValueKey(pageWidgetMobileKey),
                 itens: itens,
                 onRefresh: () async {
-                  await controller.getAll();
+                  await controller.onRefresh();
+                  selected = -2;
                   pageWidgetMobileKey +=
                       "${DateTime.now().millisecondsSinceEpoch}";
                   setState(() {});
                 },
                 onDownload: () async =>
                     await controller.downloadFile(controller.operationsFilted),
-                totalByPage: 10,
+                totalByPage: controller.limitPaginationOffset,
+                isLoadingItens:
+                    controller.appState.value is AppStateLoadingMore,
+                onLoadMoreItens: controller.isEnableLoadMoreItens.value
+                    ? controller.nextPage
+                    : null,
               );
             }),
           ],
@@ -375,7 +461,7 @@ class OperationWidgetMobile extends StatefulWidget {
 }
 
 class _OperationWidgetMobileState extends State<OperationWidgetMobile>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, KeepAliveParentDataMixin {
   var progressObs = 0.obs;
   late final TextEditingController percentageEdittinController;
 
@@ -450,14 +536,12 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
       additionalData: null,
     );
     if (widget.onAction != null) await widget.onAction!();
-    getUpdatedOperation();
-    pageWidgetMobileKey += "${DateTime.now().millisecond}";
+    //getUpdatedOperation();
   }
 
   Future<void> getUpdatedOperation() async {
-    await controller.getAll();
     operation = controller.operations.firstWhere(
-        (element) => element.liscensePlate == operation.liscensePlate);
+        (element) => element.operationKey == operation.operationKey);
   }
 
   @override
@@ -658,6 +742,14 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
       );
     });
   }
+
+  @override
+  void detach() {
+    setState(() {});
+  }
+
+  @override
+  bool get keptAlive => true;
 }
 
 class OperationSubtitleTextWidget extends StatelessWidget {

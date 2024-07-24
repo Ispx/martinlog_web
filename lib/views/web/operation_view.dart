@@ -266,7 +266,7 @@ class _OperationViewState extends State<OperationView> {
               onRefresh: () async => await controller.getAll(),
               onDownload: () async =>
                   await controller.downloadFile(controller.operationsFilted),
-              totalByPage: 10,
+              totalByPage: controller.limitPaginationOffset,
             );
           }),
         ],
