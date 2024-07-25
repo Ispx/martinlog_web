@@ -77,6 +77,7 @@ class _OperationViewDetailsMobileState
           imageBytes: await imageFile.readAsBytes(),
           filename: imageFile.name,
         );
+    setState(() {});
   }
 
   Future<void> _downloadFile() async {
@@ -93,6 +94,7 @@ class _OperationViewDetailsMobileState
           imageBytes: await imageFile.readAsBytes(),
           filename: imageFile.name,
         );
+    setState(() {});
   }
 
   Widget _sendImageOptionsButton(

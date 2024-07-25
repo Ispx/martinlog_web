@@ -536,7 +536,8 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
       additionalData: null,
     );
     if (widget.onAction != null) await widget.onAction!();
-    //getUpdatedOperation();
+    pageWidgetMobileKey += "${DateTime.now().millisecond}";
+    setState(() {});
   }
 
   Future<void> getUpdatedOperation() async {

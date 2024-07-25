@@ -113,7 +113,18 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         'event_type': EventTypeEnum.OPERATION_CANCELED.description,
         'idUser': simple.get<AuthViewModel>().authModel!.idUser,
       });
-      await _internalGetAll();
+      final index = operations.indexWhere(
+          (element) => element.operationKey == operationModel.operationKey);
+      operations.replaceRange(
+        index,
+        index + 1,
+        [
+          operationModel.copyWith(
+            idOperationStatus: OperationStatusEnum.CANCELED.idOperationStatus,
+          ),
+        ],
+      );
+      operationsFilted.value = operations;
       changeState(AppStateDone("Operação cancelada com sucesso!"));
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -215,6 +226,24 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         additionalData: additionalData,
         urlImage: null,
       );
+      final index = operations.indexWhere(
+          (element) => element.operationKey == operationModel.operationKey);
+      operations.replaceRange(
+        index,
+        index + 1,
+        [
+          operationModel.copyWith(
+            progress: progress,
+            additionalData: additionalData,
+            idOperationStatus: progress == 100
+                ? OperationStatusEnum.FINISHED.idOperationStatus
+                : null,
+          ),
+        ],
+      );
+
+      operationsFilted.value = operations;
+
       await FirebaseFirestore.instance.collection('operation_events').add({
         'data': operationModel.toJson(),
         'event_type': progress == 100
@@ -391,7 +420,22 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         additionalData: null,
         urlImage: url,
       );
-      await _internalGetAll();
+      final index = operations.indexWhere(
+          (element) => element.operationKey == operationModel.operationKey);
+      operations.replaceRange(
+        index,
+        index + 1,
+        [
+          operationModel.copyWith(
+            progress: operationModel.progress,
+            additionalData: operationModel.additionalData,
+            urlImage: url,
+          ),
+        ],
+      );
+
+      operationsFilted.value = operations;
+
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));

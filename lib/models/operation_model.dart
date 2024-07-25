@@ -73,6 +73,7 @@ class OperationModel {
     DateTime? finishedAt,
     DockModel? dockModel,
     String? additionalData,
+    String? urlImage,
   }) {
     return OperationModel(
       operationKey: operationKey,
@@ -86,6 +87,7 @@ class OperationModel {
       finishedAt: finishedAt ?? this.finishedAt,
       description: description,
       additionalData: additionalData ?? this.additionalData,
+      urlImage: urlImage ?? this.urlImage,
     );
   }
 }
