@@ -30,10 +30,15 @@ class DockViewModel extends GetxController implements IDockViewModel {
     required this.upsertDockRepository,
   });
 
-  List<DockModel> getDocksByDockType(DockType? dockType) => docks
-      .where(
-          (e) => dockType == null ? true : e.idDockType == dockType.idDockType)
-      .toList();
+  List<DockModel> getDocksByDockType(DockType? dockType) {
+    final docksFilted = docks
+        .where((e) =>
+            dockType == null ? true : e.idDockType == dockType.idDockType)
+        .toList();
+    docksFilted
+        .sort((a, b) => a.code.trimRight().compareTo(b.code.trimRight()));
+    return docksFilted;
+  }
 
   List<DockType> get docksType => DockType.values;
 

@@ -77,16 +77,6 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
     isOpen.value = false;
   }
 
-  List<DockModel> getDocksByDockType() {
-    return simple
-        .get<DockViewModel>()
-        .docks
-        .where((e) => dockTypeSelected == null
-            ? false
-            : e.idDockType.getDockType() == dockTypeSelected)
-        .toList();
-  }
-
   void clearFields() {
     for (var controller in textControllers.values) {
       controller.clear();
@@ -208,7 +198,9 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                         controller: textControllers['dockCode']!,
                         enable: controller.appState.value is! AppStateLoading,
                         width: MediaQuery.of(context).size.width - 16,
-                        dropdownMenuEntries: getDocksByDockType()
+                        dropdownMenuEntries: simple
+                            .get<DockViewModel>()
+                            .getDocksByDockType(dockTypeSelected)
                             .map(
                               (e) => DropdownMenuEntry<DockModel>(
                                 value: e,
