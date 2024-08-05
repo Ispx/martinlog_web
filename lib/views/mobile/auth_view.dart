@@ -41,12 +41,17 @@ class _AuthViewMobileState extends State<AuthViewMobile> with ValidatorsMixin {
 
   @override
   void initState() {
-       //GoTo.removeAllAndGoTo(Routes.menu);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await controller.init();
+      setState(() {});
+    });
+    //GoTo.removeAllAndGoTo(Routes.menu);
     controller = simple.get<AuthViewModel>();
-
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
-        BannerComponent(message: appState.msg ?? "Ocorreu um erro", backgroundColor: Colors.red);
+        BannerComponent(
+            message: appState.msg ?? "Ocorreu um erro",
+            backgroundColor: Colors.red);
       }
       if (appState is AppStateDone) {
         GoTo.removeAllAndGoTo(Routes.menu);
@@ -73,7 +78,6 @@ class _AuthViewMobileState extends State<AuthViewMobile> with ValidatorsMixin {
   }
 
   Widget _buildBody() {
-    
     return LayoutBuilder(builder: (context, constraint) {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 5.w),
@@ -118,12 +122,15 @@ class _AuthViewMobileState extends State<AuthViewMobile> with ValidatorsMixin {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         "Login",
-                        style: AppTextStyle.mobileDisplayMedium(context).copyWith(fontWeight: FontWeight.w600),
+                        style: AppTextStyle.mobileDisplayMedium(context)
+                            .copyWith(fontWeight: FontWeight.w600),
                       ),
                     ),
                     const Gap(16),
                     TextFormFieldWidget<OutlineInputBorder>(
+                      key: ValueKey(controller.documentStored.value),
                       label: "CPF",
+                      initialValue: controller.documentStored.value,
                       validator: isNotCPF,
                       onSaved: (e) {
                         cpf = e;
@@ -149,7 +156,9 @@ class _AuthViewMobileState extends State<AuthViewMobile> with ValidatorsMixin {
                             isVisiblePassword.value = !isVisiblePassword.value;
                           },
                           child: Icon(
-                            isVisiblePassword.value ? Icons.visibility_off : Icons.visibility,
+                            isVisiblePassword.value
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                           ),
                         ),
                         onSaved: (e) {
@@ -165,7 +174,8 @@ class _AuthViewMobileState extends State<AuthViewMobile> with ValidatorsMixin {
                         },
                         child: Text(
                           "Esqueci minha senha",
-                          style: AppTextStyle.mobileDisplayMedium(context).copyWith(
+                          style: AppTextStyle.mobileDisplayMedium(context)
+                              .copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
