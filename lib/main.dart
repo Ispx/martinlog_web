@@ -19,7 +19,7 @@ import 'package:martinlog_web/repositories/get_operations_pending_repository.dar
 import 'package:martinlog_web/repositories/get_operations_repository.dart';
 import 'package:martinlog_web/repositories/get_users_repository.dart';
 import 'package:martinlog_web/repositories/start_password_recovery_repository.dart';
-import 'package:martinlog_web/repositories/update_progress_operation_repository.dart';
+import 'package:martinlog_web/repositories/update_operation_repository.dart';
 import 'package:martinlog_web/repositories/update_user_repository.dart';
 import 'package:martinlog_web/repositories/upload_file_operation_repository.dart';
 import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';

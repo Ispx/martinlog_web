@@ -30,6 +30,7 @@ import 'package:martinlog_web/widgets/text_form_field_widget.dart';
 
 import '../../../../navigator/go_to.dart';
 
+OperationModel? operationModelToUpdate;
 var pageWidgetMobileKey = 'state_key';
 
 class OperationViewMobile extends StatefulWidget {
@@ -41,11 +42,13 @@ class OperationViewMobile extends StatefulWidget {
 
 class _OperationViewMobileState extends State<OperationViewMobile> {
   late final Worker worker;
-
+  late final GlobalKey<CreateOperationWidgetState> createOperationState;
   final controller = simple.get<OperationViewModel>();
   late final TextEditingController operationStatusEditingController;
   OperationStatusEnum? operationStatusEnumSelected;
   late final TextEditingController dockTypeEditingController;
+  late final ScrollController scrollController;
+
   var textSearched = ''.obs;
   var textDateRangeSelected = ''.obs;
   DockType? dockTypeSelected;
@@ -67,7 +70,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
   void initState() {
     operationStatusEditingController = TextEditingController();
     dockTypeEditingController = TextEditingController();
-
+    createOperationState = GlobalKey<CreateOperationWidgetState>();
+    scrollController = ScrollController();
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
         BannerComponent(
@@ -95,6 +99,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
   @override
   void dispose() {
     worker.dispose();
+    createOperationState.currentState?.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -160,10 +166,13 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
         horizontal: AppSize.padding * 2,
       ),
       child: SingleChildScrollView(
+        controller: scrollController,
         child: Column(
           children: [
             const Gap(8),
-            const CreateOperationWidget(),
+            CreateOperationWidget(
+              key: createOperationState,
+            ),
             const Gap(8),
             const Divider(),
             const Gap(8),
@@ -414,9 +423,10 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                         vertical: AppSize.padding / 2,
                       ),
                       child: OperationWidgetMobile(
-                        key: ValueKey(operationModel.operationKey),
-                        operationModel: operationModel,
-                      ),
+                          key: ValueKey(operationModel.operationKey),
+                          operationModel: operationModel,
+                          createOperationState: createOperationState,
+                          scrollController: scrollController),
                     ),
                   )
                   .toList();
@@ -450,10 +460,14 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
 class OperationWidgetMobile extends StatefulWidget {
   final OperationModel operationModel;
   final Future<void> Function()? onAction;
+  final GlobalKey<CreateOperationWidgetState>? createOperationState;
+  final ScrollController? scrollController;
   const OperationWidgetMobile({
     super.key,
     required this.operationModel,
+    this.createOperationState,
     this.onAction,
+    this.scrollController,
   });
 
   @override
@@ -529,7 +543,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
     controller.downloadFile([operation]);
   }
 
-  Future<void> update() async {
+  Future<void> updateProgress() async {
     await controller.updateOperation(
       operationModel: operation,
       progress: progressObs.value,
@@ -538,6 +552,17 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
     if (widget.onAction != null) await widget.onAction!();
     pageWidgetMobileKey += "${DateTime.now().millisecond}";
     setState(() {});
+  }
+
+  Future<void> updateAll() async {
+    operationModelToUpdate = widget.operationModel;
+    widget.createOperationState?.currentState?.open();
+    widget.createOperationState?.currentState?.activate();
+    widget.scrollController?.animateTo(
+      -10000,
+      duration: 1500.milliseconds,
+      curve: Curves.decelerate,
+    );
   }
 
   Future<void> getUpdatedOperation() async {
@@ -681,7 +706,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
                     InkWell(
                       onTap: operation.idOperationStatus.getOperationStatus() ==
                               OperationStatusEnum.IN_PROGRESS
-                          ? () async => await update()
+                          ? () async => await updateProgress()
                           : null,
                       borderRadius: BorderRadius.circular(100),
                       child: Container(
@@ -690,14 +715,39 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
                           color: operation.idOperationStatus
                                       .getOperationStatus() ==
                                   OperationStatusEnum.IN_PROGRESS
-                              ? context.appTheme.secondColor.withOpacity(.3)
+                              ? context.appTheme.secondColor
                               : context.appTheme.greyColor,
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
                           child: Icon(
                             LineIcons.syncIcon,
-                            color: context.appTheme.secondColor,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Gap(16),
+                    InkWell(
+                      onTap: operation.idOperationStatus.getOperationStatus() ==
+                              OperationStatusEnum.IN_PROGRESS
+                          ? () async => await updateAll()
+                          : null,
+                      borderRadius: BorderRadius.circular(100),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: operation.idOperationStatus
+                                      .getOperationStatus() ==
+                                  OperationStatusEnum.IN_PROGRESS
+                              ? Colors.orange.shade500
+                              : context.appTheme.greyColor,
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(
+                            LineIcons.edit,
+                            color: Colors.white,
                           ),
                         ),
                       ),

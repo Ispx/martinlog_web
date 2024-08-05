@@ -6,7 +6,6 @@ import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/enums/profile_type_enum.dart';
-import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/profile_type_extension.dart';
@@ -26,16 +25,15 @@ import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
 import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 
 class CreateOperationWidget extends StatefulWidget {
   const CreateOperationWidget({super.key});
 
   @override
-  State<CreateOperationWidget> createState() => _CreateOperationWidgetState();
+  State<CreateOperationWidget> createState() => CreateOperationWidgetState();
 }
 
-class _CreateOperationWidgetState extends State<CreateOperationWidget>
+class CreateOperationWidgetState extends State<CreateOperationWidget>
     with ValidatorsMixin {
   DockType? dockTypeSelected;
   DockModel? dockModelSelected;
@@ -71,9 +69,35 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
     super.initState();
   }
 
+  @override
+  void activate() {
+    textControllers['dockType']!.value = TextEditingValue(
+        text: operationModelToUpdate?.dockModel?.idDockType
+                .getDockType()
+                .description ??
+            '');
+    textControllers['dockCode']!.value = TextEditingValue(
+      text: operationModelToUpdate?.dockModel?.code ?? '',
+    );
+    textControllers['licensePlate']!.value = TextEditingValue(
+      text: operationModelToUpdate?.liscensePlate ?? '',
+    );
+    textControllers['company']!.value = TextEditingValue(
+      text: operationModelToUpdate?.companyModel.fantasyName ?? '',
+    );
+    textControllers['description']!.value = TextEditingValue(
+      text: operationModelToUpdate?.description ?? '',
+    );
+    companyModelSelected = operationModelToUpdate?.companyModel;
+    dockModelSelected = operationModelToUpdate?.dockModel;
+    setState(() {});
+    super.activate();
+  }
+
   void open() => isOpen.value = true;
   void close() {
     clearFields();
+    operationModelToUpdate = null;
     isOpen.value = false;
   }
 
@@ -110,6 +134,29 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
     }
   }
 
+  Future<void> update() async {
+    if (companyModelSelected == null || dockModelSelected == null) {
+      BannerComponent(
+        message: "Preencha todas as informações para atualizar a operação",
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+    if (formState.currentState?.validate() ?? false) {
+      isLoading.value = true;
+      await controller.updateOperation(
+        companyModel: companyModelSelected!,
+        dockModel: dockModelSelected!,
+        liscensePlate: textControllers['licensePlate']!.text,
+        description: textControllers['description']!.text,
+        operationModel: operationModelToUpdate!,
+      );
+      pageWidgetMobileKey += "${DateTime.now().millisecondsSinceEpoch}";
+      isLoading.value = false;
+      close();
+    }
+  }
+
   Widget buildSelectable(
       {required BuildContext context,
       required String title,
@@ -139,7 +186,9 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 IconButtonWidget(
-                  title: 'Nova operação',
+                  title: operationModelToUpdate != null
+                      ? 'Atualizar operação'
+                      : 'Nova operação',
                   onTap: open,
                   icon: const Icon(
                     LineIcons.dolly,
@@ -298,8 +347,14 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                           ),
                           Expanded(
                             child: IconButtonWidget(
-                              onTap: () => isLoading.value ? null : start(),
-                              title: 'Iniciar',
+                              onTap: () => isLoading.value
+                                  ? null
+                                  : operationModelToUpdate != null
+                                      ? update()
+                                      : start(),
+                              title: operationModelToUpdate != null
+                                  ? 'Atualizar'
+                                  : 'Iniciar',
                               icon: const Icon(LineIcons.check),
                             ),
                           ),

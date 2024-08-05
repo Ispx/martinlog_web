@@ -5,9 +5,13 @@ import '../services/http/http.dart';
 abstract interface class IUpdateOperationRepository {
   Future<void> call({
     required String operationKey,
-    required int progress,
-    required String? additionalData,
-    required String? urlImage,
+    int? progress,
+    String? additionalData,
+    String? liscensePlate,
+    String? urlImage,
+    String? description,
+    String? dockCode,
+    int? idCompany,
   });
 }
 
@@ -18,13 +22,18 @@ class UpdateOperationRepository implements IUpdateOperationRepository {
   @override
   Future<void> call({
     required String operationKey,
-    required int progress,
-    required String? additionalData,
-    required String? urlImage,
+    int? progress,
+    String? additionalData,
+    String? liscensePlate,
+    String? urlImage,
+    String? description,
+    String? dockCode,
+    int? idCompany,
   }) async {
     final data = {};
-
-    data.addAll({"progress": progress});
+    if (progress != null) {
+      data.addAll({"progress": progress});
+    }
     if (additionalData != null) {
       data.addAll({
         "additionalData": additionalData,
@@ -33,6 +42,26 @@ class UpdateOperationRepository implements IUpdateOperationRepository {
     if (urlImage != null) {
       data.addAll({
         "urlImage": urlImage,
+      });
+    }
+    if (description != null) {
+      data.addAll({
+        "description": description,
+      });
+    }
+    if (dockCode != null) {
+      data.addAll({
+        "dockCode": dockCode,
+      });
+    }
+    if (idCompany != null) {
+      data.addAll({
+        "idCompany": idCompany,
+      });
+    }
+    if (liscensePlate != null) {
+      data.addAll({
+        "liscensePlate": liscensePlate,
       });
     }
     try {
