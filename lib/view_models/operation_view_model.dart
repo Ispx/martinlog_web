@@ -18,13 +18,14 @@ import 'package:martinlog_web/extensions/event_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/models/company_model.dart';
+import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/models/operation_model.dart';
 import 'package:martinlog_web/repositories/cancel_operation_repository.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
 import 'package:martinlog_web/repositories/get_operation_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_pending_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_repository.dart';
-import 'package:martinlog_web/repositories/update_progress_operation_repository.dart';
+import 'package:martinlog_web/repositories/update_operation_repository.dart';
 import 'package:martinlog_web/repositories/upload_file_operation_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
@@ -39,8 +40,12 @@ abstract interface class IOperationViewModel {
   });
   Future<void> updateOperation({
     required OperationModel operationModel,
-    required int progress,
-    required String? additionalData,
+    int? progress,
+    DockModel? dockModel,
+    CompanyModel? companyModel,
+    String? additionalData,
+    String? liscensePlate,
+    String? description,
   });
 
   Future<void> cancel({required OperationModel operationModel});
@@ -213,8 +218,12 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   @override
   Future<void> updateOperation({
     required OperationModel operationModel,
-    required int progress,
-    required String? additionalData,
+    int? progress,
+    DockModel? dockModel,
+    CompanyModel? companyModel,
+    String? additionalData,
+    String? liscensePlate,
+    String? description,
   }) async {
     try {
       changeState(AppStateLoading());
@@ -223,6 +232,10 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         progress: progress,
         additionalData: additionalData,
         urlImage: null,
+        idCompany: companyModel?.idCompany,
+        dockCode: dockModel?.code,
+        description: description,
+        liscensePlate: liscensePlate,
       );
       final index = operations.indexWhere(
           (element) => element.operationKey == operationModel.operationKey);
@@ -232,6 +245,10 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         [
           operationModel.copyWith(
             progress: progress,
+            companyModel: companyModel,
+            dockModel: dockModel,
+            description: description,
+            liscensePlate: liscensePlate,
             additionalData: additionalData,
             idOperationStatus: progress == 100
                 ? OperationStatusEnum.FINISHED.idOperationStatus
