@@ -19,7 +19,6 @@ import '../../style/size/app_size.dart';
 import '../../style/text/app_text_style.dart';
 import '../../view_models/dashboard_view_model.dart';
 import '../../view_models/menu_view_model.dart';
-import '../../widgets/circular_progress_indicator_widget.dart';
 import '../../widgets/icon_buttom_widget.dart';
 import 'operation/views/operation_view_mobile.dart';
 
