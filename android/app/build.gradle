@@ -4,6 +4,9 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+apply plugin: 'newrelic' // <-- add this
+
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -65,4 +68,6 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+  implementation "com.newrelic.agent.android:android-agent:7.5.1"
+}
