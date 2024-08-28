@@ -67,10 +67,15 @@ class UpdateOperationRepository implements IUpdateOperationRepository {
     try {
       await http.request(
         url: urlBase +
-            Endpoints.operationUpdate
-                .replaceAll("<operationKey>", operationKey),
+            Endpoints.operationUpdate.replaceAll(
+              "<operationKey>",
+              operationKey,
+            ),
         method: HttpMethod.PUT,
         body: data,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       );
     } catch (e) {
       throw Exception(e.toString());

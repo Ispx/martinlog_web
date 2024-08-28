@@ -7,6 +7,10 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:7.5.1"
+
+
+
     }
 }
 

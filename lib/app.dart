@@ -21,6 +21,7 @@ import 'package:martinlog_web/views/web/menu_view.dart';
 import 'package:martinlog_web/views/web/operation_view.dart';
 import 'package:martinlog_web/views/web/password_recovery_view.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:newrelic_mobile/newrelic_navigation_observer.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -33,6 +34,9 @@ class App extends StatelessWidget {
         navigatorKey: GoTo.navigatorState,
         scaffoldMessengerKey: scaffoldMessengerState,
         title: EnvConfig.appName,
+        navigatorObservers: [
+          NewRelicNavigationObserver(),
+        ],
         theme: AppThemeData(
           primaryColor: Utils.color("#D5DE23"),
           primaryVariant: Utils.color("#CFD022"),
@@ -65,7 +69,8 @@ class App extends StatelessWidget {
                 Routes.dock: (context) => const DockView(),
                 Routes.dashboard: (context) => const DashboardView(),
                 Routes.menu: (context) => const MenuView(),
-                Routes.passwordRecovery: (context) => const PassswordRecoveryView(),
+                Routes.passwordRecovery: (context) =>
+                    const PassswordRecoveryView(),
               }
             : {
                 Routes.auth: (context) => const AuthViewMobile(),
@@ -74,8 +79,10 @@ class App extends StatelessWidget {
                 Routes.dock: (context) => const DockView(),
                 Routes.dashboard: (context) => const DashboardViewMobile(),
                 Routes.menu: (context) => const MenuViewMobile(),
-                Routes.passwordRecovery: (context) => const PasswordRecoveryMobileView(),
-                Routes.operationDetails: (context) => const OperationViewDetailsMobile(),
+                Routes.passwordRecovery: (context) =>
+                    const PasswordRecoveryMobileView(),
+                Routes.operationDetails: (context) =>
+                    const OperationViewDetailsMobile(),
               },
       );
     });

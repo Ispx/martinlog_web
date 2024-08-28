@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -32,23 +34,45 @@ import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/view_models/password_recovery_view_model.dart';
 import 'package:martinlog_web/view_models/user_view_model.dart';
+import 'package:newrelic_mobile/config.dart';
+import 'package:newrelic_mobile/newrelic_mobile.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  var appToken = "AAeb308c57c9293e46a4c6891b1a419e030b3b74e2-NRMA";
+  Config config = Config(
+      accessToken: appToken,
 
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-        apiKey: "AIzaSyBojaKfglolWvClT-VwYW9QzU2RGKi_e9E",
-        appId: "1:1062375327946:web:3ae61c6e184e8e75130c33",
-        messagingSenderId: "1062375327946",
-        projectId: "martinlog-web",
-        storageBucket: 'martinlog-web.appspot.com',
-        authDomain: "martinlog-web.firebaseapp.com",
-        measurementId: "G-CWVH9LC3GF"),
-  );
+      // Android specific option
+      // Optional: Enable or disable collection of event data.
+      analyticsEventEnabled: true,
 
-  Intl.defaultLocale = 'pt_BR';
-  initializeDateFormatting('pt_BR', null);
+      // iOS specific option
+      // Optional: Enable or disable automatic instrumentation of WebViews.
+      webViewInstrumentation: true,
+
+      // Optional: Enable or disable reporting successful HTTP requests to the MobileRequest event type.
+      networkErrorRequestEnabled: true,
+
+      // Optional: Enable or disable reporting network and HTTP request errors to the MobileRequestError event type.
+      networkRequestEnabled: true,
+
+      // Optional: Enable or disable crash reporting.
+      crashReportingEnabled: true,
+
+      // Optional: Enable or disable interaction tracing. Trace instrumentation still occurs, but no traces are harvested. This will disable default and custom interactions.
+      interactionTracingEnabled: true,
+
+      // Optional: Enable or disable capture of HTTP response bodies for HTTP error traces, and MobileRequestError events.
+      httpResponseBodyCaptureEnabled: true,
+
+      // Optional: Enable or disable agent logging.
+      loggingEnabled: true,
+
+      // Optional: Enable or disable print statements as Analytics Events.
+      printStatementAsEventsEnabled: true,
+
+      // Optional: Enable or disable automatic instrumentation of HTTP requests.
+      httpInstrumentationEnabled: true);
 
   simple.startUp(
     (i) {
@@ -218,5 +242,21 @@ void main() async {
     },
   );
 
-  runApp(const App());
+  await NewrelicMobile.instance.start(config, () async {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyBojaKfglolWvClT-VwYW9QzU2RGKi_e9E",
+        appId: "1:1062375327946:web:3ae61c6e184e8e75130c33",
+        messagingSenderId: "1062375327946",
+        projectId: "martinlog-web",
+        storageBucket: 'martinlog-web.appspot.com',
+        authDomain: "martinlog-web.firebaseapp.com",
+        measurementId: "G-CWVH9LC3GF",
+      ),
+    );
+    Intl.defaultLocale = 'pt_BR';
+    await initializeDateFormatting('pt_BR', null);
+
+    runApp(const App());
+  });
 }
