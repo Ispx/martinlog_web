@@ -154,8 +154,8 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         'event_type': EventTypeEnum.OPERATION_CREATED.description,
         'idUser': simple.get<AuthViewModel>().authModel!.idUser,
       });
-      operations.insert(0, operationModel);
-      operationsFilted.insert(0, operationModel);
+      operations.value = [operationModel, ...operations.value];
+      operationsFilted.value = [operationModel, ...operationsFilted.value];
       BannerComponent(
         message: "Operação criada com sucesso",
         backgroundColor: Colors.green,

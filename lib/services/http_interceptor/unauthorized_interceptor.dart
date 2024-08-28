@@ -9,8 +9,7 @@ import 'package:martinlog_web/view_models/auth_view_model.dart';
 class UnauthorizedInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    if ((err.response?.statusCode) == 401 ||
-        (err.error as FormatException).source == 'Token inválido') {
+    if ((err.response?.statusCode) == 401) {
       try {
         await simple.get<AuthViewModel>().autoLogin();
         BannerComponent(

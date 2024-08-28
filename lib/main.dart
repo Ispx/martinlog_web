@@ -38,22 +38,7 @@ import 'package:newrelic_mobile/config.dart';
 import 'package:newrelic_mobile/newrelic_mobile.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: "AIzaSyBojaKfglolWvClT-VwYW9QzU2RGKi_e9E",
-      appId: "1:1062375327946:web:3ae61c6e184e8e75130c33",
-      messagingSenderId: "1062375327946",
-      projectId: "martinlog-web",
-      storageBucket: 'martinlog-web.appspot.com',
-      authDomain: "martinlog-web.firebaseapp.com",
-      measurementId: "G-CWVH9LC3GF",
-    ),
-  );
-
   var appToken = "AAeb308c57c9293e46a4c6891b1a419e030b3b74e2-NRMA";
-
   Config config = Config(
       accessToken: appToken,
 
@@ -88,9 +73,6 @@ void main() async {
 
       // Optional: Enable or disable automatic instrumentation of HTTP requests.
       httpInstrumentationEnabled: true);
-
-  Intl.defaultLocale = 'pt_BR';
-  initializeDateFormatting('pt_BR', null);
 
   simple.startUp(
     (i) {
@@ -260,7 +242,21 @@ void main() async {
     },
   );
 
-  await NewrelicMobile.instance.start(config, () {
+  await NewrelicMobile.instance.start(config, () async {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyBojaKfglolWvClT-VwYW9QzU2RGKi_e9E",
+        appId: "1:1062375327946:web:3ae61c6e184e8e75130c33",
+        messagingSenderId: "1062375327946",
+        projectId: "martinlog-web",
+        storageBucket: 'martinlog-web.appspot.com',
+        authDomain: "martinlog-web.firebaseapp.com",
+        measurementId: "G-CWVH9LC3GF",
+      ),
+    );
+    Intl.defaultLocale = 'pt_BR';
+    await initializeDateFormatting('pt_BR', null);
+
     runApp(const App());
   });
 }
