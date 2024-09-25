@@ -21,7 +21,6 @@ import 'package:martinlog_web/views/web/menu_view.dart';
 import 'package:martinlog_web/views/web/operation_view.dart';
 import 'package:martinlog_web/views/web/password_recovery_view.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:newrelic_mobile/newrelic_navigation_observer.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -34,9 +33,6 @@ class App extends StatelessWidget {
         navigatorKey: GoTo.navigatorState,
         scaffoldMessengerKey: scaffoldMessengerState,
         title: EnvConfig.appName,
-        navigatorObservers: [
-          NewRelicNavigationObserver(),
-        ],
         theme: AppThemeData(
           primaryColor: Utils.color("#D5DE23"),
           primaryVariant: Utils.color("#CFD022"),

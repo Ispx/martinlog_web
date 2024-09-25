@@ -372,7 +372,13 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   @override
   Future<void> filterByStatus(OperationStatusEnum statusEnum) async {
     if (statusEnum.idOperationStatus == -1) {
-      operationsFilted.value = operations;
+      await onRefresh();
+      return;
+    }
+
+    if (statusEnum == OperationStatusEnum.IN_PROGRESS) {
+      await getPending();
+
       return;
     }
     if (operationsFilted.isNotEmpty) {

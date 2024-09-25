@@ -39,6 +39,8 @@ import 'package:martinlog_web/widgets/text_form_field_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+var pageWidgetMobileKey = 'state_key';
+
 class OperationView extends StatefulWidget {
   const OperationView({super.key});
 
@@ -110,166 +112,177 @@ class _OperationViewState extends State<OperationView> {
         vertical: AppSize.padding,
         horizontal: AppSize.padding * 2,
       ),
-      child: Column(
-        children: [
-          const CreateOperationWidget(),
-          const Gap(5),
-          const Divider(),
-          const Gap(30),
-          Row(
-            children: [
-              IconButton(
-                onPressed: () async {
-                  await showDateRangePickerDialog(
-                    context: context,
-                    builder: (context, date) {
-                      return DateRangePickerWidget(
-                        onDateRangeChanged: (DateRange? value) {
-                          dateRangeSelected = value;
-                        },
-                        quickDateRanges: [
-                          QuickDateRange(
-                              dateRange: null, label: "Limpar datas"),
-                          QuickDateRange(
-                            label: 'Últimos 7 dias',
-                            dateRange: DateRange(
-                              DateTime.now().subtract(const Duration(days: 7)),
-                              DateTime.now(),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            const CreateOperationWidget(),
+            const Gap(5),
+            const Divider(),
+            const Gap(30),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () async {
+                    await showDateRangePickerDialog(
+                      context: context,
+                      builder: (context, date) {
+                        return DateRangePickerWidget(
+                          onDateRangeChanged: (DateRange? value) {
+                            dateRangeSelected = value;
+                          },
+                          quickDateRanges: [
+                            QuickDateRange(
+                                dateRange: null, label: "Limpar datas"),
+                            QuickDateRange(
+                              label: 'Últimos 7 dias',
+                              dateRange: DateRange(
+                                DateTime.now()
+                                    .subtract(const Duration(days: 7)),
+                                DateTime.now(),
+                              ),
                             ),
-                          ),
-                          QuickDateRange(
-                            label: 'Últimos 30 dias',
-                            dateRange: DateRange(
-                              DateTime.now().subtract(const Duration(days: 30)),
-                              DateTime.now(),
+                            QuickDateRange(
+                              label: 'Últimos 30 dias',
+                              dateRange: DateRange(
+                                DateTime.now()
+                                    .subtract(const Duration(days: 30)),
+                                DateTime.now(),
+                              ),
                             ),
-                          ),
-                          QuickDateRange(
-                            label: 'Últimos 60 dias',
-                            dateRange: DateRange(
-                              DateTime.now().subtract(const Duration(days: 60)),
-                              DateTime.now(),
+                            QuickDateRange(
+                              label: 'Últimos 60 dias',
+                              dateRange: DateRange(
+                                DateTime.now()
+                                    .subtract(const Duration(days: 60)),
+                                DateTime.now(),
+                              ),
                             ),
-                          ),
-                          QuickDateRange(
-                            label: 'Últimos 90 dias',
-                            dateRange: DateRange(
-                              DateTime.now().subtract(const Duration(days: 90)),
-                              DateTime.now(),
+                            QuickDateRange(
+                              label: 'Últimos 90 dias',
+                              dateRange: DateRange(
+                                DateTime.now()
+                                    .subtract(const Duration(days: 90)),
+                                DateTime.now(),
+                              ),
                             ),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                  if (dateRangeSelected == null) {
-                    controller.resetFilter();
-                    textDateRangeSelected.value = '';
-                  }
-                  if (dateRangeSelected != null) {
-                    await controller.filterByDate(
-                      dateRangeSelected!.start,
-                      dateRangeSelected!.end,
+                          ],
+                        );
+                      },
                     );
-                    textDateRangeSelected.value =
-                        "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
-                  }
-                },
-                icon: const Icon(Icons.date_range),
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.resolveWith(
-                    (states) => RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: AppSize.padding,
-              ),
-              Obx(() {
-                return Text(
-                  textDateRangeSelected.value,
-                  style: AppTextStyle.displayMedium(context),
-                );
-              }),
-              SizedBox(
-                width: AppSize.padding,
-              ),
-              DropBoxWidget<OperationStatusEnum>(
-                controller: operationStatusEditingController,
-                label: 'Status',
-                dropdownMenuEntries: [
-                  ...OperationStatusEnum.values
-                      .map(
-                        (e) =>
-                            DropdownMenuEntry(value: e, label: e.description),
-                      )
-                      .toList()
-                ],
-                onSelected: (e) {
-                  if (e == null) return;
-                  simple.get<OperationViewModel>().filterByStatus(e);
-                },
-              ),
-              SizedBox(
-                width: AppSize.padding,
-              ),
-              DropBoxWidget<DockType>(
-                controller: dockTypeEditingController,
-                label: 'Tipo',
-                dropdownMenuEntries: [
-                  ...DockType.values
-                      .map(
-                        (e) =>
-                            DropdownMenuEntry(value: e, label: e.description),
-                      )
-                      .toList()
-                ],
-                onSelected: (e) {
-                  if (e == null) return;
-                  simple.get<OperationViewModel>().filterByDock(e);
-                },
-              ),
-              SizedBox(
-                width: AppSize.padding,
-              ),
-              Expanded(
-                child: TextFormFieldWidget<OutlineInputBorder>(
-                  label: 'Pesquisar',
-                  hint: 'Pesquise por transportadora ou doca',
-                  onChange: (e) => textSearched.value = e,
-                ),
-              ),
-              SizedBox(
-                width: AppSize.padding,
-              ),
-            ],
-          ),
-          const Gap(10),
-          Obx(() {
-            final itens = controller.operationsFilted.value
-                .map(
-                  (operationModel) => Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: AppSize.padding / 2,
-                    ),
-                    child: OperationWidget(
-                      key: ObjectKey(operationModel),
-                      operationModel: operationModel,
+                    if (dateRangeSelected == null) {
+                      controller.resetFilter();
+                      textDateRangeSelected.value = '';
+                    }
+                    if (dateRangeSelected != null) {
+                      await controller.filterByDate(
+                        dateRangeSelected!.start,
+                        dateRangeSelected!.end,
+                      );
+                      textDateRangeSelected.value =
+                          "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
+                    }
+                  },
+                  icon: const Icon(Icons.date_range),
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.resolveWith(
+                      (states) => RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
-                )
-                .toList();
-            return PageWidget(
-              key: ObjectKey(itens),
-              itens: itens,
-              onRefresh: () async => await controller.getAll(),
-              onDownload: () async =>
-                  await controller.downloadFile(controller.operationsFilted),
-              totalByPage: controller.limitPaginationOffset,
-            );
-          }),
-        ],
+                ),
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+                Obx(() {
+                  return Text(
+                    textDateRangeSelected.value,
+                    style: AppTextStyle.displayMedium(context),
+                  );
+                }),
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+                DropBoxWidget<OperationStatusEnum>(
+                  controller: operationStatusEditingController,
+                  label: 'Status',
+                  dropdownMenuEntries: [
+                    ...OperationStatusEnum.values
+                        .map(
+                          (e) =>
+                              DropdownMenuEntry(value: e, label: e.description),
+                        )
+                        .toList()
+                  ],
+                  onSelected: (e) async {
+                    if (e == null) return;
+                    await simple.get<OperationViewModel>().filterByStatus(e);
+                  },
+                ),
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+                DropBoxWidget<DockType>(
+                  controller: dockTypeEditingController,
+                  label: 'Tipo',
+                  dropdownMenuEntries: [
+                    ...DockType.values
+                        .map(
+                          (e) =>
+                              DropdownMenuEntry(value: e, label: e.description),
+                        )
+                        .toList()
+                  ],
+                  onSelected: (e) {
+                    if (e == null) return;
+                    simple.get<OperationViewModel>().filterByDock(e);
+                  },
+                ),
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+                Expanded(
+                  child: TextFormFieldWidget<OutlineInputBorder>(
+                    label: 'Pesquisar',
+                    hint: 'Pesquise por transportadora ou doca',
+                    onChange: (e) => textSearched.value = e,
+                  ),
+                ),
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+              ],
+            ),
+            const Gap(10),
+            Obx(() {
+              final itens = controller.operationsFilted.value
+                  .map(
+                    (operationModel) => Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: AppSize.padding / 2,
+                      ),
+                      child: OperationWidget(
+                        key: ObjectKey(operationModel),
+                        operationModel: operationModel,
+                      ),
+                    ),
+                  )
+                  .toList();
+              return PageWidget(
+                key: ValueKey(pageWidgetMobileKey),
+                itens: itens,
+                onRefresh: () async => await controller.getAll(),
+                onDownload: () async =>
+                    await controller.downloadFile(controller.operationsFilted),
+                totalByPage: controller.limitPaginationOffset,
+                isLoadingItens:
+                    controller.appState.value is AppStateLoadingMore,
+                onLoadMoreItens: controller.isEnableLoadMoreItens.value
+                    ? controller.nextPage
+                    : null,
+              );
+            }),
+          ],
+        ),
       ),
     );
   }

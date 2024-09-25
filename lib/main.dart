@@ -242,6 +242,7 @@ void main() async {
     },
   );
 
+/*
   await NewrelicMobile.instance.start(config, () async {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
@@ -259,4 +260,20 @@ void main() async {
 
     runApp(const App());
   });
+  */
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: "AIzaSyBojaKfglolWvClT-VwYW9QzU2RGKi_e9E",
+      appId: "1:1062375327946:web:3ae61c6e184e8e75130c33",
+      messagingSenderId: "1062375327946",
+      projectId: "martinlog-web",
+      storageBucket: 'martinlog-web.appspot.com',
+      authDomain: "martinlog-web.firebaseapp.com",
+      measurementId: "G-CWVH9LC3GF",
+    ),
+  );
+  Intl.defaultLocale = 'pt_BR';
+  await initializeDateFormatting('pt_BR', null);
+
+  runApp(const App());
 }
