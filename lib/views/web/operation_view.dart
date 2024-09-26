@@ -1046,6 +1046,8 @@ class _DetailsWidgetState extends State<DetailsWidget>
                           recognizer: TapGestureRecognizer()
                             ..onTap = () async {
                               if (widget.operationModel.urlImage != null) {
+                                await launchUrl(
+                                    Uri.parse(widget.operationModel.urlImage!));
                                 /*
                                 html.window.open(
                                     widget.operationModel.urlImage!,
