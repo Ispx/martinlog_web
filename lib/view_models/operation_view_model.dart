@@ -113,11 +113,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     try {
       changeState(AppStateLoading());
       await cancelOperationRepository(operationModel.operationKey);
-      await FirebaseFirestore.instance.collection('operation_events').add({
-        'data': operationModel.toJson(),
-        'event_type': EventTypeEnum.OPERATION_CANCELED.description,
-        'idUser': simple.get<AuthViewModel>().authModel!.idUser,
-      });
+      _notify(operationModel, EventTypeEnum.OPERATION_CANCELED);
       final index = operations.indexWhere(
           (element) => element.operationKey == operationModel.operationKey);
       operations.replaceRange(
@@ -149,13 +145,9 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
           dockCode: dockCode,
           liscensePlate: liscensePlate,
           description: description);
-      await FirebaseFirestore.instance.collection('operation_events').add({
-        'data': operationModel.toJson(),
-        'event_type': EventTypeEnum.OPERATION_CREATED.description,
-        'idUser': simple.get<AuthViewModel>().authModel!.idUser,
-      });
+      _notify(operationModel, EventTypeEnum.OPERATION_CREATED);
       operations.value = [operationModel, ...operations.value];
-      operationsFilted.value = [operationModel, ...operationsFilted.value];
+      operationsFilted.value = List.from(operations.value);
       BannerComponent(
         message: "Operação criada com sucesso",
         backgroundColor: Colors.green,
@@ -256,20 +248,28 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
           ),
         ],
       );
-
+      _notify(
+          operationModel,
+          progress == 100
+              ? EventTypeEnum.OPERATION_FINISHED
+              : EventTypeEnum.OPERATION_UPDATED);
       operationsFilted.value = operations;
 
-      await FirebaseFirestore.instance.collection('operation_events').add({
-        'data': operationModel.toJson(),
-        'event_type': progress == 100
-            ? EventTypeEnum.OPERATION_FINISHED.description
-            : EventTypeEnum.OPERATION_UPDATED.description,
-        'idUser': simple.get<AuthViewModel>().authModel!.idUser,
-      });
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
     }
+  }
+
+  Future<void> _notify(
+      OperationModel operationModel, EventTypeEnum eventType) async {
+    try {
+      FirebaseFirestore.instance.collection('operation_events').add({
+        'data': operationModel.toJson(),
+        'event_type': eventType.description,
+        'idUser': simple.get<AuthViewModel>().authModel!.idUser,
+      });
+    } catch (_) {}
   }
 
   void changeState(AppState appState) {
