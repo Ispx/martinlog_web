@@ -2,10 +2,8 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id 'com.google.gms.google-services'
 }
-
-apply plugin: 'newrelic' // <-- add this
-
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
@@ -70,4 +68,6 @@ flutter {
 
 dependencies {
   implementation "com.newrelic.agent.android:android-agent:7.5.1"
+  implementation platform('com.google.firebase:firebase-bom:33.4.0')
+  implementation 'com.google.firebase:firebase-analytics'
 }

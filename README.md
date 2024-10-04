@@ -44,3 +44,6 @@ server {
 
 Deploy: flutter clean && flutter build web --dart-define URL_BASE=https://api.martinlog.com.br --dart-define APP_NAME="Plataforma Martin log" && cd build/web && npx surge --project . --domain martinlog.surge.sh
 
+
+
+flutter clean && flutter build apk --split-per-abi --dart-define URL_BASE=https://api.martinlog.com.br --dart-define APP_NAME="Plataforma Martin log"

@@ -59,7 +59,6 @@ dependencies:
   firebase_storage: 
   shimmer:
   flutter_secure_storage: 
-  newrelic_mobile: 1.0.0
 
 
 dev_dependencies:
