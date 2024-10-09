@@ -18,10 +18,26 @@
             ],
         },
         {
-            "name": "[PROD] martinlog_web",
+            "name": "[PROD WEB] martinlog_web",
             "request": "launch",
             "type": "dart",
             "args": [
+                "--dart-define",
+                "PLATFORM=web",
+                "--dart-define",
+                "ENV=dev",
+                "--dart-define",
+                "URL_BASE=https://api.martinlog.com.br",
+                "--dart-define",
+                "APP_NAME=Plataforma Martin log",
+            ],
+        },    {
+            "name": "[PROD MOBILE] martinlog_web",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define",
+                "PLATFORM=mobile",
                 "--dart-define",
                 "ENV=dev",
                 "--dart-define",
