@@ -14,6 +14,7 @@ extension IntExt on int {
         2 => DockType.RECEIPT,
         3 => DockType.KAMIKAZE,
         4 => DockType.TRANSFER,
+        5 => DockType.REVERSE,
         _ => throw Exception("$this is invalid dock")
       };
   OperationStatusEnum getOperationStatus() => switch (this) {
