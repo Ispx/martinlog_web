@@ -31,13 +31,14 @@
                 "--dart-define",
                 "APP_NAME=Plataforma Martin log",
             ],
-        },    {
+        },
+        {
             "name": "[PROD MOBILE] martinlog_web",
             "request": "launch",
             "type": "dart",
             "args": [
                 "--dart-define",
-                "PLATFORM=web",
+                "PLATFORM=mobile",
                 "--dart-define",
                 "ENV=dev",
                 "--dart-define",
