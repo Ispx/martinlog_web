@@ -11,6 +11,7 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/state/menu_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
+import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/view_models/dashboard_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/views/web/operation_view.dart';
@@ -82,28 +83,49 @@ class _DashboardViewState extends State<DashboardView> {
                     padding: EdgeInsets.symmetric(horizontal: 2.w),
                     child: LayoutBuilder(builder: (context, constraint) {
                       final width = constraint.maxWidth / 4.5;
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      return Column(
                         children: [
-                          CardSummaryOperationWidget(
-                            width: width,
-                            controller: controller,
-                            dockType: DockType.RECEIPT,
+                          Wrap(
+                            spacing: AppSize.padding * 2,
+                            runSpacing: AppSize.padding * 2,
+                            alignment: WrapAlignment.center,
+                            children: [
+                              CardSummaryOperationWidget(
+                                width: width,
+                                controller: controller,
+                                dockType: DockType.RECEIPT,
+                              ),
+                              CardSummaryOperationWidget(
+                                width: width,
+                                controller: controller,
+                                dockType: DockType.EXPEDITION,
+                              ),
+                              CardSummaryOperationWidget(
+                                width: width,
+                                controller: controller,
+                                dockType: DockType.TRANSFER,
+                              ),
+                            ],
                           ),
-                          CardSummaryOperationWidget(
-                            width: width,
-                            controller: controller,
-                            dockType: DockType.EXPEDITION,
+                          SizedBox(
+                            height: AppSize.padding * 2,
                           ),
-                          CardSummaryOperationWidget(
-                            width: width,
-                            controller: controller,
-                            dockType: DockType.TRANSFER,
-                          ),
-                          CardSummaryOperationWidget(
-                            width: width,
-                            controller: controller,
-                            dockType: DockType.KAMIKAZE,
+                          Wrap(
+                            spacing: AppSize.padding * 2,
+                            runSpacing: AppSize.padding * 2,
+                            alignment: WrapAlignment.center,
+                            children: [
+                              CardSummaryOperationWidget(
+                                width: width,
+                                controller: controller,
+                                dockType: DockType.KAMIKAZE,
+                              ),
+                              CardSummaryOperationWidget(
+                                width: width,
+                                controller: controller,
+                                dockType: DockType.REVERSE,
+                              ),
+                            ],
                           ),
                         ],
                       );
@@ -129,6 +151,7 @@ class _DashboardViewState extends State<DashboardView> {
                 PageWidget(
                   key: ValueKey(DateTime.now()),
                   totalByPage: 5,
+                  isLoadingItens: controller.appState.value is AppStateLoading,
                   itens: controller
                       .getLastsOperations(5)
                       .map(
@@ -166,25 +189,6 @@ class CardSummaryOperationWidget extends StatelessWidget {
     required this.dockType,
     required this.controller,
   });
-  Color getColorIconDockType(DockType dockType) {
-    return switch (dockType) {
-      DockType.EXPEDITION => Colors.blue,
-      DockType.RECEIPT => Colors.green,
-      DockType.TRANSFER => Colors.orange,
-      DockType.KAMIKAZE => Colors.red,
-      _ => throw "Invalid icondata to dockType"
-    };
-  }
-
-  IconData getIconDataByDockType(DockType dockType) {
-    return switch (dockType) {
-      DockType.EXPEDITION => LineIcons.arrowUp,
-      DockType.RECEIPT => LineIcons.arrowDown,
-      DockType.TRANSFER => LineIcons.alternateExchange,
-      DockType.KAMIKAZE => LineIcons.alternateArrows,
-      _ => throw "Invalid icondata to dockType"
-    };
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,12 +218,12 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     height: 3.w,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      color: getColorIconDockType(dockType),
+                      color: Utils.getColorIconDockType(dockType),
                     ),
                     alignment: Alignment.center,
                     child: Center(
                       child: Icon(
-                        getIconDataByDockType(dockType),
+                        Utils.getIconDataByDockType(dockType),
                         color: Colors.white,
                         size: 2.w,
                       ),
@@ -341,45 +345,52 @@ class CardIndicatorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      borderRadius: BorderRadius.circular(10),
-      elevation: 4.0,
-      child: Container(
-        width: width,
-        height: width != null ? width! * .80 : null,
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: EdgeInsets.only(
-          top: 0.5.w,
-          bottom: 0.5.w,
-          left: 0.5.w,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: AppTextStyle.displaySmall(context).copyWith(
-                overflow: TextOverflow.ellipsis,
-                color: Colors.white,
+    return LayoutBuilder(builder: (context, constraint) {
+      return Material(
+        borderRadius: BorderRadius.circular(10),
+        elevation: 4.0,
+        child: Container(
+          width: width,
+          height: width != null ? width! * .80 : null,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: EdgeInsets.only(
+            top: 0.5.w,
+            bottom: 0.5.w,
+            left: 0.5.w,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: AppTextStyle.displaySmall(context).copyWith(
+                  overflow: TextOverflow.ellipsis,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            isLoading == true
-                ? const CircularProgressIndicatorWidget()
-                : Text(
-                    value.toString(),
-                    style: AppTextStyle.displayLarge(context).copyWith(
-                      fontWeight: FontWeight.bold,
-                      overflow: TextOverflow.ellipsis,
-                      color: Colors.white,
-                    ),
-                  )
-          ],
+              isLoading == true
+                  ? const Center(
+                      child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicatorWidget()),
+                    )
+                  : Text(
+                      value.toString(),
+                      style: AppTextStyle.displayLarge(context).copyWith(
+                        fontWeight: FontWeight.bold,
+                        overflow: TextOverflow.ellipsis,
+                        color: Colors.white,
+                      ),
+                    )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

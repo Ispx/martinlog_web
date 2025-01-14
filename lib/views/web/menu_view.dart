@@ -137,9 +137,6 @@ class _MenuViewState extends State<MenuView> {
           if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicatorWidget());
-          }
           return Obx(() {
             return Row(
               children: [

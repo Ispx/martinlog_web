@@ -6,6 +6,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
+import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/widgets/page_widget_mobile.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
@@ -102,6 +103,12 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
                               controller: controller,
                               dockType: DockType.KAMIKAZE,
                             ),
+                            const Gap(16),
+                            CardSummaryOperationWidget(
+                              width: width,
+                              controller: controller,
+                              dockType: DockType.REVERSE,
+                            ),
                           ],
                         );
                       }),
@@ -160,25 +167,6 @@ class CardSummaryOperationWidget extends StatelessWidget {
     required this.dockType,
     required this.controller,
   });
-  Color getColorIconDockType(DockType dockType) {
-    return switch (dockType) {
-      DockType.EXPEDITION => Colors.blue,
-      DockType.RECEIPT => Colors.green,
-      DockType.TRANSFER => Colors.orange,
-      DockType.KAMIKAZE => Colors.red,
-      _ => throw "Invalid icondata to dockType"
-    };
-  }
-
-  IconData getIconDataByDockType(DockType dockType) {
-    return switch (dockType) {
-      DockType.EXPEDITION => LineIcons.arrowUp,
-      DockType.RECEIPT => LineIcons.arrowDown,
-      DockType.TRANSFER => LineIcons.alternateExchange,
-      DockType.KAMIKAZE => LineIcons.alternateArrows,
-      _ => throw "Invalid icondata to dockType"
-    };
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -208,12 +196,12 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     height: 6.w,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      color: getColorIconDockType(dockType),
+                      color: Utils.getColorIconDockType(dockType),
                     ),
                     alignment: Alignment.center,
                     child: Center(
                       child: Icon(
-                        getIconDataByDockType(dockType),
+                        Utils.getIconDataByDockType(dockType),
                         color: Colors.white,
                         size: 4.w,
                       ),

@@ -68,7 +68,7 @@ class _PageWidgetState extends State<PageWidget> {
 
   @override
   Widget build(BuildContext context) {
-return Container(
+    return Container(
       margin: EdgeInsets.zero,
       height: double.maxFinite,
       child: Padding(
@@ -154,37 +154,35 @@ return Container(
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: AppSize.padding),
-                child: Obx(() {
-                  return widget.isLoadingItens
-                      ? ListView.builder(
-                          itemCount: 10,
-                          physics: !kIsWeb
-                              ? const NeverScrollableScrollPhysics()
-                              : null,
-                          itemBuilder: (context, index) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Shimmer.fromColors(
-                              baseColor: Colors.grey.shade300,
-                              highlightColor: Colors.white,
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: Colors.white,
-                                ),
-                                height: 90,
+                child: widget.isLoadingItens
+                    ? ListView.builder(
+                        itemCount: 10,
+                        physics: !kIsWeb
+                            ? const NeverScrollableScrollPhysics()
+                            : null,
+                        itemBuilder: (context, index) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.grey.shade300,
+                            highlightColor: Colors.white,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.white,
                               ),
+                              height: 90,
                             ),
                           ),
-                        )
-                      : ListView.builder(
-                          physics: !kIsWeb
-                              ? const NeverScrollableScrollPhysics()
-                              : null,
-                          itemCount: sublistItens.length,
-                          itemBuilder: (context, index) => sublistItens[index],
-                        );
-                }),
+                        ),
+                      )
+                    : ListView.builder(
+                        physics: !kIsWeb
+                            ? const NeverScrollableScrollPhysics()
+                            : null,
+                        itemCount: sublistItens.length,
+                        itemBuilder: (context, index) => sublistItens[index],
+                      ),
               ),
             ),
           ],
