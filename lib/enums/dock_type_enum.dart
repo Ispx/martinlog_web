@@ -4,4 +4,5 @@ enum DockType {
   RECEIPT,
   KAMIKAZE,
   TRANSFER,
+  REVERSE,
 }

@@ -37,7 +37,7 @@
             "type": "dart",
             "args": [
                 "--dart-define",
-                "PLATFORM=mobile",
+                "PLATFORM=web",
                 "--dart-define",
                 "ENV=dev",
                 "--dart-define",

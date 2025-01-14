@@ -7,6 +7,7 @@ extension DockTypeExt on DockType {
         DockType.RECEIPT => 2,
         DockType.KAMIKAZE => 3,
         DockType.TRANSFER => 4,
+        DockType.REVERSE => 5,
       };
 
   String get description => switch (this) {
@@ -15,5 +16,6 @@ extension DockTypeExt on DockType {
         DockType.RECEIPT => "Recebimento",
         DockType.KAMIKAZE => "Camicado",
         DockType.TRANSFER => "Transferência",
+        DockType.REVERSE => "Reverso",
       };
 }
