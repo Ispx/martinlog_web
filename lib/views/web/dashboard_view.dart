@@ -35,9 +35,9 @@ class _DashboardViewState extends State<DashboardView> {
       setState(() {});
     });
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       if (controller.operations.isEmpty) {
-        controller.getAllOperations();
+        await controller.getAllOperations();
       }
     });
     super.initState();

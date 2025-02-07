@@ -162,6 +162,7 @@ class _PageWidgetState extends State<PageWidget> {
                         itemBuilder: (context, index) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Shimmer.fromColors(
+                            enabled: false,
                             baseColor: Colors.grey.shade300,
                             highlightColor: Colors.white,
                             child: Container(
