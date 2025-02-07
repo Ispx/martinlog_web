@@ -161,7 +161,7 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
         liscensePlate: textControllers['licensePlate']!.text,
         description: textControllers['description']!.text,
         operationModel: operationModelToUpdate!,
-        route: textControllers['description']!.text,
+        route: textControllers['route']!.text,
         place: textControllers['place']!.text,
       );
       pageWidgetMobileKey += "${DateTime.now().millisecondsSinceEpoch}";
