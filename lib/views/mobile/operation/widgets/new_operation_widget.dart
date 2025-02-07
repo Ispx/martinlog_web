@@ -339,6 +339,7 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
                       title: "Rota",
                       child: TextFormFieldWidget<OutlineInputBorder>(
                         controller: textControllers['route']!,
+                        prefixText: '/',
                         enable: controller.appState.value is! AppStateLoading,
                       ),
                     ),
@@ -348,7 +349,6 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
                       title: "Loja",
                       child: TextFormFieldWidget<OutlineInputBorder>(
                         controller: textControllers['place']!,
-                        prefixText: '/',
                         enable: controller.appState.value is! AppStateLoading,
                       ),
                     ),
