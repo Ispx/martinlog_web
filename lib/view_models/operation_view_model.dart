@@ -37,6 +37,8 @@ abstract interface class IOperationViewModel {
     required CompanyModel companyModel,
     required String liscensePlate,
     required String description,
+    required String? route,
+    required String? place,
   });
   Future<void> updateOperation({
     required OperationModel operationModel,
@@ -133,18 +135,24 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   }
 
   @override
-  Future<void> create(
-      {required String dockCode,
-      required CompanyModel companyModel,
-      required String liscensePlate,
-      required String description}) async {
+  Future<void> create({
+    required String dockCode,
+    required CompanyModel companyModel,
+    required String liscensePlate,
+    required String description,
+    required String? route,
+    required String? place,
+  }) async {
     try {
       changeState(AppStateLoading());
       final operationModel = await createOperationRepository(
-          companyModel: companyModel,
-          dockCode: dockCode,
-          liscensePlate: liscensePlate,
-          description: description);
+        companyModel: companyModel,
+        dockCode: dockCode,
+        liscensePlate: liscensePlate,
+        description: description,
+        route: route,
+        place: place,
+      );
       _notify(operationModel, EventTypeEnum.OPERATION_CREATED);
       operations.value = [operationModel, ...operations.value];
       operationsFilted.value = List.from(operations.value);
@@ -216,6 +224,8 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     String? additionalData,
     String? liscensePlate,
     String? description,
+    String? route,
+    String? place,
   }) async {
     try {
       changeState(AppStateLoading());
@@ -228,6 +238,8 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         dockCode: dockModel?.code,
         description: description,
         liscensePlate: liscensePlate,
+        route: route,
+        place: place,
       );
       final index = operations.indexWhere(
           (element) => element.operationKey == operationModel.operationKey);
@@ -245,6 +257,8 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
             idOperationStatus: progress == 100
                 ? OperationStatusEnum.FINISHED.idOperationStatus
                 : null,
+            route: route,
+            place: place,
           ),
         ],
       );
@@ -322,6 +336,10 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
           operationModel.description);
       excel.updateCell(sheetName, CellIndex.indexByString("J$index"),
           operationModel.operationKey);
+      excel.updateCell(sheetName, CellIndex.indexByString("K$index"),
+          operationModel.route ?? '');
+      excel.updateCell(sheetName, CellIndex.indexByString("L$index"),
+          operationModel.place ?? '');
     }
 
     excel.setDefaultSheet(sheetName);

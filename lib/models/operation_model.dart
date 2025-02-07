@@ -1,4 +1,3 @@
-import 'package:get/get_utils/get_utils.dart';
 import 'package:martinlog_web/extensions/string_extension.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
@@ -17,7 +16,8 @@ class OperationModel {
   String? description;
   String? additionalData;
   String? urlImage;
-
+  String? route;
+  String? place;
   OperationModel({
     required this.operationKey,
     this.dockModel,
@@ -31,6 +31,8 @@ class OperationModel {
     this.description,
     this.additionalData,
     this.urlImage,
+    this.route,
+    this.place,
   });
 
   Map<String, dynamic> toJson() {
@@ -45,6 +47,8 @@ class OperationModel {
       'createdAt': createdAt.toString().parseToDateTime(),
       'finishedAt': finishedAt?.toString().parseToDateTime(),
       'description': description,
+      'route': route,
+      'place': place,
     };
   }
 
@@ -58,13 +62,15 @@ class OperationModel {
             data['dock'] != null ? DockModel.fromJson(data['dock']) : null,
         progress: data['progress'],
         idOperationStatus: data['idOperationStatus'],
-        createdAt: data['createdAt'].toString().parseToDateTime()!,
+        createdAt: data['createdAt'].toString().parseToDateTime()!.toLocal(),
         finishedAt: data['finishedAt'] != null
-            ? data['finishedAt'].toString().parseToDateTime()!
+            ? data['finishedAt'].toString().parseToDateTime()!.toLocal()
             : null,
         description: data['description'],
         additionalData: data['additionalData'],
-        urlImage: data['urlImage']);
+        urlImage: data['urlImage'],
+        route: data['route'],
+        place: data['place']);
   }
 
   OperationModel copyWith({
@@ -77,6 +83,8 @@ class OperationModel {
     String? description,
     CompanyModel? companyModel,
     String? urlImage,
+    String? route,
+    String? place,
   }) {
     return OperationModel(
       operationKey: operationKey,
@@ -91,6 +99,8 @@ class OperationModel {
       description: description ?? this.description,
       additionalData: additionalData ?? this.additionalData,
       urlImage: urlImage ?? this.urlImage,
+      route: route ?? this.route,
+      place: place ?? this.place,
     );
   }
 }

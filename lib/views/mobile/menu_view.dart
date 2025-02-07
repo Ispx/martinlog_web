@@ -6,7 +6,6 @@ import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
 import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-
 import '../../core/dependencie_injection_manager/simple.dart';
 import '../../enums/profile_type_enum.dart';
 import '../../functions/futures.dart';
@@ -23,7 +22,6 @@ import '../../view_models/menu_view_model.dart';
 import '../../view_models/operation_view_model.dart';
 import '../../view_models/user_view_model.dart';
 import '../../widgets/app_bar_widget_mobile.dart';
-import '../../widgets/circular_progress_indicator_widget.dart';
 import '../web/company_view.dart';
 import '../web/dock_view.dart';
 import '../web/users_view.dart';
@@ -38,20 +36,26 @@ class MenuViewMobile extends StatefulWidget {
 
 class _MenuViewMobileState extends State<MenuViewMobile> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late final Future<dynamic> _future;
   late final MenuViewModel menuViewModel;
   late final Worker worker;
 
   Widget getViewByMenu(MenuEnum menuEnum) => switch (menuEnum) {
-        MenuEnum.Operations => const OperationViewMobile(),
-        MenuEnum.Dock => const DockView(),
-        MenuEnum.Company => const CompanyView(),
-        MenuEnum.Users => const UserView(),
+        MenuEnum.Operations => const OperationViewMobile(
+            key: ObjectKey(MenuEnum.Operations),
+          ),
+        MenuEnum.Dock => const DockView(
+            key: ObjectKey(MenuEnum.Dock),
+          ),
+        MenuEnum.Company => const CompanyView(
+            key: ObjectKey(MenuEnum.Company),
+          ),
+        MenuEnum.Users => const UserView(
+            key: ObjectKey(MenuEnum.Users),
+          ),
         MenuEnum.Dashboard => const DashboardViewMobile()
       };
   @override
   void initState() {
-    _future = funcGetAccountInfo();
     worker = everAll([
       simple.get<OperationViewModel>().appState,
       simple.get<DockViewModel>().appState,
@@ -62,7 +66,9 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
       menuViewModel.changeStatus(state as AppState);
     });
     menuViewModel = simple.get<MenuViewModel>();
-
+    WidgetsBinding.instance.addPostFrameCallback((value) {
+      funcGetAccountInfo();
+    });
     super.initState();
   }
 
@@ -82,38 +88,29 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
           drawer: DrawerMenu(
               menuViewModel: menuViewModel, scaffoldKey: _scaffoldKey),
           backgroundColor: context.appTheme.backgroundColor,
-          body: FutureBuilder(
-            future: _future,
-            builder: (_, snapshot) {
-              if (snapshot.hasError)
-                return Center(child: Text(snapshot.error.toString()));
-              if (!snapshot.hasData)
-                return const Center(child: CircularProgressIndicatorWidget());
-
-              return Obx(() {
-                return Column(
-                  children: [
-                    AppBarWidgetMobile(
-                      prefix: IconButton(
-                        icon: const Icon(Icons.menu),
-                        onPressed: () {
-                          _scaffoldKey.currentState!.openDrawer();
-                        },
-                      ),
-                      backgroundColor: context.appTheme.backgroundColor,
-                      title: menuViewModel.menuState.value.menuEnum.title,
-                      content: const Center(),
-                      isLoading: menuViewModel.menuState.value.appState
-                          is AppStateLoading,
-                    ),
-                    Expanded(
-                        child: getViewByMenu(
-                            menuViewModel.menuState.value.menuEnum)),
-                  ],
-                );
-              });
-            },
-          ),
+          body: Obx(() {
+            return Column(
+              children: [
+                AppBarWidgetMobile(
+                  key: const ValueKey('AppBarWidgetMobile'),
+                  prefix: IconButton(
+                    icon: const Icon(Icons.menu),
+                    onPressed: () {
+                      _scaffoldKey.currentState!.openDrawer();
+                    },
+                  ),
+                  backgroundColor: context.appTheme.backgroundColor,
+                  title: menuViewModel.menuState.value.menuEnum.title,
+                  content: const Center(),
+                ),
+                Expanded(
+                  child: getViewByMenu(
+                    menuViewModel.menuState.value.menuEnum,
+                  ),
+                ),
+              ],
+            );
+          }),
         ),
       ),
     );
@@ -213,61 +210,6 @@ class _DrawerMenuState extends State<DrawerMenu> {
                       });
                     },
                   ),
-                  // SizedBox(height: AppSize.padding),
-                  // MenuItem(
-                  //   icon: const Icon(
-                  //     LineIcons.warehouse,
-                  //     color: Colors.white,
-                  //   ),
-                  //   isOpen: isOpen,
-                  //   title: 'Docas',
-                  //   isSelected: widget.menuViewModel.menuState.value.menuEnum == MenuEnum.Dock,
-                  //   onTap: () {
-                  //     setState(() {
-                  //       widget.menuViewModel.changeMenu(MenuEnum.Dock);
-                  //       // widget.scaffoldKey.currentState!.closeDrawer();
-                  //     });
-                  //   },
-                  //   profiles: const [ProfileTypeEnum.MASTER],
-                  // ),
-                  // SizedBox(
-                  //   height: AppSize.padding,
-                  // ),
-                  // MenuItem(
-                  //   icon: const Icon(
-                  //     LineIcons.truck,
-                  //     color: Colors.white,
-                  //   ),
-                  //   isOpen: isOpen,
-                  //   isSelected: widget.menuViewModel.menuState.value.menuEnum == MenuEnum.Company,
-                  //   title: 'Transportadoras',
-                  //   onTap: () {
-                  //     setState(() {
-                  //       widget.menuViewModel.changeMenu(MenuEnum.Company);
-                  //       // widget.scaffoldKey.currentState!.closeDrawer();
-                  //     });
-                  //   },
-                  //   profiles: const [ProfileTypeEnum.MASTER],
-                  // ),
-                  // SizedBox(
-                  //   height: AppSize.padding,
-                  // ),
-                  // MenuItem(
-                  //   icon: const Icon(
-                  //     LineIcons.users,
-                  //     color: Colors.white,
-                  //   ),
-                  //   isOpen: isOpen,
-                  //   isSelected: widget.menuViewModel.menuState.value.menuEnum == MenuEnum.Users,
-                  //   title: 'Usuários',
-                  //   onTap: () {
-                  //     setState(() {
-                  //       widget.menuViewModel.changeMenu(MenuEnum.Users);
-                  //       // widget.scaffoldKey.currentState!.closeDrawer();
-                  //     });
-                  //   },
-                  //   profiles: const [ProfileTypeEnum.MASTER],
-                  // ),
                   SizedBox(
                     height: AppSize.padding,
                   ),

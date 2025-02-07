@@ -9,7 +9,6 @@ import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/widgets/page_widget_mobile.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../core/dependencie_injection_manager/simple.dart';
 import '../../enums/dock_type_enum.dart';
@@ -354,12 +353,10 @@ class CardIndicatorWidget extends StatelessWidget {
               ),
             ),
             isLoading
-                ? Shimmer.fromColors(
-                    baseColor: Colors.grey.shade300,
-                    highlightColor: Colors.white,
-                    child: Container(
-                      height: 35,
-                      width: 45,
+                ? Text(
+                    'Carregando...',
+                    style: AppTextStyle.mobileDisplaySmall(context).copyWith(
+                      overflow: TextOverflow.ellipsis,
                       color: Colors.white,
                     ),
                   )

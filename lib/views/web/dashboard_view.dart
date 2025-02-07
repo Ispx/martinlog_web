@@ -15,7 +15,6 @@ import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/view_models/dashboard_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/views/web/operation_view.dart';
-import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
 import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:martinlog_web/widgets/page_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -34,6 +33,12 @@ class _DashboardViewState extends State<DashboardView> {
   void initState() {
     worker = ever(controller.operations, (callback) {
       setState(() {});
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (controller.operations.isEmpty) {
+        controller.getAllOperations();
+      }
     });
     super.initState();
   }
@@ -148,28 +153,30 @@ class _DashboardViewState extends State<DashboardView> {
                     ),
                   ),
                 ),
-                PageWidget(
-                  key: ValueKey(DateTime.now()),
-                  totalByPage: 5,
-                  isLoadingItens: controller.appState.value is AppStateLoading,
-                  itens: controller
-                      .getLastsOperations(5)
-                      .map(
-                        (operationModel) => Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: AppSize.padding / 2,
+                Obx(() {
+                  return PageWidget(
+                    key: ValueKey(DateTime.now()),
+                    totalByPage: 5,
+                    isLoadingItens:
+                        controller.appState.value is AppStateLoading,
+                    itens: controller
+                        .getLastsOperations(5)
+                        .map(
+                          (operationModel) => Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: AppSize.padding / 2,
+                            ),
+                            child: OperationWidget(
+                              key: ObjectKey(operationModel),
+                              operationModel: operationModel,
+                              onAction: () => controller.getAllOperations(),
+                            ),
                           ),
-                          child: OperationWidget(
-                            key: ObjectKey(operationModel),
-                            operationModel: operationModel,
-                            onAction: () async =>
-                                await controller.getAllOperations(),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                  onRefresh: () async => await controller.getAllOperations(),
-                ),
+                        )
+                        .toList(),
+                    onRefresh: () => controller.getAllOperations(),
+                  );
+                }),
               ],
             ),
           ),
@@ -243,80 +250,82 @@ class CardSummaryOperationWidget extends StatelessWidget {
               SizedBox(
                 height: 3.w,
               ),
-              SizedBox(
-                width: width,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    CardIndicatorWidget(
-                      width: widthIndicator,
-                      value: controller.filterOperations(
-                          idDockType: dockType.idDockType,
-                          dateFrom: DateTime.now().day <= 15
-                              ? DateTime(DateTime.now().year,
-                                      DateTime.now().month, 1)
-                                  .toUtc()
-                              : DateTime(DateTime.now().year,
-                                      DateTime.now().month, 16)
-                                  .toUtc(),
-                          dateUntil: DateTime.now().day <= 15
-                              ? DateTime(DateTime.now().year,
-                                      DateTime.now().month, 15, 23, 59, 59)
-                                  .toUtc()
-                              : DateTime(DateTime.now().year,
-                                      DateTime.now().month + 1, 1)
-                                  .toUtc()
-                                  .subtract(1.seconds),
-                          status: [
-                            OperationStatusEnum.CREATED.idOperationStatus,
-                            OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                            OperationStatusEnum.FINISHED.idOperationStatus,
-                          ]).length,
-                      isLoading: controller.appState.value is AppStateLoading,
-                      title: "15º atual",
-                      backgroundColor: Colors.blue,
-                    ),
-                    SizedBox(width: width * .05),
-                    CardIndicatorWidget(
-                      width: widthIndicator,
-                      value: controller.filterOperations(
-                          idDockType: dockType.idDockType,
-                          dateFrom: DateTime(DateTime.now().year,
-                                  DateTime.now().month, DateTime.now().day)
-                              .toUtc(),
-                          dateUntil: DateTime(
-                                  DateTime.now().year,
-                                  DateTime.now().month,
-                                  DateTime.now().day,
-                                  23,
-                                  59,
-                                  59)
-                              .toUtc(),
-                          status: [
-                            OperationStatusEnum.CREATED.idOperationStatus,
-                            OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                            OperationStatusEnum.FINISHED.idOperationStatus,
-                          ]).length,
-                      isLoading: controller.appState.value is AppStateLoading,
-                      title: "Hoje",
-                      backgroundColor: context.appTheme.primaryColor,
-                    ),
-                    SizedBox(width: width * .05),
-                    CardIndicatorWidget(
-                      width: widthIndicator,
-                      value: controller.filterOperations(
-                          idDockType: dockType.idDockType,
-                          status: [
-                            OperationStatusEnum.CREATED.idOperationStatus,
-                            OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                          ]).length,
-                      isLoading: controller.appState.value is AppStateLoading,
-                      title: "Em execução",
-                      backgroundColor: context.appTheme.primaryVariant,
-                    ),
-                  ],
-                ),
-              ),
+              Obx(() {
+                return SizedBox(
+                  width: width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CardIndicatorWidget(
+                        width: widthIndicator,
+                        value: controller.filterOperations(
+                            idDockType: dockType.idDockType,
+                            dateFrom: DateTime.now().day <= 15
+                                ? DateTime(DateTime.now().year,
+                                        DateTime.now().month, 1)
+                                    .toUtc()
+                                : DateTime(DateTime.now().year,
+                                        DateTime.now().month, 16)
+                                    .toUtc(),
+                            dateUntil: DateTime.now().day <= 15
+                                ? DateTime(DateTime.now().year,
+                                        DateTime.now().month, 15, 23, 59, 59)
+                                    .toUtc()
+                                : DateTime(DateTime.now().year,
+                                        DateTime.now().month + 1, 1)
+                                    .toUtc()
+                                    .subtract(1.seconds),
+                            status: [
+                              OperationStatusEnum.CREATED.idOperationStatus,
+                              OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                              OperationStatusEnum.FINISHED.idOperationStatus,
+                            ]).length,
+                        isLoading: controller.appState.value is AppStateLoading,
+                        title: "15º atual",
+                        backgroundColor: Colors.blue,
+                      ),
+                      SizedBox(width: width * .05),
+                      CardIndicatorWidget(
+                        width: widthIndicator,
+                        value: controller.filterOperations(
+                            idDockType: dockType.idDockType,
+                            dateFrom: DateTime(DateTime.now().year,
+                                    DateTime.now().month, DateTime.now().day)
+                                .toUtc(),
+                            dateUntil: DateTime(
+                                    DateTime.now().year,
+                                    DateTime.now().month,
+                                    DateTime.now().day,
+                                    23,
+                                    59,
+                                    59)
+                                .toUtc(),
+                            status: [
+                              OperationStatusEnum.CREATED.idOperationStatus,
+                              OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                              OperationStatusEnum.FINISHED.idOperationStatus,
+                            ]).length,
+                        isLoading: controller.appState.value is AppStateLoading,
+                        title: "Hoje",
+                        backgroundColor: context.appTheme.primaryColor,
+                      ),
+                      SizedBox(width: width * .05),
+                      CardIndicatorWidget(
+                        width: widthIndicator,
+                        value: controller.filterOperations(
+                            idDockType: dockType.idDockType,
+                            status: [
+                              OperationStatusEnum.CREATED.idOperationStatus,
+                              OperationStatusEnum.IN_PROGRESS.idOperationStatus,
+                            ]).length,
+                        isLoading: controller.appState.value is AppStateLoading,
+                        title: "Em execução",
+                        backgroundColor: context.appTheme.primaryVariant,
+                      ),
+                    ],
+                  ),
+                );
+              }),
               SizedBox(
                 height: 2.w,
               ),
@@ -373,11 +382,14 @@ class CardIndicatorWidget extends StatelessWidget {
                 ),
               ),
               isLoading == true
-                  ? const Center(
-                      child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicatorWidget()),
+                  ? Center(
+                      child: Text(
+                        'Carregando...',
+                        style: AppTextStyle.displaySmall(context).copyWith(
+                          overflow: TextOverflow.ellipsis,
+                          color: Colors.white,
+                        ),
+                      ),
                     )
                   : Text(
                       value.toString(),

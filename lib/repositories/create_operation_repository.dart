@@ -10,6 +10,8 @@ abstract interface class ICreateOperationRepository {
     required String dockCode,
     required String liscensePlate,
     required String description,
+    required String? route,
+    required String? place,
   });
 }
 
@@ -18,11 +20,14 @@ class CreateOperationRepository implements ICreateOperationRepository {
   final String urlBase;
   CreateOperationRepository({required this.http, required this.urlBase});
   @override
-  Future<OperationModel> call(
-      {required CompanyModel companyModel,
-      required String dockCode,
-      required String liscensePlate,
-      required String description}) async {
+  Future<OperationModel> call({
+    required CompanyModel companyModel,
+    required String dockCode,
+    required String liscensePlate,
+    required String description,
+    required String? route,
+    required String? place,
+  }) async {
     try {
       final response = await http.request<Response>(
           url: urlBase + Endpoints.operation,
@@ -30,7 +35,9 @@ class CreateOperationRepository implements ICreateOperationRepository {
           body: {
             "dockCode": dockCode,
             "liscensePlate": liscensePlate,
-            "description": description
+            "description": description,
+            "route": route,
+            "place":place,
           },
           headers: {
             'IdCompany': companyModel.idCompany,

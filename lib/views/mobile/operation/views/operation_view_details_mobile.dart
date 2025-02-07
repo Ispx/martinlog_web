@@ -241,6 +241,16 @@ class _OperationViewDetailsMobileState
                       ),
                       const Gap(8),
                       ValuesDetailsWidget(
+                        title: 'Rota:',
+                        value: '/${operationModel!.route ?? ''}',
+                      ),
+                      const Gap(8),
+                      ValuesDetailsWidget(
+                        title: 'Loja:',
+                        value: operationModel!.place ?? '',
+                      ),
+                      const Gap(8),
+                      ValuesDetailsWidget(
                         title: 'Descrição:',
                         value: operationModel!.description ?? '',
                       ),
