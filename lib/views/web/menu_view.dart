@@ -30,7 +30,6 @@ import 'package:martinlog_web/views/web/dock_view.dart';
 import 'package:martinlog_web/views/web/operation_view.dart';
 import 'package:martinlog_web/views/web/users_view.dart';
 import 'package:martinlog_web/widgets/app_bar_widget.dart';
-import 'package:martinlog_web/widgets/circular_progress_indicator_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class MenuView extends StatefulWidget {
@@ -47,11 +46,13 @@ class _MenuViewState extends State<MenuView> {
   late final Worker worker;
 
   Widget getViewByMenu(MenuEnum menuEnum) => switch (menuEnum) {
-        MenuEnum.Operations => const OperationView(),
-        MenuEnum.Dock => const DockView(),
-        MenuEnum.Company => const CompanyView(),
-        MenuEnum.Users => const UserView(),
-        MenuEnum.Dashboard => const DashboardView()
+        MenuEnum.Operations =>
+          const OperationView(key: ObjectKey(MenuEnum.Operations)),
+        MenuEnum.Dock => const DockView(key: ObjectKey(MenuEnum.Dock)),
+        MenuEnum.Company => const CompanyView(key: ObjectKey(MenuEnum.Company)),
+        MenuEnum.Users => const UserView(key: ObjectKey(MenuEnum.Users)),
+        MenuEnum.Dashboard =>
+          const DashboardView(key: ObjectKey(MenuEnum.Dashboard))
       };
   @override
   void initState() {
@@ -117,7 +118,9 @@ class _MenuViewState extends State<MenuView> {
       menuViewModel.changeStatus(state as AppState);
     });
     menuViewModel = simple.get<MenuViewModel>();
-
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      funcGetAccountInfo();
+    });
     super.initState();
   }
 
@@ -131,38 +134,30 @@ class _MenuViewState extends State<MenuView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.appTheme.backgroundColor,
-      body: FutureBuilder(
-        future: funcGetAccountInfo(),
-        builder: (_, snapshot) {
-          if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          return Obx(() {
-            return Row(
-              children: [
-                DrawerMenu(
-                  menuViewModel: menuViewModel,
+      body: Obx(
+        () {
+          return Row(
+            children: [
+              DrawerMenu(
+                menuViewModel: menuViewModel,
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    AppBarWidget(
+                      backgroundColor: context.appTheme.backgroundColor,
+                      title: menuViewModel.menuState.value.menuEnum.title,
+                      content: const Center(),
+                    ),
+                    Expanded(
+                      child:
+                          getViewByMenu(menuViewModel.menuState.value.menuEnum),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      AppBarWidget(
-                        backgroundColor: context.appTheme.backgroundColor,
-                        title: menuViewModel.menuState.value.menuEnum.title,
-                        content: const Center(),
-                        isLoading: menuViewModel.menuState.value.appState
-                            is AppStateLoading,
-                      ),
-                      Expanded(
-                        child: getViewByMenu(
-                            menuViewModel.menuState.value.menuEnum),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          });
+              ),
+            ],
+          );
         },
       ),
     );

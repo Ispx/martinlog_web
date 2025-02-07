@@ -62,7 +62,6 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
       menuViewModel.changeStatus(state as AppState);
     });
     menuViewModel = simple.get<MenuViewModel>();
-
     super.initState();
   }
 
@@ -85,10 +84,12 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
           body: FutureBuilder(
             future: _future,
             builder: (_, snapshot) {
-              if (snapshot.hasError)
+              if (snapshot.hasError) {
                 return Center(child: Text(snapshot.error.toString()));
-              if (!snapshot.hasData)
+              }
+              if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicatorWidget());
+              }
 
               return Obx(() {
                 return Column(
