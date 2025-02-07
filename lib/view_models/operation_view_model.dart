@@ -326,10 +326,10 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
           operationModel.idOperationStatus.getOperationStatus().description);
 
       excel.updateCell(sheetName, CellIndex.indexByString("F$index"),
-          operationModel.createdAt.toLocal().ddMMyyyyHHmmss);
+          operationModel.createdAt.ddMMyyyyHHmmss);
 
       excel.updateCell(sheetName, CellIndex.indexByString("G$index"),
-          operationModel.finishedAt?.toLocal().ddMMyyyyHHmmss ?? '');
+          operationModel.finishedAt?.ddMMyyyyHHmmss ?? '');
       excel.updateCell(sheetName, CellIndex.indexByString("H$index"),
           operationModel.liscensePlate);
       excel.updateCell(sheetName, CellIndex.indexByString("I$index"),
