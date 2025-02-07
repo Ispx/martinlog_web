@@ -12,6 +12,8 @@ abstract interface class IUpdateOperationRepository {
     String? description,
     String? dockCode,
     int? idCompany,
+    String? route,
+    String? place,
   });
 }
 
@@ -29,6 +31,8 @@ class UpdateOperationRepository implements IUpdateOperationRepository {
     String? description,
     String? dockCode,
     int? idCompany,
+    String? route,
+    String? place,
   }) async {
     final data = {};
     if (progress != null) {
@@ -62,6 +66,16 @@ class UpdateOperationRepository implements IUpdateOperationRepository {
     if (liscensePlate != null) {
       data.addAll({
         "liscensePlate": liscensePlate,
+      });
+    }
+    if (route != null) {
+      data.addAll({
+        "route": route,
+      });
+    }
+    if (place != null) {
+      data.addAll({
+        "place": place,
       });
     }
     try {

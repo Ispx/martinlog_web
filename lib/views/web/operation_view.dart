@@ -93,6 +93,11 @@ class _OperationViewState extends State<OperationView> {
         );
       }
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (simple.get<OperationViewModel>().operations.value.isEmpty) {
+        simple.get<OperationViewModel>().getAll();
+      }
+    });
     super.initState();
   }
 
@@ -309,6 +314,8 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
   late TextEditingController dockTypeEditingController;
   late TextEditingController dockCodeEditingController;
   late TextEditingController companyEditingController;
+  late TextEditingController routeEditingController;
+  late TextEditingController placeEditingController;
 
   late final GlobalKey<FormState> formState;
   final controller = simple.get<OperationViewModel>();
@@ -320,6 +327,9 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
     dockCodeEditingController = TextEditingController();
     dockTypeEditingController = TextEditingController();
     companyEditingController = TextEditingController();
+    routeEditingController = TextEditingController();
+    placeEditingController = TextEditingController();
+
     companies = simple.get<AuthViewModel>().authModel?.idProfile ==
             ProfileTypeEnum.MASTER.idProfileType
         ? simple.get<CompanyViewModel>().companies.toList()
@@ -345,6 +355,8 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
     dockCodeEditingController.clear();
     dockTypeEditingController.clear();
     companyEditingController.clear();
+    routeEditingController.clear();
+    placeEditingController.clear();
     setState(() {});
   }
 
@@ -371,6 +383,8 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
         dockCode: dockModelSelected!.code,
         liscensePlate: liscensePlateEditingController.text,
         description: descriptionEditingController.text,
+        place: placeEditingController.text,
+        route: routeEditingController.text,
       );
       isLoading.value = false;
       clearFields();
@@ -514,13 +528,42 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                         Row(
                           children: [
                             Flexible(
-                              flex: 2,
+                              flex: 3,
                               fit: FlexFit.tight,
                               child: buildSelectable(
                                 context: context,
                                 title: "Descrição",
                                 child: TextFormFieldWidget<OutlineInputBorder>(
                                   controller: descriptionEditingController,
+                                  enable: controller.appState.value
+                                      is! AppStateLoading,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: AppSize.padding * 2,
+                            ),
+                            Flexible(
+                              child: buildSelectable(
+                                context: context,
+                                title: "Rota",
+                                child: TextFormFieldWidget<OutlineInputBorder>(
+                                  controller: routeEditingController,
+                                  prefixText: '/',
+                                  enable: controller.appState.value
+                                      is! AppStateLoading,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: AppSize.padding * 2,
+                            ),
+                            Flexible(
+                              child: buildSelectable(
+                                context: context,
+                                title: "Loja",
+                                child: TextFormFieldWidget<OutlineInputBorder>(
+                                  controller: placeEditingController,
                                   enable: controller.appState.value
                                       is! AppStateLoading,
                                 ),
@@ -1027,6 +1070,14 @@ class _DetailsWidgetState extends State<DetailsWidget>
                   ValuesDetailsWidget(
                     title: 'Placa:',
                     value: widget.operationModel.liscensePlate,
+                  ),
+                  ValuesDetailsWidget(
+                    title: 'Rota:',
+                    value: "/${widget.operationModel.route ?? ''}",
+                  ),
+                  ValuesDetailsWidget(
+                    title: 'Loja:',
+                    value: widget.operationModel.place ?? '',
                   ),
                   ValuesDetailsWidget(
                     title: 'Descrição:',

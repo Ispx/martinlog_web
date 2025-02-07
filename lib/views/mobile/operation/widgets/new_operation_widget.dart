@@ -47,6 +47,8 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
     'dockType': TextEditingController(),
     'dockCode': TextEditingController(),
     'company': TextEditingController(),
+    'route': TextEditingController(),
+    'place': TextEditingController(),
   };
 
   late final List<CompanyModel> companies;
@@ -88,6 +90,13 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
     textControllers['description']!.value = TextEditingValue(
       text: operationModelToUpdate?.description ?? '',
     );
+    textControllers['route']!.value = TextEditingValue(
+      text: operationModelToUpdate?.route ?? '',
+    );
+    textControllers['place']!.value = TextEditingValue(
+      text: operationModelToUpdate?.place ?? '',
+    );
+
     companyModelSelected = operationModelToUpdate?.companyModel;
     dockModelSelected = operationModelToUpdate?.dockModel;
     setState(() {});
@@ -126,6 +135,8 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
         dockCode: dockModelSelected!.code,
         liscensePlate: textControllers['licensePlate']!.text,
         description: textControllers['description']!.text,
+        route: textControllers['route']!.text,
+        place: textControllers['place']!.text,
       );
       pageWidgetMobileKey += "${DateTime.now().millisecondsSinceEpoch}";
       isLoading.value = false;
@@ -150,6 +161,8 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
         liscensePlate: textControllers['licensePlate']!.text,
         description: textControllers['description']!.text,
         operationModel: operationModelToUpdate!,
+        route: textControllers['description']!.text,
+        place: textControllers['place']!.text,
       );
       pageWidgetMobileKey += "${DateTime.now().millisecondsSinceEpoch}";
       isLoading.value = false;
@@ -318,6 +331,25 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
                           companyModelSelected = e;
                           setState(() {});
                         },
+                      ),
+                    ),
+                    const Gap(8),
+                    buildSelectable(
+                      context: context,
+                      title: "Rota",
+                      child: TextFormFieldWidget<OutlineInputBorder>(
+                        controller: textControllers['route']!,
+                        enable: controller.appState.value is! AppStateLoading,
+                      ),
+                    ),
+                    const Gap(8),
+                    buildSelectable(
+                      context: context,
+                      title: "Loja",
+                      child: TextFormFieldWidget<OutlineInputBorder>(
+                        controller: textControllers['place']!,
+                        prefixText: '/',
+                        enable: controller.appState.value is! AppStateLoading,
                       ),
                     ),
                     const Gap(32),

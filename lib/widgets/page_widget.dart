@@ -5,7 +5,6 @@ import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/utils/utils.dart';
-import 'package:martinlog_web/widgets/page_widget_mobile.dart';
 import 'package:shimmer/shimmer.dart';
 
 class PageWidget extends StatefulWidget {
@@ -156,7 +155,7 @@ class _PageWidgetState extends State<PageWidget> {
                 padding: EdgeInsets.symmetric(vertical: AppSize.padding),
                 child: widget.isLoadingItens
                     ? ListView.builder(
-                        itemCount: 10,
+                        itemCount: 5,
                         physics: !kIsWeb
                             ? const NeverScrollableScrollPhysics()
                             : null,
