@@ -15,7 +15,6 @@ import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
-import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:martinlog_web/widgets/page_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
@@ -501,9 +500,7 @@ class _CompanyWidgetState extends State<CompanyWidget> {
             Flexible(
               flex: 2,
               child: Text(
-                Utils.fromServerToLocal(
-                        widget.companyModel.createdAt!.toString())
-                    .ddMMyyyyHHmmss,
+                widget.companyModel.createdAt!.toLocal().ddMMyyyyHHmmss,
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyle.displayMedium(context).copyWith(
                   fontWeight: FontWeight.w600,

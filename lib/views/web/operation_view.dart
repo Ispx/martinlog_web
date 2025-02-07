@@ -758,9 +758,7 @@ class _OperationWidgetState extends State<OperationWidget>
               Flexible(
                 flex: 2,
                 child: Text(
-                  Utils.fromServerToLocal(
-                          widget.operationModel.createdAt.toString())
-                      .ddMMyyyyHHmmss,
+                  widget.operationModel.createdAt.ddMMyyyyHHmmss,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.displayMedium(context).copyWith(
                     fontWeight: FontWeight.w600,

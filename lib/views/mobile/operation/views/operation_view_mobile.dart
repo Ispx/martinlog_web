@@ -604,7 +604,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
                   onAction: () {},
                 ),
                 OperationSubtitleTextWidget(
-                  text: operation.createdAt.toBrazillianHour.ddMMyyyyHHmmss,
+                  text: operation.createdAt.ddMMyyyyHHmmss,
                   textAlign: null,
                   width: null,
                 ),

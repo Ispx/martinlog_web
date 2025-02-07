@@ -204,22 +204,6 @@ abstract class Utils {
   static String shortDate(DateTime dateTime) =>
       DateFormat("dd MMM yyyy", 'pt_Br').format(dateTime);
 
-  static DateTime fromServerToLocal(String value) {
-    final date = DateTime.parse(value);
-    final utcDate = DateTime.utc(
-      date.year,
-      date.month,
-      date.day,
-      date.hour,
-      date.minute,
-      date.second,
-      date.millisecond,
-      date.microsecond,
-    );
-    final localDate = utcDate.toLocal();
-    return localDate;
-  }
-
   static String maskDocument(String document) {
     document = document.replaceAll('.', '');
     document = document.replaceAll('-', '');

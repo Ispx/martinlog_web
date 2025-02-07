@@ -226,8 +226,7 @@ class _OperationViewDetailsMobileState
                       const Gap(8),
                       ValuesDetailsWidget(
                         title: 'Data de início:',
-                        value: operationModel!
-                            .createdAt.toBrazillianHour.ddMMyyyyHHmmss,
+                        value: operationModel!.createdAt.ddMMyyyyHHmmss,
                       ),
                       const Gap(8),
                       ValuesDetailsWidget(

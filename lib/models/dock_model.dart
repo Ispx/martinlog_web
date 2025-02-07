@@ -28,7 +28,7 @@ class DockModel {
     return {
       "code": code,
       "idDockType": idDockType,
-      "createdAt": createdAt.toString().toString().parseToDateTime(),
+      "createdAt": createdAt.toString().toString().parseToDateTime()!.toLocal(),
       "isActive": isActive,
       "operationKey": operationKey,
     };

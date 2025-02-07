@@ -365,7 +365,7 @@ class _DockWidgetState extends State<DockWidget> {
               Flexible(
                 flex: 2,
                 child: Text(
-                  Utils.fromServerToLocal(widget.dockModel.createdAt.toString())
+                  widget.dockModel.createdAt
                       .ddMMyyyyHHmmss,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.displayMedium(context).copyWith(
