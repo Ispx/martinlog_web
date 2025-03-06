@@ -205,7 +205,8 @@ void main() async {
   );
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    name: const String.fromEnvironment("PLATFORM") == "web" ? null : "App",
+    name:
+        const String.fromEnvironment("PLATFORM") == "web" ? null : "App",
     options: const FirebaseOptions(
       apiKey: "AIzaSyBojaKfglolWvClT-VwYW9QzU2RGKi_e9E",
       appId: "1:1062375327946:web:3ae61c6e184e8e75130c33",
