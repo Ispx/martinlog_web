@@ -1,5 +1,5 @@
-import 'package:get/get.dart';
 import 'package:martinlog_web/extensions/string_extension.dart';
+import 'package:martinlog_web/models/branch_office_model.dart';
 
 class CompanyModel {
   int idCompany;
@@ -14,6 +14,7 @@ class CompanyModel {
   String streetNumber;
   String? streetComplement;
   DateTime? createdAt;
+  List<BranchOfficeModel> branchOffices;
 
   CompanyModel({
     required this.idCompany,
@@ -26,6 +27,7 @@ class CompanyModel {
     required this.zipcode,
     required this.streetNumber,
     required this.streetComplement,
+    required this.branchOffices,
     this.createdAt,
   });
 
@@ -44,6 +46,10 @@ class CompanyModel {
       createdAt: map['createdAt'] != null
           ? map['createdAt'].toString().parseToDateTime()!.toLocal()
           : null,
+      branchOffices: map['branchOffices'] != null
+          ? List<BranchOfficeModel>.from(
+              map['branchOffices'].map((x) => BranchOfficeModel.fromJson(x)))
+          : [],
     );
   }
 
@@ -68,6 +74,7 @@ class CompanyModel {
     String? zipcode,
     String? streetNumber,
     String? streetComplement,
+    List<BranchOfficeModel>? branchOffices,
   }) {
     return CompanyModel(
       idCompany: idCompany,
@@ -81,6 +88,7 @@ class CompanyModel {
       streetNumber: streetNumber ?? this.streetNumber,
       streetComplement: streetComplement ?? this.streetComplement,
       createdAt: createdAt,
+      branchOffices: branchOffices ?? this.branchOffices,
     );
   }
 }

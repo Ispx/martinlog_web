@@ -171,6 +171,7 @@ class _CreateCompanyWidgetState extends State<CreateCompanyWidget>
           zipcode: zipcodeEditingController.text,
           streetNumber: streetNumberEditingController.text,
           streetComplement: streetComplementEditingController.text,
+          branchOffices: [],
         ),
       );
       isLoading.value = false;

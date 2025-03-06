@@ -1,4 +1,5 @@
 import 'package:martinlog_web/extensions/string_extension.dart';
+import 'package:martinlog_web/models/branch_office_model.dart';
 
 class DockModel {
   String code;
@@ -6,12 +7,14 @@ class DockModel {
   DateTime createdAt;
   bool isActive;
   String? operationKey;
+  BranchOfficeModel? branchOfficeModel;
   DockModel({
     required this.code,
     required this.idDockType,
     required this.createdAt,
     this.isActive = true,
     this.operationKey,
+    this.branchOfficeModel,
   });
 
   factory DockModel.fromJson(Map<String, dynamic> data) {
@@ -21,6 +24,9 @@ class DockModel {
       createdAt: DateTime.parse(data['createdAt']),
       isActive: data['isActive'],
       operationKey: data['operationKey'],
+      branchOfficeModel: data['branchOffice'] != null
+          ? BranchOfficeModel.fromJson(data['branchOffice'])
+          : null,
     );
   }
 

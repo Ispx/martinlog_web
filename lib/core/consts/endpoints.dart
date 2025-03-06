@@ -18,4 +18,8 @@ class Endpoints {
   static const operationUpdate = '$operation/<operationKey>/update';
   static const operationUploadFile = '$operation/<operationKey>/upload';
   static const operationAll = '$operation/all';
+  static const branchOfficeCreate = '/branch-office/create';
+  static const branchOfficeAll = '/branch-office/all';
+  static const branchOfficeCompanyLink = '/branch-office/company/link';
+  static const branchOfficeCompanyLinked = '/branch-office/company/linked';
 }
