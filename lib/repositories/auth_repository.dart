@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
-import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/models/auth_model.dart';
+import 'package:martinlog_web/services/http/http.dart';
 
 abstract interface class IAuthRepository {
   Future<AuthModel> call(String document, String password);
@@ -25,7 +25,9 @@ class AuthRepository implements IAuthRepository {
 
       return AuthModel.fromJson(Map.castFrom(response.data));
     } catch (e) {
-      throw Exception(e.toString());
+      var message = 'Falha inesperada';
+      message = e.toString().split(':').lastOrNull ?? message;
+      throw message;
     }
   }
 }

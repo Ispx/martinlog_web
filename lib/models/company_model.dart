@@ -42,7 +42,7 @@ class CompanyModel {
       streetNumber: map['streetNumber'],
       streetComplement: map['streetComplement'],
       createdAt: map['createdAt'] != null
-          ? map['createdAt'].toString().parseToDateTime()!.subtract(3.hours)
+          ? map['createdAt'].toString().parseToDateTime()!.toLocal()
           : null,
     );
   }

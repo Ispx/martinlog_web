@@ -1,18 +1,25 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/config/env_confg.dart';
 import 'package:martinlog_web/core/consts/routes.dart';
 import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/style/theme/app_theme.dart';
 import 'package:martinlog_web/utils/utils.dart';
-import 'package:martinlog_web/views/dashboard_view.dart';
-import 'package:martinlog_web/views/auth_view.dart';
-import 'package:martinlog_web/views/company_view.dart';
-import 'package:martinlog_web/views/dock_view.dart';
-import 'package:martinlog_web/views/menu_view.dart';
-import 'package:martinlog_web/views/operation_view.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:martinlog_web/components/banner_component.dart';
-import 'package:martinlog_web/views/password_recovery_view.dart';
+import 'package:martinlog_web/views/mobile/auth_view.dart';
+import 'package:martinlog_web/views/mobile/dashboard_view.dart';
+import 'package:martinlog_web/views/mobile/menu_view.dart';
+import 'package:martinlog_web/views/mobile/operation/views/operation_view_details_mobile.dart';
+import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile.dart';
+import 'package:martinlog_web/views/mobile/password_recovery.dart';
+import 'package:martinlog_web/views/web/auth_view.dart';
+import 'package:martinlog_web/views/web/company_view.dart';
+import 'package:martinlog_web/views/web/dashboard_view.dart';
+import 'package:martinlog_web/views/web/dock_view.dart';
+import 'package:martinlog_web/views/web/menu_view.dart';
+import 'package:martinlog_web/views/web/operation_view.dart';
+import 'package:martinlog_web/views/web/password_recovery_view.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class App extends StatelessWidget {
@@ -50,15 +57,29 @@ class App extends StatelessWidget {
         ],
         locale: const Locale('pt_BR'),
         supportedLocales: const [Locale('pt', 'BR')],
-        routes: {
-          Routes.auth: (context) => const AuthView(),
-          Routes.operation: (context) => const OperationView(),
-          Routes.company: (context) => const CompanyView(),
-          Routes.dock: (context) => const DockView(),
-          Routes.dashboard: (context) => const DashboardView(),
-          Routes.menu: (context) => const MenuView(),
-          Routes.passwordRecovery: (context) => const PassswordRecoveryView(),
-        },
+        routes: kIsWeb
+            ? {
+                Routes.auth: (context) => const AuthView(),
+                Routes.operation: (context) => const OperationView(),
+                Routes.company: (context) => const CompanyView(),
+                Routes.dock: (context) => const DockView(),
+                Routes.dashboard: (context) => const DashboardView(),
+                Routes.menu: (context) => const MenuView(),
+                Routes.passwordRecovery: (context) =>
+                    const PassswordRecoveryView(),
+              }
+            : {
+                Routes.auth: (context) => const AuthViewMobile(),
+                Routes.operation: (context) => const OperationViewMobile(),
+                Routes.company: (context) => const CompanyView(),
+                Routes.dock: (context) => const DockView(),
+                Routes.dashboard: (context) => const DashboardViewMobile(),
+                Routes.menu: (context) => const MenuViewMobile(),
+                Routes.passwordRecovery: (context) =>
+                    const PasswordRecoveryMobileView(),
+                Routes.operationDetails: (context) =>
+                    const OperationViewDetailsMobile(),
+              },
       );
     });
   }

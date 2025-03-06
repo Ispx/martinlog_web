@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
@@ -38,10 +41,15 @@ class IconButtonWidget extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: AppTextStyle.displayMedium(context).copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: context.appTheme.titleColor,
-                ),
+                style: kIsWeb
+                    ? AppTextStyle.displayMedium(context).copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: context.appTheme.titleColor,
+                      )
+                    : AppTextStyle.mobileDisplayMedium(context).copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: context.appTheme.titleColor,
+                      ),
               ),
               icon
             ],

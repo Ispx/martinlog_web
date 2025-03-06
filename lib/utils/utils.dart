@@ -1,10 +1,9 @@
-import 'dart:ui';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/extensions/string_extension.dart';
 import 'package:martinlog_web/helpers/formater_helper.dart';
+import 'package:intl/intl.dart';
 
 abstract class Utils {
   static bool isCEP(String cep) {
@@ -205,22 +204,6 @@ abstract class Utils {
   static String shortDate(DateTime dateTime) =>
       DateFormat("dd MMM yyyy", 'pt_Br').format(dateTime);
 
-  static DateTime fromServerToLocal(String value) {
-    final date = DateTime.parse(value);
-    final utcDate = DateTime.utc(
-      date.year,
-      date.month,
-      date.day,
-      date.hour,
-      date.minute,
-      date.second,
-      date.millisecond,
-      date.microsecond,
-    );
-    final localDate = utcDate.toLocal();
-    return localDate;
-  }
-
   static String maskDocument(String document) {
     document = document.replaceAll('.', '');
     document = document.replaceAll('-', '');
@@ -264,4 +247,26 @@ abstract class Utils {
 
   static String clearMaskBarcode(String barcode) =>
       barcode.replaceAll(RegExp(r'[.\s]'), '');
+
+  static Color getColorIconDockType(DockType dockType) {
+    return switch (dockType) {
+      DockType.EXPEDITION => Colors.blue,
+      DockType.RECEIPT => Colors.green,
+      DockType.TRANSFER => Colors.orange,
+      DockType.KAMIKAZE => Colors.red,
+      DockType.REVERSE => Colors.indigo,
+      _ => throw "Invalid icondata to dockType"
+    };
+  }
+
+  static IconData getIconDataByDockType(DockType dockType) {
+    return switch (dockType) {
+      DockType.EXPEDITION => LineIcons.arrowUp,
+      DockType.RECEIPT => LineIcons.arrowDown,
+      DockType.TRANSFER => LineIcons.alternateExchange,
+      DockType.KAMIKAZE => LineIcons.alternateArrows,
+      DockType.REVERSE => LineIcons.arrowLeft,
+      _ => throw "Invalid icondata to dockType"
+    };
+  }
 }

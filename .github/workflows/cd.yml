@@ -11,7 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
    #   - uses: actions/checkout@v3
+      - run: flutter build web --dart-define URL_BASE=https://api.martinlog.com.br --dart-define APP_NAME="Plataforma Martin log"
       - run: firebase deploy --only hosting:martinlog
+      - run: cd build/web && npx surge --project . --domain martinlog.surge.sh
+
    #   - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'

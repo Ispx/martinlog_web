@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.0 <4.0.0'
+  sdk: '>=3.2.5 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -34,35 +34,43 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
+  archive: ^3.6.1
   cupertino_icons: ^1.0.2
   provider: ^6.0.5
-  http: ^1.1.0
-  http_interceptor: ^2.0.0-beta.7
+  http:
+  http_interceptor:
   flutter_localizations:
     sdk: flutter
-  intl: any
-  scaffold_responsive: ^1.1.1
-  gap: ^3.0.1
-  responsive_sizer: ^3.2.0
-  easy_mask: ^2.0.1
-  get: ^4.6.6
-  rxdart: ^0.27.7
-  dio: ^5.3.3
-  flutter_svg: ^2.0.9
-  line_icons: ^2.0.3
-  flutter_excel: ^1.0.1
-  flutter_date_range_picker: ^0.0.14
+  scaffold_responsive: 
+  gap: 
+  responsive_sizer:
+  easy_mask:
+  get:
+  rxdart: 
+  dio:
+  flutter_svg:
+  line_icons: 
+  flutter_excel:
+  flutter_date_range_picker:
+  firebase_core: 
+  cloud_firestore:
+  image_picker:
+  url_launcher:
+  firebase_storage: 
+  shimmer:
+  flutter_secure_storage: 
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  flutter_launcher_icons: "^0.13.1"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  image_path: "assets/images/logos/icon_mobile.png"
+  min_sdk_android: 21
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

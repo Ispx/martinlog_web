@@ -27,6 +27,8 @@ class DropBoxWidget<T> extends StatelessWidget {
       controller: controller,
       enabled: enable,
       width: width ?? 10.w,
+      menuHeight: 40.h,
+      enableFilter: true,
       label: label != null ? Text(label!) : null,
       onSelected: (value) => onSelected(value),
       inputDecorationTheme: InputDecorationTheme(

@@ -11,7 +11,7 @@ abstract interface class IHttp {
     required String url,
     required HttpMethod method,
     Map<String, dynamic>? headers,
-    Map<String, dynamic>? body,
+    dynamic body,
     Map<String, dynamic>? params,
   });
 }
@@ -29,18 +29,19 @@ class Http implements IHttp {
       {required String url,
       required HttpMethod method,
       Map<String, dynamic>? headers,
-      Map<String, dynamic>? body,
+      dynamic body,
       Map<String, dynamic>? params}) async {
     dio.options.headers = headers ?? {};
     dio.options.sendTimeout = 10.seconds;
     try {
-      return switch (method) {
+      var result = switch (method) {
         HttpMethod.GET => await dio.get(url, queryParameters: params),
         HttpMethod.POST =>
           await dio.post(url, data: body, queryParameters: params),
         HttpMethod.PUT =>
           await dio.put(url, data: body, queryParameters: params)
       } as T;
+      return result;
     } on DioException catch (e) {
       throw e.response?.data ?? "Falha inesperada";
     }

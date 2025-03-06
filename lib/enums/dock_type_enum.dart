@@ -3,4 +3,6 @@ enum DockType {
   EXPEDITION,
   RECEIPT,
   KAMIKAZE,
+  TRANSFER,
+  REVERSE,
 }

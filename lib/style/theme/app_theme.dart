@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:martinlog_web/style/text/app_text_style.dart';
 
 @immutable
 class AppThemeData {
@@ -228,14 +227,10 @@ class AppTheme extends ThemeExtension<AppTheme> {
       redColor: redColor ?? this.redColor,
       hintFieldColor: hintFieldColor ?? this.hintFieldColor,
       borderColor: borderColor ?? this.borderColor,
-      linearGradientBackground:
-          linearGradientBackground ?? this.linearGradientBackground,
-      linearGradientButtonEnable:
-          linearGradientButtonEnable ?? this.linearGradientButtonEnable,
-      linearGradientButtonDisable:
-          linearGradientButtonDisable ?? this.linearGradientButtonDisable,
-      linearGradientGreyColor:
-          linearGradientGreyColor ?? this.linearGradientGreyColor,
+      linearGradientBackground: linearGradientBackground ?? this.linearGradientBackground,
+      linearGradientButtonEnable: linearGradientButtonEnable ?? this.linearGradientButtonEnable,
+      linearGradientButtonDisable: linearGradientButtonDisable ?? this.linearGradientButtonDisable,
+      linearGradientGreyColor: linearGradientGreyColor ?? this.linearGradientGreyColor,
       appBarVariantTheme: appBarVariantTheme ?? this.appBarVariantTheme,
     );
   }
@@ -250,28 +245,24 @@ class AppTheme extends ThemeExtension<AppTheme> {
       primaryVariant: Color.lerp(primaryVariant, other.primaryVariant, t)!,
       secondColor: Color.lerp(secondColor, other.secondColor, t)!,
       greenColor: Color.lerp(greenColor, other.greenColor, t)!,
-      buttonEnableColor:
-          Color.lerp(buttonEnableColor, other.buttonEnableColor, t)!,
-      buttonDisableColor:
-          Color.lerp(buttonDisableColor, other.buttonDisableColor, t)!,
+      buttonEnableColor: Color.lerp(buttonEnableColor, other.buttonEnableColor, t)!,
+      buttonDisableColor: Color.lerp(buttonDisableColor, other.buttonDisableColor, t)!,
       disableColor: Color.lerp(disableColor, other.disableColor, t)!,
       greyColor: Color.lerp(greyColor, other.greyColor, t)!,
       titleColor: Color.lerp(titleColor, other.titleColor, t)!,
       redColor: Color.lerp(redColor, other.redColor, t)!,
       hintFieldColor: Color.lerp(hintFieldColor, other.hintFieldColor, t)!,
       borderColor: Color.lerp(borderColor, other.borderColor, t)!,
-      snackBarTextColor:
-          Color.lerp(snackBarTextColor, other.snackBarTextColor, t)!,
-      linearGradientBackground: LinearGradient.lerp(
-          linearGradientBackground, other.linearGradientBackground, t)!,
+      snackBarTextColor: Color.lerp(snackBarTextColor, other.snackBarTextColor, t)!,
+      linearGradientBackground: LinearGradient.lerp(linearGradientBackground, other.linearGradientBackground, t)!,
       linearGradientButtonEnable: LinearGradient.lerp(
-          linearGradientButtonEnable, other.linearGradientButtonEnable, t)!,
-      linearGradientButtonDisable: LinearGradient.lerp(
-          linearGradientButtonDisable, other.linearGradientButtonDisable, t)!,
-      linearGradientGreyColor: LinearGradient.lerp(
-          linearGradientGreyColor, other.linearGradientGreyColor, t)!,
-      appBarVariantTheme:
-          AppBarTheme.lerp(appBarVariantTheme, other.appBarVariantTheme, t),
+          // TODO: TROCAER DPS ISSO AQ PARA:   linearGradientButtonEnable, other.linearGradientButtonEnable, t)!,
+          linearGradientBackground,
+          other.linearGradientBackground,
+          t)!,
+      linearGradientButtonDisable: LinearGradient.lerp(linearGradientButtonDisable, other.linearGradientButtonDisable, t)!,
+      linearGradientGreyColor: LinearGradient.lerp(linearGradientGreyColor, other.linearGradientGreyColor, t)!,
+      appBarVariantTheme: AppBarTheme.lerp(appBarVariantTheme, other.appBarVariantTheme, t),
     );
   }
 }

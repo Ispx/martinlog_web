@@ -30,10 +30,15 @@ class DockViewModel extends GetxController implements IDockViewModel {
     required this.upsertDockRepository,
   });
 
-  List<DockModel> getDocksByDockType(DockType? dockType) => docks
-      .where(
-          (e) => dockType == null ? true : e.idDockType == dockType.idDockType)
-      .toList();
+  List<DockModel> getDocksByDockType(DockType? dockType) {
+    final docksFilted = docks
+        .where((e) =>
+            dockType == null ? true : e.idDockType == dockType.idDockType)
+        .toList();
+    docksFilted
+        .sort((a, b) => a.code.trimRight().compareTo(b.code.trimRight()));
+    return docksFilted;
+  }
 
   List<DockType> get docksType => DockType.values;
 
@@ -44,12 +49,12 @@ class DockViewModel extends GetxController implements IDockViewModel {
   }) async {
     try {
       changeState(AppStateLoading());
-      final dockModel = await upsertDockRepository(
+      await upsertDockRepository(
         code: code,
         dockType: dockType,
         isActive: true,
       );
-      docks.add(dockModel);
+      _internalGetAll();
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -63,12 +68,16 @@ class DockViewModel extends GetxController implements IDockViewModel {
 
       changeState(AppStateLoading());
       final docks = await getDocksRepository();
-      this.docks.value = docks
-        ..sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 0 : 1);
+      this.docks.value = docks;
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
     }
+  }
+
+  Future<void> _internalGetAll() async {
+    final docks = await getDocksRepository();
+    this.docks.value = docks;
   }
 
   void changeState(AppState appState) {

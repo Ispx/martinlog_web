@@ -1,28 +1,14 @@
 {
   "hosting": {
-    "public": "build/web",
-    "site": "martinlog",
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ],
-    "headers": [
-      {
-        "source": "**",
-        "headers": [
-          {
-            "key": "Content-Security-Policy",
-            "value": "upgrade-insecure-requests"
-          }
-        ]
-      }
-    ],
+    "site":"plataforma-martinlog",
+    "source": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ]
+    ],
+    "frameworksBackend": {
+      "region": "us-west1"
+    }
   }
 }

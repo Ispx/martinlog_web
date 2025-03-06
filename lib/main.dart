@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -8,18 +11,20 @@ import 'package:martinlog_web/repositories/auth_repository.dart';
 import 'package:martinlog_web/repositories/cancel_operation_repository.dart';
 import 'package:martinlog_web/repositories/complete_password_recovery_repository.dart';
 import 'package:martinlog_web/repositories/create_company_repository.dart';
-import 'package:martinlog_web/repositories/create_user_repository.dart';
-import 'package:martinlog_web/repositories/get_users_repository.dart';
-import 'package:martinlog_web/repositories/start_password_recovery_repository.dart';
-import 'package:martinlog_web/repositories/update_user_repository.dart';
-import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
+import 'package:martinlog_web/repositories/create_user_repository.dart';
 import 'package:martinlog_web/repositories/get_companies_repository.dart';
 import 'package:martinlog_web/repositories/get_company_repositoy.dart';
 import 'package:martinlog_web/repositories/get_docks_repository.dart';
 import 'package:martinlog_web/repositories/get_operation_repository.dart';
+import 'package:martinlog_web/repositories/get_operations_pending_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_repository.dart';
-import 'package:martinlog_web/repositories/update_progress_operation_repository.dart';
+import 'package:martinlog_web/repositories/get_users_repository.dart';
+import 'package:martinlog_web/repositories/start_password_recovery_repository.dart';
+import 'package:martinlog_web/repositories/update_operation_repository.dart';
+import 'package:martinlog_web/repositories/update_user_repository.dart';
+import 'package:martinlog_web/repositories/upload_file_operation_repository.dart';
+import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';
 import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
@@ -31,9 +36,6 @@ import 'package:martinlog_web/view_models/password_recovery_view_model.dart';
 import 'package:martinlog_web/view_models/user_view_model.dart';
 
 void main() async {
-  Intl.defaultLocale = 'pt_BR';
-  initializeDateFormatting('pt_BR', null);
-
   simple.startUp(
     (i) {
       i.addFactory<Http>(() => Http());
@@ -45,6 +47,12 @@ void main() async {
       );
       i.addFactory<CancelOperationRepository>(
         () => CancelOperationRepository(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
+      i.addFactory<UploadFileOperationRepository>(
+        () => UploadFileOperationRepository(
           http: i.get<Http>(),
           urlBase: EnvConfig.urlBase,
         ),
@@ -98,8 +106,8 @@ void main() async {
           urlBase: EnvConfig.urlBase,
         ),
       );
-      i.addFactory<UpdateProgressOperationRepository>(
-        () => UpdateProgressOperationRepository(
+      i.addFactory<UpdateOperationRepository>(
+        () => UpdateOperationRepository(
           http: i.get<Http>(),
           urlBase: EnvConfig.urlBase,
         ),
@@ -134,6 +142,12 @@ void main() async {
           urlBase: EnvConfig.urlBase,
         ),
       );
+      i.addFactory<GetOperationsPedingRepository>(
+        () => GetOperationsPedingRepository(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
       i.addSingleton<AuthViewModel>(
         () => AuthViewModel(
           authRepository: i.get<AuthRepository>(),
@@ -154,12 +168,13 @@ void main() async {
       );
       i.addSingleton<OperationViewModel>(
         () => OperationViewModel(
+          uploadFileOperationRepository: i.get<UploadFileOperationRepository>(),
           cancelOperationRepository: i.get<CancelOperationRepository>(),
           createOperationRepository: i.get<CreateOperationRepository>(),
           getOperationsRepository: i.get<GetOperationsRepository>(),
           getOperationRepository: i.get<GetOperationRepository>(),
-          updateProgressOperationRepository:
-              i.get<UpdateProgressOperationRepository>(),
+          updateOperationRepository: i.get<UpdateOperationRepository>(),
+          getOperationsPedingRepository: i.get<GetOperationsPedingRepository>(),
         ),
       );
       i.addSingleton<UserViewModel>(
@@ -179,8 +194,6 @@ void main() async {
       );
       i.addSingleton<DashboardViewModel>(
         () => DashboardViewModel(
-          getCompaniesRepository: i.get<GetCompaniesRepository>(),
-          getDocksRepository: i.get<GetDocksRepository>(),
           getOperationsRepository: i.get<GetOperationsRepository>(),
         ),
       );
@@ -190,5 +203,22 @@ void main() async {
       return i;
     },
   );
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    name:
+        const String.fromEnvironment("PLATFORM") == "web" ? null : "App",
+    options: const FirebaseOptions(
+      apiKey: "AIzaSyBojaKfglolWvClT-VwYW9QzU2RGKi_e9E",
+      appId: "1:1062375327946:web:3ae61c6e184e8e75130c33",
+      messagingSenderId: "1062375327946",
+      projectId: "martinlog-web",
+      storageBucket: 'martinlog-web.appspot.com',
+      authDomain: "martinlog-web.firebaseapp.com",
+      measurementId: "G-CWVH9LC3GF",
+    ),
+  );
+  Intl.defaultLocale = 'pt_BR';
+  await initializeDateFormatting('pt_BR', null);
+
   runApp(const App());
 }

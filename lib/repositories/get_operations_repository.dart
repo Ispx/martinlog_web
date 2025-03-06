@@ -5,8 +5,13 @@ import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/models/operation_model.dart';
 
 abstract interface class IGetOperationsRepository {
-  Future<List<OperationModel>> call(
-      {DateTime? dateFrom, DateTime? dateUntil, List<int>? status});
+  Future<List<OperationModel>> call({
+    DateTime? dateFrom,
+    DateTime? dateUntil,
+    List<int>? status,
+    int? skip,
+    int? limit,
+  });
 }
 
 class GetOperationsRepository implements IGetOperationsRepository {
@@ -15,22 +20,43 @@ class GetOperationsRepository implements IGetOperationsRepository {
   GetOperationsRepository({required this.http, required this.urlBase});
 
   @override
-  Future<List<OperationModel>> call(
-      {DateTime? dateFrom, DateTime? dateUntil, List<int>? status}) async {
+  Future<List<OperationModel>> call({
+    DateTime? dateFrom,
+    DateTime? dateUntil,
+    List<int>? status,
+    int? skip,
+    int? limit,
+  }) async {
     try {
       final params = <String, dynamic>{};
+      String url = urlBase + Endpoints.operationAll;
       if (dateFrom != null) {
-        params.addAll({"dateFrom": dateFrom.yyyyMMdd});
+        params.addAll({"dateFrom": dateFrom.yyyyMMddyHHmmss});
         if (dateUntil == null) throw Exception("dateUntil is required");
-        params.addAll({"dateUntil": dateUntil.yyyyMMdd});
+        params.addAll({"dateUntil": dateUntil.yyyyMMddyHHmmss});
+        url +=
+            "?dateFrom=${dateFrom.yyyyMMddyHHmmss}&dateUntil=${dateUntil.yyyyMMddyHHmmss}";
+      }
+      if (skip != null) {
+        if (url.contains('?')) {
+          url += "&skip=$skip&limit=$limit";
+        } else {
+          url += "?skip=$skip&limit=$limit";
+        }
       }
       if (status != null) {
-        params.addAll({for (int st in status) "status": st});
+        for (var st in status) {
+          if (url.contains('?')) {
+            url += "&status=$st";
+          } else {
+            url += "?status=$st";
+          }
+        }
       }
       final response = await http.request<Response>(
-        url: urlBase + Endpoints.operationAll,
+        url: url,
         method: HttpMethod.GET,
-        params: params,
+        //   params: params,
       );
       var result = List<OperationModel>.from(
           response.data.map((e) => OperationModel.fromJson(e)).toList());
