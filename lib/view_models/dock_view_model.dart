@@ -53,6 +53,7 @@ class DockViewModel extends GetxController implements IDockViewModel {
         code: code,
         dockType: dockType,
         isActive: true,
+        idBranchOffice: null,
       );
       _internalGetAll();
       changeState(AppStateDone());
@@ -123,6 +124,7 @@ class DockViewModel extends GetxController implements IDockViewModel {
         code: dockModel.code,
         dockType: dockModel.idDockType.getDockType(),
         isActive: dockModel.isActive,
+        idBranchOffice: dockModel.branchOfficeModel?.idBranchOffice,
       );
       changeState(AppStateDone());
     } catch (e) {
