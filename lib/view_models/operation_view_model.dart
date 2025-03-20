@@ -179,14 +179,15 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         dateUntil: dateUntil,
         status: status,
         limit: limitPaginationOffset,
-        skip: operations.length,
+        skip: operations.length < 20 ? null : operations.length,
       );
       if (result.isEmpty) {
-        changeState(AppStateEmpity());
         isEnableLoadMoreItens.value = false;
+        changeState(AppStateEmpity());
         return;
       }
-      operations.value = [...operations, ...result];
+      operations.value =
+          operations.length < 20 ? [...result] : [...operations, ...result];
       operationsFilted.value = operations;
       isEnableLoadMoreItens.value = true;
       changeState(AppStateDone());

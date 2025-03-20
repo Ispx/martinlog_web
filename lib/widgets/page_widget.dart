@@ -158,7 +158,7 @@ class _PageWidgetState extends State<PageWidget> {
                         itemCount: 5,
                         physics: !kIsWeb
                             ? const NeverScrollableScrollPhysics()
-                            : null,
+                            : NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Shimmer.fromColors(
@@ -179,7 +179,7 @@ class _PageWidgetState extends State<PageWidget> {
                     : ListView.builder(
                         physics: !kIsWeb
                             ? const NeverScrollableScrollPhysics()
-                            : null,
+                            : NeverScrollableScrollPhysics(),
                         itemCount: sublistItens.length,
                         itemBuilder: (context, index) => sublistItens[index],
                       ),

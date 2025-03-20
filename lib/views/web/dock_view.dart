@@ -11,11 +11,12 @@ import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
+import 'package:martinlog_web/models/branch_office_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
-import 'package:martinlog_web/utils/utils.dart';
+import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/views/web/operation_view.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
@@ -112,9 +113,12 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
   var isOpen = false.obs;
   late TextEditingController dockCodeEditingController;
   late TextEditingController dockTypeEditingController;
+  late TextEditingController branchOfficeEditingController;
+
   late TextEditingController isActiveEditingController;
 
   DockType? dockTypeSelected = null;
+  BranchOfficeModel? branchOfficeSelected = null;
 
   late final GlobalKey<FormState> formState;
   final controller = simple.get<DockViewModel>();
@@ -124,6 +128,7 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
     dockCodeEditingController = TextEditingController();
     dockTypeEditingController = TextEditingController();
     isActiveEditingController = TextEditingController();
+    branchOfficeEditingController = TextEditingController();
     super.initState();
   }
 
@@ -137,6 +142,7 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
 
   void clearFields() {
     dockCodeEditingController.clear();
+    branchOfficeEditingController.clear();
     setState(() {});
   }
 
@@ -156,11 +162,19 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
       );
       return;
     }
+    if (branchOfficeSelected == null) {
+      BannerComponent(
+        message: "Selecione uma filial",
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
     if (formState.currentState?.validate() ?? false) {
       isLoading.value = true;
       await controller.create(
         dockType: dockTypeSelected!,
         code: dockCodeEditingController.text,
+        branchOffice: branchOfficeSelected!,
       );
       await controller.getAll();
       isLoading.value = false;
@@ -170,6 +184,7 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
 
   @override
   void dispose() {
+    formState.currentState?.dispose();
     super.dispose();
   }
 
@@ -224,6 +239,38 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
                                 },
                               ),
                             ),
+                            SizedBox(
+                              width: AppSize.padding * 2,
+                            ),
+                            Obx(() {
+                              final branchOffices = simple
+                                  .get<BranchOfficeViewModelImpl>()
+                                  .branchOfficeList
+                                  .value;
+                              return buildSelectable(
+                                context: context,
+                                title: "Filial",
+                                child: DropBoxWidget<BranchOfficeModel>(
+                                  enable: controller.appState.value
+                                      is! AppStateLoading,
+                                  icon: const Icon(Icons.business),
+                                  dropdownMenuEntries: branchOffices
+                                      .map(
+                                        (e) => DropdownMenuEntry<
+                                            BranchOfficeModel>(
+                                          value: e,
+                                          label: e.name,
+                                        ),
+                                      )
+                                      .toList(),
+                                  onSelected: (BranchOfficeModel? e) {
+                                    branchOfficeSelected = e;
+                                    setState(() {});
+                                  },
+                                  controller: branchOfficeEditingController,
+                                ),
+                              );
+                            }),
                             SizedBox(
                               width: AppSize.padding * 2,
                             ),
@@ -327,20 +374,25 @@ class DockWidget extends StatefulWidget {
 
 class _DockWidgetState extends State<DockWidget> {
   late final TextEditingController dockCodeEdittinController;
+  late final TextEditingController branchOfficeEdittinController;
+
   final controller = simple.get<DockViewModel>();
 
   @override
   void initState() {
     dockCodeEdittinController =
         TextEditingController(text: widget.dockModel.code);
+    branchOfficeEdittinController = TextEditingController(
+      text: widget.dockModel.branchOfficeModel?.name,
+    );
 
     super.initState();
   }
 
-  Future<void> update() async {}
-
   @override
   void dispose() {
+    dockCodeEdittinController.dispose();
+    branchOfficeEdittinController.dispose();
     super.dispose();
   }
 
@@ -365,8 +417,7 @@ class _DockWidgetState extends State<DockWidget> {
               Flexible(
                 flex: 2,
                 child: Text(
-                  widget.dockModel.createdAt
-                      .ddMMyyyyHHmmss,
+                  widget.dockModel.createdAt.ddMMyyyyHHmmss,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.displayMedium(context).copyWith(
                     fontWeight: FontWeight.w600,
@@ -388,6 +439,33 @@ class _DockWidgetState extends State<DockWidget> {
                     ),
                   ),
                 ),
+              ),
+              Obx(
+                () {
+                  final branchOffices = simple
+                      .get<BranchOfficeViewModelImpl>()
+                      .branchOfficeList
+                      .value;
+                  return DropBoxWidget<BranchOfficeModel>(
+                    key: ObjectKey(widget.dockModel),
+                    label: 'Filial',
+                    width: 13.w,
+                    icon: const Icon(Icons.business),
+                    dropdownMenuEntries: [
+                      ...branchOffices
+                          .map(
+                            (e) => DropdownMenuEntry(value: e, label: e.name),
+                          )
+                          .toList()
+                    ],
+                    onSelected: (branchOffice) {
+                      if (branchOffice == null) return;
+                      controller.bindBranchOffice(
+                          branchOffice, widget.dockModel);
+                    },
+                    controller: branchOfficeEdittinController,
+                  );
+                },
               ),
               Flexible(
                 child: SizedBox(

@@ -52,6 +52,7 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
         MenuEnum.Users => const UserView(
             key: ObjectKey(MenuEnum.Users),
           ),
+        MenuEnum.BranchOffice => SizedBox.shrink(),
         MenuEnum.Dashboard => const DashboardViewMobile()
       };
   @override

@@ -4,6 +4,7 @@ import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
+import 'package:martinlog_web/models/branch_office_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';
 import 'package:martinlog_web/repositories/get_docks_repository.dart';
@@ -13,8 +14,10 @@ abstract interface class IDockViewModel {
   Future<void> create({
     required String code,
     required DockType dockType,
+    required BranchOfficeModel branchOffice,
   });
-
+  Future<void> bindBranchOffice(
+      BranchOfficeModel branchOffice, DockModel dockModel);
   Future<void> getAll();
   Future<void> updateDock(DockModel dockModel);
   Future<void> downloadFile();
@@ -46,6 +49,7 @@ class DockViewModel extends GetxController implements IDockViewModel {
   Future<void> create({
     required String code,
     required DockType dockType,
+    required BranchOfficeModel branchOffice,
   }) async {
     try {
       changeState(AppStateLoading());
@@ -53,7 +57,7 @@ class DockViewModel extends GetxController implements IDockViewModel {
         code: code,
         dockType: dockType,
         isActive: true,
-        idBranchOffice: null,
+        idBranchOffice: branchOffice.idBranchOffice,
       );
       _internalGetAll();
       changeState(AppStateDone());
@@ -125,6 +129,23 @@ class DockViewModel extends GetxController implements IDockViewModel {
         dockType: dockModel.idDockType.getDockType(),
         isActive: dockModel.isActive,
         idBranchOffice: dockModel.branchOfficeModel?.idBranchOffice,
+      );
+      changeState(AppStateDone());
+    } catch (e) {
+      changeState(AppStateError(e.toString()));
+    }
+  }
+
+  @override
+  Future<void> bindBranchOffice(
+      BranchOfficeModel branchOffice, DockModel dockModel) async {
+    try {
+      changeState(AppStateLoading());
+      await upsertDockRepository(
+        code: dockModel.code,
+        dockType: dockModel.idDockType.getDockType(),
+        isActive: dockModel.isActive,
+        idBranchOffice: branchOffice.idBranchOffice,
       );
       changeState(AppStateDone());
     } catch (e) {

@@ -49,7 +49,10 @@ class CompanyModel {
       branchOffices: map['branchOffices'] != null
           ? List<BranchOfficeModel>.from(
               map['branchOffices'].map((x) => BranchOfficeModel.fromJson(x)))
-          : [],
+          : [
+              BranchOfficeModel(idBranchOffice: 1, name: 'São Paulo'),
+              BranchOfficeModel(idBranchOffice: 2, name: 'Rio de Janeiro')
+            ],
     );
   }
 

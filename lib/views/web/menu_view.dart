@@ -24,6 +24,7 @@ import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/view_models/user_view_model.dart';
+import 'package:martinlog_web/views/web/branch_office_view.dart';
 import 'package:martinlog_web/views/web/company_view.dart';
 import 'package:martinlog_web/views/web/dashboard_view.dart';
 import 'package:martinlog_web/views/web/dock_view.dart';
@@ -52,7 +53,9 @@ class _MenuViewState extends State<MenuView> {
         MenuEnum.Company => const CompanyView(key: ObjectKey(MenuEnum.Company)),
         MenuEnum.Users => const UserView(key: ObjectKey(MenuEnum.Users)),
         MenuEnum.Dashboard =>
-          const DashboardView(key: ObjectKey(MenuEnum.Dashboard))
+          const DashboardView(key: ObjectKey(MenuEnum.Dashboard)),
+        MenuEnum.BranchOffice =>
+          const BranchOfficeView(key: ObjectKey(MenuEnum.BranchOffice))
       };
   @override
   void initState() {
@@ -258,6 +261,20 @@ class _DrawerMenuState extends State<DrawerMenu> {
                         MenuEnum.Dock,
                     onTap: () {
                       widget.menuViewModel.changeMenu(MenuEnum.Dock);
+                    },
+                    profiles: const [ProfileTypeEnum.MASTER],
+                  ),
+                  MenuItem(
+                    icon: const Icon(
+                      Icons.business,
+                      color: Colors.white,
+                    ),
+                    isOpen: isOpen,
+                    title: 'Filial',
+                    isSelected: widget.menuViewModel.menuState.value.menuEnum ==
+                        MenuEnum.BranchOffice,
+                    onTap: () {
+                      widget.menuViewModel.changeMenu(MenuEnum.BranchOffice);
                     },
                     profiles: const [ProfileTypeEnum.MASTER],
                   ),

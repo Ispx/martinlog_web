@@ -4,19 +4,22 @@ import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class DropBoxWidget<T> extends StatelessWidget {
-  final TextEditingController controller;
+  final TextEditingController? controller;
+
   final bool enable;
 
   final List<DropdownMenuEntry<T>> dropdownMenuEntries;
   final Function(T?) onSelected;
   final double? width;
   final String? label;
+  final Widget? icon;
   const DropBoxWidget({
     super.key,
-    required this.controller,
+    this.controller,
     required this.dropdownMenuEntries,
     this.enable = true,
     this.width,
+    this.icon,
     required this.onSelected,
     this.label,
   });
@@ -31,6 +34,7 @@ class DropBoxWidget<T> extends StatelessWidget {
       enableFilter: true,
       label: label != null ? Text(label!) : null,
       onSelected: (value) => onSelected(value),
+      leadingIcon: icon,
       inputDecorationTheme: InputDecorationTheme(
         fillColor: Colors.white,
         filled: true,

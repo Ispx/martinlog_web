@@ -1,6 +1,6 @@
 import 'package:martinlog_web/state/app_state.dart';
 
-enum MenuEnum { Operations, Dashboard, Dock, Company, Users }
+enum MenuEnum { Operations, Dashboard, Dock, Company, Users, BranchOffice }
 
 class MenuState {
   final MenuEnum menuEnum;

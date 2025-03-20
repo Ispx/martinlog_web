@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:martinlog_web/services/http_interceptor/access_token_interceptor.dart';
+import 'package:martinlog_web/services/http_interceptor/switch_branch_office_interceptor.dart';
 import 'package:martinlog_web/services/http_interceptor/switch_company_interceptor.dart';
 import 'package:martinlog_web/services/http_interceptor/unauthorized_interceptor.dart';
 
@@ -21,6 +22,7 @@ class Http implements IHttp {
     ..interceptors.addAll([
       AccessTokenInterceptor(),
       SwitchCompanyInterceptor(),
+      SwitchBranchOfficeInterceptor(),
       UnauthorizedInterceptor(),
     ]);
 
