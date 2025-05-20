@@ -258,28 +258,9 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     children: [
                       CardIndicatorWidget(
                         width: widthIndicator,
-                        value: controller.filterOperations(
-                            idDockType: dockType.idDockType,
-                            dateFrom: DateTime.now().day <= 15
-                                ? DateTime(DateTime.now().year,
-                                        DateTime.now().month, 1)
-                                    .toUtc()
-                                : DateTime(DateTime.now().year,
-                                        DateTime.now().month, 16)
-                                    .toUtc(),
-                            dateUntil: DateTime.now().day <= 15
-                                ? DateTime(DateTime.now().year,
-                                        DateTime.now().month, 15, 23, 59, 59)
-                                    .toUtc()
-                                : DateTime(DateTime.now().year,
-                                        DateTime.now().month + 1, 1)
-                                    .toUtc()
-                                    .subtract(1.seconds),
-                            status: [
-                              OperationStatusEnum.CREATED.idOperationStatus,
-                              OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                              OperationStatusEnum.FINISHED.idOperationStatus,
-                            ]).length,
+                        value: controller.filterDashboard(
+                          idDockType: dockType.idDockType,
+                        ),
                         isLoading: controller.appState.value is AppStateLoading,
                         title: "15º atual",
                         backgroundColor: Colors.blue,
@@ -287,24 +268,9 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       SizedBox(width: width * .05),
                       CardIndicatorWidget(
                         width: widthIndicator,
-                        value: controller.filterOperations(
-                            idDockType: dockType.idDockType,
-                            dateFrom: DateTime(DateTime.now().year,
-                                    DateTime.now().month, DateTime.now().day)
-                                .toUtc(),
-                            dateUntil: DateTime(
-                                    DateTime.now().year,
-                                    DateTime.now().month,
-                                    DateTime.now().day,
-                                    23,
-                                    59,
-                                    59)
-                                .toUtc(),
-                            status: [
-                              OperationStatusEnum.CREATED.idOperationStatus,
-                              OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                              OperationStatusEnum.FINISHED.idOperationStatus,
-                            ]).length,
+                        value: controller.filterDashboard(
+                          idDockType: dockType.idDockType,
+                        ),
                         isLoading: controller.appState.value is AppStateLoading,
                         title: "Hoje",
                         backgroundColor: context.appTheme.primaryColor,
@@ -312,12 +278,9 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       SizedBox(width: width * .05),
                       CardIndicatorWidget(
                         width: widthIndicator,
-                        value: controller.filterOperations(
-                            idDockType: dockType.idDockType,
-                            status: [
-                              OperationStatusEnum.CREATED.idOperationStatus,
-                              OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                            ]).length,
+                        value: controller.filterDashboard(
+                          idDockType: dockType.idDockType,
+                        ),
                         isLoading: controller.appState.value is AppStateLoading,
                         title: "Em execução",
                         backgroundColor: context.appTheme.primaryVariant,

@@ -34,7 +34,7 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      simple.get<DashboardViewModel>().getAllOperations();
+      simple.get<DashboardViewModel>().dashboard();
     });
     super.initState();
   }
