@@ -3,10 +3,8 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
-import 'package:martinlog_web/enums/operation_status_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
-import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/state/menu_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
@@ -28,24 +26,19 @@ class DashboardView extends StatefulWidget {
 
 class _DashboardViewState extends State<DashboardView> {
   final DashboardViewModel controller = simple.get<DashboardViewModel>();
-  late Worker worker;
   @override
   void initState() {
-    worker = ever(controller.operations, (callback) {
-      setState(() {});
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      if (controller.operations.isEmpty) {
-        await controller.getAllOperations();
-      }
-    });
+    onRefresh();
     super.initState();
+  }
+
+  void onRefresh() {
+    simple.get<DashboardViewModel>().fetchDashboard();
+    simple.get<DashboardViewModel>().fetchLastestOperations();
   }
 
   @override
   void dispose() {
-    worker.dispose();
     super.dispose();
   }
 
@@ -159,8 +152,7 @@ class _DashboardViewState extends State<DashboardView> {
                     totalByPage: 5,
                     isLoadingItens:
                         controller.appState.value is AppStateLoading,
-                    itens: controller
-                        .getLastsOperations(5)
+                    itens: controller.operations
                         .map(
                           (operationModel) => Padding(
                             padding: EdgeInsets.symmetric(
@@ -169,12 +161,12 @@ class _DashboardViewState extends State<DashboardView> {
                             child: OperationWidget(
                               key: ObjectKey(operationModel),
                               operationModel: operationModel,
-                              onAction: () => controller.getAllOperations(),
+                              onAction: () {},
                             ),
                           ),
                         )
                         .toList(),
-                    onRefresh: () => controller.getAllOperations(),
+                    onRefresh: () => onRefresh(),
                   );
                 }),
               ],
@@ -251,6 +243,8 @@ class CardSummaryOperationWidget extends StatelessWidget {
                 height: 3.w,
               ),
               Obx(() {
+                final dashboardModel =
+                    controller.getDashboard(idDockType: dockType.idDockType);
                 return SizedBox(
                   width: width,
                   child: Row(
@@ -258,9 +252,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     children: [
                       CardIndicatorWidget(
                         width: widthIndicator,
-                        value: controller.filterDashboard(
-                          idDockType: dockType.idDockType,
-                        ),
+                        value: dashboardModel?.total ?? 0,
                         isLoading: controller.appState.value is AppStateLoading,
                         title: "15º atual",
                         backgroundColor: Colors.blue,
@@ -268,9 +260,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       SizedBox(width: width * .05),
                       CardIndicatorWidget(
                         width: widthIndicator,
-                        value: controller.filterDashboard(
-                          idDockType: dockType.idDockType,
-                        ),
+                        value: dashboardModel?.today ?? 0,
                         isLoading: controller.appState.value is AppStateLoading,
                         title: "Hoje",
                         backgroundColor: context.appTheme.primaryColor,
@@ -278,9 +268,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       SizedBox(width: width * .05),
                       CardIndicatorWidget(
                         width: widthIndicator,
-                        value: controller.filterDashboard(
-                          idDockType: dockType.idDockType,
-                        ),
+                        value: dashboardModel?.inProgress ?? 0,
                         isLoading: controller.appState.value is AppStateLoading,
                         title: "Em execução",
                         backgroundColor: context.appTheme.primaryVariant,

@@ -8,14 +8,11 @@ import 'package:martinlog_web/repositories/get_operations_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 
 abstract interface class IDashboardViewModel {
-  Future<void> getAllOperations();
-  Future<void> dashboard();
-
-  int filterDashboard({
+  Future<void> fetchLastestOperations();
+  Future<void> fetchDashboard();
+  DashboardModel? getDashboard({
     required int idDockType,
   });
-
-  List<OperationModel> getLastsOperations(int qtd);
 }
 
 final class DashboardViewModel extends GetxController
@@ -39,10 +36,10 @@ final class DashboardViewModel extends GetxController
   }
 
   @override
-  Future<void> getAllOperations() async {
+  Future<void> fetchLastestOperations() async {
     try {
       changeState(AppStateLoading());
-      operations.value = await getOperationsRepository();
+      operations.value = await getOperationsRepository(limit: 5);
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -50,7 +47,7 @@ final class DashboardViewModel extends GetxController
   }
 
   @override
-  Future<void> dashboard() async {
+  Future<void> fetchDashboard() async {
     try {
       changeState(AppStateLoading());
       dashboardResults.value = await dashboardRepository();
@@ -61,22 +58,9 @@ final class DashboardViewModel extends GetxController
   }
 
   @override
-  int filterDashboard({
+  DashboardModel? getDashboard({
     required int idDockType,
   }) {
-    return dashboardResults
-            .where((e) => e.idDockType == idDockType)
-            .firstOrNull
-            ?.total ??
-        0;
-  }
-
-  @override
-  List<OperationModel> getLastsOperations(int qtd) {
-    if (operations.length < qtd) {
-      return operations.toList();
-    }
-
-    return operations.sublist(0, qtd - 1);
+    return dashboardResults.where((e) => e.idDockTpe == idDockType).firstOrNull;
   }
 }

@@ -11,7 +11,6 @@ import 'package:martinlog_web/extensions/event_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
 import 'package:martinlog_web/extensions/profile_type_extension.dart';
-import 'package:martinlog_web/functions/futures.dart';
 import 'package:martinlog_web/images/app_images.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/state/menu_state.dart';
@@ -118,9 +117,6 @@ class _MenuViewState extends State<MenuView> {
       menuViewModel.changeStatus(state as AppState);
     });
     menuViewModel = simple.get<MenuViewModel>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      funcGetAccountInfo();
-    });
     super.initState();
   }
 

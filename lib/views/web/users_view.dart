@@ -49,6 +49,7 @@ class _UserViewState extends State<UserView> {
 
   @override
   void initState() {
+    simple.get<UserViewModel>().getAll();
     workerSearch = debounce(textSearched, controller.search);
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {

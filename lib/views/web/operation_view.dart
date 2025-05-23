@@ -75,6 +75,8 @@ class _OperationViewState extends State<OperationView> {
 
   @override
   void initState() {
+    simple.get<DockViewModel>().getAll();
+    simple.get<CompanyViewModel>().getAllCompanies();
     operationStatusEditingController = TextEditingController();
     dockTypeEditingController = TextEditingController();
     workerSearch = debounce(textSearched, controller.search);

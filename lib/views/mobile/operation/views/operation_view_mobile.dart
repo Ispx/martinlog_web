@@ -21,6 +21,8 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
+import 'package:martinlog_web/view_models/company_view_model.dart';
+import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/views/mobile/operation/widgets/new_operation_widget.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
@@ -67,6 +69,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
 
   @override
   void initState() {
+    simple.get<DockViewModel>().getAll();
+    simple.get<CompanyViewModel>().getAllCompanies();
     operationStatusEditingController = TextEditingController();
     dockTypeEditingController = TextEditingController();
     createOperationState = GlobalKey<CreateOperationWidgetState>();
