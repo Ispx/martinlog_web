@@ -19,11 +19,9 @@ final class DashboardViewModel extends GetxController
     implements IDashboardViewModel {
   final IGetOperationsRepository getOperationsRepository;
   final IDashboardRepository dashboardRepository;
-  var companies = <CompanyModel>[].obs;
   var operations = <OperationModel>[].obs;
   var dashboardResults = <DashboardModel>[].obs;
 
-  var docks = <DockModel>[].obs;
   var appState = AppState().obs;
 
   DashboardViewModel({

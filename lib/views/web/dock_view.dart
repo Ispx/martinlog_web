@@ -37,7 +37,9 @@ class _DockViewState extends State<DockView> {
 
   @override
   void initState() {
-    simple.get<DockViewModel>().getAll();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      simple.get<DockViewModel>().getAll();
+    });
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
         BannerComponent(

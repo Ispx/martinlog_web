@@ -48,7 +48,6 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
             backgroundColor: Colors.red);
       }
       if (appState is AppStateDone) {
-        await simple.get<CompanyViewModel>().getCompany();
         GoTo.removeAllAndGoTo(Routes.menu);
       }
     });

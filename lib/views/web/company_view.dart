@@ -35,7 +35,9 @@ class _CompanyViewState extends State<CompanyView> {
 
   @override
   void initState() {
-    simple.get<CompanyViewModel>().getAllCompanies();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      simple.get<CompanyViewModel>().getAllCompanies();
+    });
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
         BannerComponent(
