@@ -75,6 +75,11 @@ class _OperationViewState extends State<OperationView> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      simple.get<DockViewModel>().getAll();
+      simple.get<OperationViewModel>().getAll();
+    });
+
     operationStatusEditingController = TextEditingController();
     dockTypeEditingController = TextEditingController();
     workerSearch = debounce(textSearched, controller.search);
@@ -93,11 +98,7 @@ class _OperationViewState extends State<OperationView> {
         );
       }
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (simple.get<OperationViewModel>().operations.value.isEmpty) {
-        simple.get<OperationViewModel>().getAll();
-      }
-    });
+
     super.initState();
   }
 

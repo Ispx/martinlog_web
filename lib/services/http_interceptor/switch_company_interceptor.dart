@@ -10,7 +10,8 @@ class SwitchCompanyInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final authModel = simple.get<AuthViewModel>().authModel;
 
-    if (options.uri.path == Endpoints.operationAll &&
+    if ((options.uri.path == Endpoints.operationAll ||
+            options.uri.path == Endpoints.dashboard) &&
         authModel?.idProfile == ProfileTypeEnum.MASTER.idProfileType) {
       super.onRequest(options, handler);
       return;

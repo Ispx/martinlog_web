@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
+import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:scaffold_responsive/scaffold_responsive.dart';
 
@@ -47,13 +48,14 @@ class _AuthViewMobileState extends State<AuthViewMobile> with ValidatorsMixin {
     });
     //GoTo.removeAllAndGoTo(Routes.menu);
     controller = simple.get<AuthViewModel>();
-    worker = ever(controller.appState, (appState) {
+    worker = ever(controller.appState, (appState) async {
       if (appState is AppStateError) {
         BannerComponent(
             message: appState.msg ?? "Ocorreu um erro",
             backgroundColor: Colors.red);
       }
       if (appState is AppStateDone) {
+        await simple.get<CompanyViewModel>().getCompany();
         GoTo.removeAllAndGoTo(Routes.menu);
       }
     });

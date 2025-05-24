@@ -8,7 +8,6 @@ import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile
 import 'package:responsive_sizer/responsive_sizer.dart';
 import '../../core/dependencie_injection_manager/simple.dart';
 import '../../enums/profile_type_enum.dart';
-import '../../functions/futures.dart';
 import '../../images/app_images.dart';
 import '../../state/app_state.dart';
 import '../../state/menu_state.dart';
@@ -66,9 +65,7 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
       menuViewModel.changeStatus(state as AppState);
     });
     menuViewModel = simple.get<MenuViewModel>();
-    WidgetsBinding.instance.addPostFrameCallback((value) {
-      funcGetAccountInfo();
-    });
+
     super.initState();
   }
 

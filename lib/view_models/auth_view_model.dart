@@ -6,6 +6,7 @@ import 'package:martinlog_web/models/auth_model.dart';
 import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/repositories/auth_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
+import 'package:martinlog_web/view_models/company_view_model.dart';
 
 const passwordKey = 'passwordKey';
 const documentKey = 'documentKey';
@@ -39,6 +40,9 @@ class AuthViewModel implements IAuthViewModel {
       changeState(AppStateLoading());
 
       authModel = await authRepository(document, password);
+      await simple.get<CompanyViewModel>().getCompany();
+      await simple.get<CompanyViewModel>().getAllCompanies();
+
       _saveValueInLocalStorage(documentKey, document);
       _saveValueInLocalStorage(passwordKey, password);
 

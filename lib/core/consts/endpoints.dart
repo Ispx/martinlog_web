@@ -18,4 +18,5 @@ class Endpoints {
   static const operationUpdate = '$operation/<operationKey>/update';
   static const operationUploadFile = '$operation/<operationKey>/upload';
   static const operationAll = '$operation/all';
+  static const dashboard = '/dashboard';
 }

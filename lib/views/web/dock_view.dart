@@ -37,6 +37,9 @@ class _DockViewState extends State<DockView> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      simple.get<DockViewModel>().getAll();
+    });
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
         BannerComponent(
@@ -365,8 +368,7 @@ class _DockWidgetState extends State<DockWidget> {
               Flexible(
                 flex: 2,
                 child: Text(
-                  widget.dockModel.createdAt
-                      .ddMMyyyyHHmmss,
+                  widget.dockModel.createdAt.ddMMyyyyHHmmss,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.displayMedium(context).copyWith(
                     fontWeight: FontWeight.w600,

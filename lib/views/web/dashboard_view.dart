@@ -3,10 +3,8 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
-import 'package:martinlog_web/enums/operation_status_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
-import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/state/menu_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
@@ -28,24 +26,21 @@ class DashboardView extends StatefulWidget {
 
 class _DashboardViewState extends State<DashboardView> {
   final DashboardViewModel controller = simple.get<DashboardViewModel>();
-  late Worker worker;
   @override
   void initState() {
-    worker = ever(controller.operations, (callback) {
-      setState(() {});
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      if (controller.operations.isEmpty) {
-        await controller.getAllOperations();
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      onRefresh();
     });
     super.initState();
   }
 
+  void onRefresh() {
+    simple.get<DashboardViewModel>().fetchDashboard();
+    simple.get<DashboardViewModel>().fetchLastestOperations();
+  }
+
   @override
   void dispose() {
-    worker.dispose();
     super.dispose();
   }
 
@@ -82,61 +77,64 @@ class _DashboardViewState extends State<DashboardView> {
                 SizedBox(
                   height: 2.w,
                 ),
-                SizedBox(
-                  width: snapshot.maxWidth,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 2.w),
-                    child: LayoutBuilder(builder: (context, constraint) {
-                      final width = constraint.maxWidth / 4.5;
-                      return Column(
-                        children: [
-                          Wrap(
-                            spacing: AppSize.padding * 2,
-                            runSpacing: AppSize.padding * 2,
-                            alignment: WrapAlignment.center,
-                            children: [
-                              CardSummaryOperationWidget(
-                                width: width,
-                                controller: controller,
-                                dockType: DockType.RECEIPT,
-                              ),
-                              CardSummaryOperationWidget(
-                                width: width,
-                                controller: controller,
-                                dockType: DockType.EXPEDITION,
-                              ),
-                              CardSummaryOperationWidget(
-                                width: width,
-                                controller: controller,
-                                dockType: DockType.TRANSFER,
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: AppSize.padding * 2,
-                          ),
-                          Wrap(
-                            spacing: AppSize.padding * 2,
-                            runSpacing: AppSize.padding * 2,
-                            alignment: WrapAlignment.center,
-                            children: [
-                              CardSummaryOperationWidget(
-                                width: width,
-                                controller: controller,
-                                dockType: DockType.KAMIKAZE,
-                              ),
-                              CardSummaryOperationWidget(
-                                width: width,
-                                controller: controller,
-                                dockType: DockType.REVERSE,
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    }),
-                  ),
-                ),
+                Obx(() {
+                  controller.appState.value;
+                  return SizedBox(
+                    width: snapshot.maxWidth,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 2.w),
+                      child: LayoutBuilder(builder: (context, constraint) {
+                        final width = constraint.maxWidth / 4.5;
+                        return Column(
+                          children: [
+                            Wrap(
+                              spacing: AppSize.padding * 2,
+                              runSpacing: AppSize.padding * 2,
+                              alignment: WrapAlignment.center,
+                              children: [
+                                CardSummaryOperationWidget(
+                                  width: width,
+                                  controller: controller,
+                                  dockType: DockType.RECEIPT,
+                                ),
+                                CardSummaryOperationWidget(
+                                  width: width,
+                                  controller: controller,
+                                  dockType: DockType.EXPEDITION,
+                                ),
+                                CardSummaryOperationWidget(
+                                  width: width,
+                                  controller: controller,
+                                  dockType: DockType.TRANSFER,
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: AppSize.padding * 2,
+                            ),
+                            Wrap(
+                              spacing: AppSize.padding * 2,
+                              runSpacing: AppSize.padding * 2,
+                              alignment: WrapAlignment.center,
+                              children: [
+                                CardSummaryOperationWidget(
+                                  width: width,
+                                  controller: controller,
+                                  dockType: DockType.KAMIKAZE,
+                                ),
+                                CardSummaryOperationWidget(
+                                  width: width,
+                                  controller: controller,
+                                  dockType: DockType.REVERSE,
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }),
+                    ),
+                  );
+                }),
                 SizedBox(
                   height: 3.w,
                 ),
@@ -159,8 +157,7 @@ class _DashboardViewState extends State<DashboardView> {
                     totalByPage: 5,
                     isLoadingItens:
                         controller.appState.value is AppStateLoading,
-                    itens: controller
-                        .getLastsOperations(5)
+                    itens: controller.operations
                         .map(
                           (operationModel) => Padding(
                             padding: EdgeInsets.symmetric(
@@ -169,12 +166,12 @@ class _DashboardViewState extends State<DashboardView> {
                             child: OperationWidget(
                               key: ObjectKey(operationModel),
                               operationModel: operationModel,
-                              onAction: () => controller.getAllOperations(),
+                              onAction: () {},
                             ),
                           ),
                         )
                         .toList(),
-                    onRefresh: () => controller.getAllOperations(),
+                    onRefresh: () => onRefresh(),
                   );
                 }),
               ],
@@ -211,6 +208,8 @@ class CardSummaryOperationWidget extends StatelessWidget {
         padding: EdgeInsets.only(left: 1.w, right: 1.w),
         child: LayoutBuilder(builder: (context, snapshot) {
           final widthIndicator = snapshot.maxWidth / 3.5;
+          final dashboardModel =
+              controller.getDashboard(idDockType: dockType.idDockType);
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,82 +249,37 @@ class CardSummaryOperationWidget extends StatelessWidget {
               SizedBox(
                 height: 3.w,
               ),
-              Obx(() {
-                return SizedBox(
-                  width: width,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      CardIndicatorWidget(
-                        width: widthIndicator,
-                        value: controller.filterOperations(
-                            idDockType: dockType.idDockType,
-                            dateFrom: DateTime.now().day <= 15
-                                ? DateTime(DateTime.now().year,
-                                        DateTime.now().month, 1)
-                                    .toUtc()
-                                : DateTime(DateTime.now().year,
-                                        DateTime.now().month, 16)
-                                    .toUtc(),
-                            dateUntil: DateTime.now().day <= 15
-                                ? DateTime(DateTime.now().year,
-                                        DateTime.now().month, 15, 23, 59, 59)
-                                    .toUtc()
-                                : DateTime(DateTime.now().year,
-                                        DateTime.now().month + 1, 1)
-                                    .toUtc()
-                                    .subtract(1.seconds),
-                            status: [
-                              OperationStatusEnum.CREATED.idOperationStatus,
-                              OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                              OperationStatusEnum.FINISHED.idOperationStatus,
-                            ]).length,
-                        isLoading: controller.appState.value is AppStateLoading,
-                        title: "15º atual",
-                        backgroundColor: Colors.blue,
-                      ),
-                      SizedBox(width: width * .05),
-                      CardIndicatorWidget(
-                        width: widthIndicator,
-                        value: controller.filterOperations(
-                            idDockType: dockType.idDockType,
-                            dateFrom: DateTime(DateTime.now().year,
-                                    DateTime.now().month, DateTime.now().day)
-                                .toUtc(),
-                            dateUntil: DateTime(
-                                    DateTime.now().year,
-                                    DateTime.now().month,
-                                    DateTime.now().day,
-                                    23,
-                                    59,
-                                    59)
-                                .toUtc(),
-                            status: [
-                              OperationStatusEnum.CREATED.idOperationStatus,
-                              OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                              OperationStatusEnum.FINISHED.idOperationStatus,
-                            ]).length,
-                        isLoading: controller.appState.value is AppStateLoading,
-                        title: "Hoje",
-                        backgroundColor: context.appTheme.primaryColor,
-                      ),
-                      SizedBox(width: width * .05),
-                      CardIndicatorWidget(
-                        width: widthIndicator,
-                        value: controller.filterOperations(
-                            idDockType: dockType.idDockType,
-                            status: [
-                              OperationStatusEnum.CREATED.idOperationStatus,
-                              OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                            ]).length,
-                        isLoading: controller.appState.value is AppStateLoading,
-                        title: "Em execução",
-                        backgroundColor: context.appTheme.primaryVariant,
-                      ),
-                    ],
-                  ),
-                );
-              }),
+              SizedBox(
+                width: width,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    CardIndicatorWidget(
+                      width: widthIndicator,
+                      value: dashboardModel?.total ?? 0,
+                      isLoading: controller.appState.value is AppStateLoading,
+                      title: "15º atual",
+                      backgroundColor: Colors.blue,
+                    ),
+                    SizedBox(width: width * .05),
+                    CardIndicatorWidget(
+                      width: widthIndicator,
+                      value: dashboardModel?.today ?? 0,
+                      isLoading: controller.appState.value is AppStateLoading,
+                      title: "Hoje",
+                      backgroundColor: context.appTheme.primaryColor,
+                    ),
+                    SizedBox(width: width * .05),
+                    CardIndicatorWidget(
+                      width: widthIndicator,
+                      value: dashboardModel?.inProgress ?? 0,
+                      isLoading: controller.appState.value is AppStateLoading,
+                      title: "Em execução",
+                      backgroundColor: context.appTheme.primaryVariant,
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(
                 height: 2.w,
               ),
