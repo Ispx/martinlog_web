@@ -75,9 +75,13 @@ class _OperationViewState extends State<OperationView> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      simple.get<DockViewModel>().getAll();
-      simple.get<OperationViewModel>().getAll();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.wait([
+        simple.get<DockViewModel>().getAll(),
+        simple.get<CompanyViewModel>().getCompany(),
+        simple.get<CompanyViewModel>().getAllCompanies(),
+        simple.get<OperationViewModel>().getAll()
+      ]);
     });
 
     operationStatusEditingController = TextEditingController();

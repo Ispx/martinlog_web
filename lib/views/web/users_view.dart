@@ -49,9 +49,11 @@ class _UserViewState extends State<UserView> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      simple.get<UserViewModel>().getAll();
-      simple.get<CompanyViewModel>().getAllCompanies();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.wait([
+        simple.get<UserViewModel>().getAll(),
+        simple.get<CompanyViewModel>().getAllCompanies(),
+      ]);
     });
     workerSearch = debounce(textSearched, controller.search);
     worker = ever(controller.appState, (appState) {
