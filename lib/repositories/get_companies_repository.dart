@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/services/http/http.dart';
@@ -18,8 +20,9 @@ class GetCompaniesRepository implements IGetCompaniesRepository {
         url: urlBase + Endpoints.companyAll,
         method: HttpMethod.GET,
       );
-      var result = List<CompanyModel>.from(
-          response.data.map((e) => CompanyModel.fromJson(e)).toList());
+
+      var result = await Isolate.run(() => List<CompanyModel>.from(
+          response.data.map((e) => CompanyModel.fromJson(e)).toList()));
       return result;
     } catch (e) {
       throw Exception(e.toString());
