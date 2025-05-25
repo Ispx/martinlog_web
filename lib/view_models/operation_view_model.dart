@@ -375,14 +375,13 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         resetFilter();
         return;
       }
-
+      final regex = RegExp(text);
       operationsFilted.value = operations
-          .where((p0) =>
-              p0.companyModel.fantasyName
-                  .toString()
-                  .toLowerCase()
-                  .startsWith(text.toLowerCase()) ||
-              p0.dockModel!.code.compareTo(text) == 0)
+          .where(
+            (p0) =>
+                regex.hasMatch(p0.companyModel.fantasyName) ||
+                regex.hasMatch(p0.dockModel!.code),
+          )
           .toList();
     } catch (e) {
       operationsFilted.value = [];
