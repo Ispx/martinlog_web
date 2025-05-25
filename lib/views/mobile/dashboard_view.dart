@@ -43,7 +43,6 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
 
   void onRefresh() {
     simple.get<DashboardViewModel>().fetchDashboard();
-    simple.get<DashboardViewModel>().fetchLastestOperations();
   }
 
   @override

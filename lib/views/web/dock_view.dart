@@ -15,7 +15,6 @@ import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
-import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/views/web/operation_view.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
@@ -37,8 +36,8 @@ class _DockViewState extends State<DockView> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      simple.get<DockViewModel>().getAll();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await simple.get<DockViewModel>().getAll();
     });
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {

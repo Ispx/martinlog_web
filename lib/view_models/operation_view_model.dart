@@ -93,7 +93,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   final IGetOperationsPedingRepository getOperationsPedingRepository;
 
   final _bucket = 'operations-file';
-  final limitPaginationOffset = 20;
+  final limitPaginationOffset = 10;
   var currentIndexPage = 0.obs;
   var isEnableLoadMoreItens = true.obs;
   OperationViewModel({
@@ -375,14 +375,13 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         resetFilter();
         return;
       }
-
+      final regex = RegExp(text);
       operationsFilted.value = operations
-          .where((p0) =>
-              p0.companyModel.fantasyName
-                  .toString()
-                  .toLowerCase()
-                  .startsWith(text.toLowerCase()) ||
-              p0.dockModel!.code.compareTo(text) == 0)
+          .where(
+            (p0) =>
+                regex.hasMatch(p0.companyModel.fantasyName) ||
+                regex.hasMatch(p0.dockModel!.code),
+          )
           .toList();
     } catch (e) {
       operationsFilted.value = [];
@@ -421,8 +420,9 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   Future<void> filterByDate(DateTime start, DateTime end) async {
     try {
       if (appState is AppStateLoading) return;
-      changeState(AppStateLoading());
-      isEnableLoadMoreItens.value = false;
+      operationsFilted.value = [];
+      this.operations.value = [];
+      changeState(AppStateLoadingMore());
       final operations = await getOperationsRepository(
           dateFrom:
               DateTime(start.year, start.month, start.day, 00, 00, 00).toUtc(),

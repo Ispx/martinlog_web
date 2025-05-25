@@ -40,8 +40,7 @@ class AuthViewModel implements IAuthViewModel {
       changeState(AppStateLoading());
 
       authModel = await authRepository(document, password);
-      await simple.get<CompanyViewModel>().getCompany();
-      await simple.get<CompanyViewModel>().getAllCompanies();
+
 
       _saveValueInLocalStorage(documentKey, document);
       _saveValueInLocalStorage(passwordKey, password);
