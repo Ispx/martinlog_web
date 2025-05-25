@@ -1,5 +1,3 @@
-import 'dart:isolate';
-
 import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
@@ -60,8 +58,8 @@ class GetOperationsRepository implements IGetOperationsRepository {
         method: HttpMethod.GET,
         //   params: params,
       );
-      var result = await Isolate.run(() => List<OperationModel>.from(
-          response.data.map((e) => OperationModel.fromJson(e)).toList()));
+      var result = List<OperationModel>.from(
+          response.data.map((e) => OperationModel.fromJson(e)).toList());
       return result;
     } catch (e) {
       throw Exception(e.toString());

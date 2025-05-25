@@ -1,5 +1,3 @@
-import 'dart:isolate';
-
 import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/models/user_model.dart';
@@ -21,8 +19,8 @@ final class GetUsersRepository implements IGetUsersRepository {
         url: urlBase + Endpoints.userAll,
         method: HttpMethod.GET,
       );
-      var result = await Isolate.run(() => List<UserModel>.from(
-          response.data.map((e) => UserModel.fromJson(e)).toList()));
+      var result = List<UserModel>.from(
+          response.data.map((e) => UserModel.fromJson(e)).toList());
       return result;
     } catch (e) {
       throw Exception("Ocorreu um erro ao obter a lista de usuários");

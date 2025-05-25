@@ -1,5 +1,3 @@
-import 'dart:isolate';
-
 import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
@@ -28,11 +26,8 @@ final class DashboardRepository implements IDashboardRepository {
         method: HttpMethod.GET,
       );
 
-      final result = await Isolate.run<List<DashboardModel>>(() {
-        return List<DashboardModel>.from(
-          response.data.map((e) => DashboardModel.fromJson(e)).toList(),
-        );
-      });
+      var result = List<DashboardModel>.from(
+          response.data.map((e) => DashboardModel.fromJson(e)).toList());
       return result;
     } catch (e) {
       rethrow;

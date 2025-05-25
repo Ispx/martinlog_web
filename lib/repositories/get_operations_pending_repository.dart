@@ -1,5 +1,3 @@
-import 'dart:isolate';
-
 import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/models/operation_model.dart';
@@ -20,8 +18,8 @@ class GetOperationsPedingRepository implements IGetOperationsPedingRepository {
         url: '$urlBase${Endpoints.operationPending}',
         method: HttpMethod.GET,
       );
-      var result = await Isolate.run(() => List<OperationModel>.from(
-          response.data.map((e) => OperationModel.fromJson(e)).toList()));
+      var result = List<OperationModel>.from(
+          response.data.map((e) => OperationModel.fromJson(e)).toList());
       return result;
     } catch (e) {
       throw "Ocorreu um erro ao obter as operações em execução";

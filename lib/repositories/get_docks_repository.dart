@@ -1,5 +1,3 @@
-import 'dart:isolate';
-
 import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/services/http/http.dart';
@@ -21,8 +19,8 @@ class GetDocksRepository implements IGetDocksRepository {
         method: HttpMethod.GET,
       );
 
-      var result = await Isolate.run(() => List<DockModel>.from(
-          response.data.map((e) => DockModel.fromJson(e)).toList()));
+      var result = List<DockModel>.from(
+          response.data.map((e) => DockModel.fromJson(e)).toList());
       return result;
     } catch (e) {
       throw Exception(e.toString());
