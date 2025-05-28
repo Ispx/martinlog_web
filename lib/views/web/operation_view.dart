@@ -85,7 +85,7 @@ class _OperationViewState extends State<OperationView> {
 
     operationStatusEditingController = TextEditingController();
     dockTypeEditingController = TextEditingController();
-    workerSearch = debounce(textSearched, controller.search);
+    workerSearch = ever(textSearched, controller.search);
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
         BannerComponent(
