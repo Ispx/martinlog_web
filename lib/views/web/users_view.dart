@@ -107,7 +107,7 @@ class _UserViewState extends State<UserView> {
                     label: 'Pesquisar',
                     hint: 'Pesquise por nome, documento ou transportadora',
                     onChange: (e) => textSearched.value = e,
-                    maxLength: 1,
+                    maxLines: 1,
                   ),
                 ),
                 SizedBox(
