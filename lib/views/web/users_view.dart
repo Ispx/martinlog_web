@@ -49,6 +49,12 @@ class _UserViewState extends State<UserView> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.wait([
+        simple.get<UserViewModel>().getAll(),
+        simple.get<CompanyViewModel>().getAllCompanies(),
+      ]);
+    });
     workerSearch = debounce(textSearched, controller.search);
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
@@ -101,6 +107,7 @@ class _UserViewState extends State<UserView> {
                     label: 'Pesquisar',
                     hint: 'Pesquise por nome, documento ou transportadora',
                     onChange: (e) => textSearched.value = e,
+                    maxLines: 1,
                   ),
                 ),
                 SizedBox(

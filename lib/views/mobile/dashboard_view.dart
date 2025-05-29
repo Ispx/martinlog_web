@@ -5,14 +5,12 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
-import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/widgets/page_widget_mobile.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 import '../../core/dependencie_injection_manager/simple.dart';
 import '../../enums/dock_type_enum.dart';
-import '../../enums/operation_status_enum.dart';
 import '../../state/app_state.dart';
 import '../../state/menu_state.dart';
 import '../../style/size/app_size.dart';
@@ -33,15 +31,18 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
   final DashboardViewModel controller = simple.get<DashboardViewModel>();
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      simple.get<DashboardViewModel>().getAllOperations();
-    });
+    onRefresh();
+
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void onRefresh() {
+    simple.get<DashboardViewModel>().fetchDashboard();
   }
 
   @override
@@ -126,27 +127,22 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
                   ),
                   Obx(() {
                     return PageWidgetMobile(
-                      totalByPage: 20,
-                      isLoadingItens:
-                          controller.appState.value is AppStateLoading,
-                      itens: controller
-                          .getLastsOperations(20)
-                          .map((operationModel) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: AppSize.padding / 2,
-                          ),
-                          child: OperationWidgetMobile(
-                            key: ObjectKey(operationModel),
-                            operationModel: operationModel,
-                            onAction: () async =>
-                                await controller.getAllOperations(),
-                          ),
-                        );
-                      }).toList(),
-                      onRefresh: () async =>
-                          await controller.getAllOperations(),
-                    );
+                        totalByPage: 20,
+                        isLoadingItens:
+                            controller.appState.value is AppStateLoading,
+                        itens: controller.operations.map((operationModel) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: AppSize.padding / 2,
+                            ),
+                            child: OperationWidgetMobile(
+                              key: ObjectKey(operationModel),
+                              operationModel: operationModel,
+                              onAction: () async {},
+                            ),
+                          );
+                        }).toList(),
+                        onRefresh: () async => onRefresh());
                   })
                 ],
               ),
@@ -221,6 +217,8 @@ class CardSummaryOperationWidget extends StatelessWidget {
                 height: 3.w,
               ),
               Obx(() {
+                final dashboardModel =
+                    controller.getDashboard(idDockType: dockType.idDockType);
                 return SizedBox(
                   width: width,
                   child: Row(
@@ -229,28 +227,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       CardIndicatorWidget(
                         isLoading: controller.appState.value is AppStateLoading,
                         width: widthIndicator,
-                        value: controller.filterOperations(
-                            idDockType: dockType.idDockType,
-                            dateFrom: DateTime.now().day <= 15
-                                ? DateTime(DateTime.now().year,
-                                        DateTime.now().month, 1)
-                                    .toUtc()
-                                : DateTime(DateTime.now().year,
-                                        DateTime.now().month, 16)
-                                    .toUtc(),
-                            dateUntil: DateTime.now().day <= 15
-                                ? DateTime(DateTime.now().year,
-                                        DateTime.now().month, 15, 23, 59, 59)
-                                    .toUtc()
-                                : DateTime(DateTime.now().year,
-                                        DateTime.now().month + 1, 1)
-                                    .toUtc()
-                                    .subtract(1.seconds),
-                            status: [
-                              OperationStatusEnum.CREATED.idOperationStatus,
-                              OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                              OperationStatusEnum.FINISHED.idOperationStatus,
-                            ]).length,
+                        value: dashboardModel?.total ?? 0,
                         title: "15º atual",
                         backgroundColor: Colors.blue,
                       ),
@@ -258,24 +235,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       CardIndicatorWidget(
                         isLoading: controller.appState.value is AppStateLoading,
                         width: widthIndicator,
-                        value: controller.filterOperations(
-                            idDockType: dockType.idDockType,
-                            dateFrom: DateTime(DateTime.now().year,
-                                    DateTime.now().month, DateTime.now().day)
-                                .toUtc(),
-                            dateUntil: DateTime(
-                                    DateTime.now().year,
-                                    DateTime.now().month,
-                                    DateTime.now().day,
-                                    23,
-                                    59,
-                                    59)
-                                .toUtc(),
-                            status: [
-                              OperationStatusEnum.CREATED.idOperationStatus,
-                              OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                              OperationStatusEnum.FINISHED.idOperationStatus,
-                            ]).length,
+                        value: dashboardModel?.today ?? 0,
                         title: "Hoje",
                         backgroundColor: context.appTheme.primaryColor,
                       ),
@@ -283,12 +243,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       CardIndicatorWidget(
                         isLoading: controller.appState.value is AppStateLoading,
                         width: widthIndicator,
-                        value: controller.filterOperations(
-                            idDockType: dockType.idDockType,
-                            status: [
-                              OperationStatusEnum.CREATED.idOperationStatus,
-                              OperationStatusEnum.IN_PROGRESS.idOperationStatus,
-                            ]).length,
+                        value: dashboardModel?.inProgress ?? 0,
                         title: "Em execução",
                         backgroundColor: context.appTheme.primaryVariant,
                       ),

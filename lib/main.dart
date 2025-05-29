@@ -13,6 +13,7 @@ import 'package:martinlog_web/repositories/create_company_repository.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
 import 'package:martinlog_web/repositories/create_user_repository.dart';
 import 'package:martinlog_web/repositories/get_branch_office_repository.dart';
+import 'package:martinlog_web/repositories/dashboard_repository.dart';
 import 'package:martinlog_web/repositories/get_companies_repository.dart';
 import 'package:martinlog_web/repositories/get_company_repositoy.dart';
 import 'package:martinlog_web/repositories/get_docks_repository.dart';
@@ -219,6 +220,10 @@ void main() async {
       i.addSingleton<DashboardViewModel>(
         () => DashboardViewModel(
           getOperationsRepository: i.get<GetOperationsRepository>(),
+          dashboardRepository: DashboardRepository(
+            http: i.get<Http>(),
+            urlBase: EnvConfig.urlBase,
+          ),
         ),
       );
       i.addSingleton<MenuViewModel>(

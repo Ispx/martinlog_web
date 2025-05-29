@@ -14,6 +14,7 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
+import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/widgets/buttom_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -40,7 +41,7 @@ class _AuthViewState extends State<AuthView> with ValidatorsMixin {
   void initState() {
     controller = simple.get<AuthViewModel>();
 
-    worker = ever(controller.appState, (appState) {
+    worker = ever(controller.appState, (appState) async {
       if (appState is AppStateError) {
         BannerComponent(
             message: appState.msg ?? "Ocorreu um erro",

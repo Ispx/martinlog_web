@@ -10,6 +10,8 @@
             "type": "dart",
             "args": [
                 "--dart-define",
+                "PLATFORM=web",
+                "--dart-define",
                 "ENV=dev",
                 "--dart-define",
                 "URL_BASE=http://192.168.100.19:8080",
@@ -21,7 +23,11 @@
             "name": "[PROD WEB] martinlog_web",
             "request": "launch",
             "type": "dart",
+            "program": "lib/main_web.dart",
             "args": [
+                "-d",
+                "chrome",
+                "web-experimental-hot-reload",
                 "--dart-define",
                 "PLATFORM=web",
                 "--dart-define",

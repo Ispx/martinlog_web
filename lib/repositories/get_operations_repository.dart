@@ -37,7 +37,8 @@ class GetOperationsRepository implements IGetOperationsRepository {
         url +=
             "?dateFrom=${dateFrom.yyyyMMddyHHmmss}&dateUntil=${dateUntil.yyyyMMddyHHmmss}";
       }
-      if (skip != null) {
+      skip ??= 0;
+      if (limit != null) {
         if (url.contains('?')) {
           url += "&skip=$skip&limit=$limit";
         } else {

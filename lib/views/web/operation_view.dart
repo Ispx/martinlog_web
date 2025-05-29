@@ -27,7 +27,6 @@ import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
-import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
@@ -75,9 +74,18 @@ class _OperationViewState extends State<OperationView> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.wait([
+        simple.get<DockViewModel>().getAll(),
+        simple.get<CompanyViewModel>().getCompany(),
+        simple.get<CompanyViewModel>().getAllCompanies(),
+        simple.get<OperationViewModel>().getAll()
+      ]);
+    });
+
     operationStatusEditingController = TextEditingController();
     dockTypeEditingController = TextEditingController();
-    workerSearch = debounce(textSearched, controller.search);
+    workerSearch = ever(textSearched, controller.search);
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
         BannerComponent(
@@ -93,11 +101,7 @@ class _OperationViewState extends State<OperationView> {
         );
       }
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (simple.get<OperationViewModel>().operations.value.isEmpty) {
-        simple.get<OperationViewModel>().getAll();
-      }
-    });
+
     super.initState();
   }
 
@@ -179,12 +183,13 @@ class _OperationViewState extends State<OperationView> {
                       textDateRangeSelected.value = '';
                     }
                     if (dateRangeSelected != null) {
-                      await controller.filterByDate(
+                      controller.filterByDate(
                         dateRangeSelected!.start,
                         dateRangeSelected!.end,
                       );
                       textDateRangeSelected.value =
                           "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
+                      setState(() {});
                     }
                   },
                   icon: const Icon(Icons.date_range),
@@ -250,6 +255,7 @@ class _OperationViewState extends State<OperationView> {
                     label: 'Pesquisar',
                     hint: 'Pesquise por transportadora ou doca',
                     onChange: (e) => textSearched.value = e,
+                    maxLines: 1,
                   ),
                 ),
                 SizedBox(
