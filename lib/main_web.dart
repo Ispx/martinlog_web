@@ -35,6 +35,8 @@ import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/view_models/password_recovery_view_model.dart';
 import 'package:martinlog_web/view_models/user_view_model.dart';
 
+import 'repositories/dashboard_repository.dart';
+
 void main() async {
   simple.startUp(
     (i) {
@@ -195,7 +197,10 @@ void main() async {
       i.addSingleton<DashboardViewModel>(
         () => DashboardViewModel(
           getOperationsRepository: i.get<GetOperationsRepository>(),
-        ),
+   dashboardRepository: DashboardRepository(
+            http: i.get<Http>(),
+            urlBase: EnvConfig.urlBase,
+          ),        ),
       );
       i.addSingleton<MenuViewModel>(
         () => MenuViewModel(),
