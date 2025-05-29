@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/models/branch_office_model.dart';
-import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/branch_office_view_model.dart';
-import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
-import 'package:martinlog_web/widgets/text_form_field_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class AppBarWidget extends StatefulWidget {
@@ -60,9 +56,12 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        SizedBox(
-                          width: 15.w,
-                          child: const BranchOfficeManagerWidget(),
+                        Visibility(
+                          visible: false,
+                          child: SizedBox(
+                            width: 15.w,
+                            child: const BranchOfficeManagerWidget(),
+                          ),
                         ),
                         SizedBox(
                           width: AppSize.padding * 4,
@@ -179,7 +178,6 @@ class _BranchOfficeManagerWidgetState extends State<BranchOfficeManagerWidget> {
                   .toList()
             ],
             onSelected: (e) {
-            
               simple.get<BranchOfficeViewModelImpl>().switchBranchOffice(e);
             },
             controller: textEditingController,

@@ -224,6 +224,7 @@ void main() async {
             http: i.get<Http>(),
             urlBase: EnvConfig.urlBase,
           ),
+          branchOfficeViewModel: simple.get<BranchOfficeViewModelImpl>(),
         ),
       );
       i.addSingleton<MenuViewModel>(

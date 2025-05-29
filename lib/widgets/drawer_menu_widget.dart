@@ -115,6 +115,23 @@ class _DrawerMenuState extends State<DrawerMenuWidget> {
                   ),
                   MenuItem(
                     icon: const Icon(
+                      Icons.business,
+                      color: Colors.white,
+                    ),
+                    isOpen: isOpen,
+                    isSelected: widget.menuViewModel.menuState.value.menuEnum ==
+                        MenuEnum.BranchOffice,
+                    title: 'Filial',
+                    onTap: () {
+                      widget.menuViewModel.changeMenu(MenuEnum.BranchOffice);
+                    },
+                    profiles: const [ProfileTypeEnum.MASTER],
+                  ),
+                  SizedBox(
+                    height: AppSize.padding,
+                  ),
+                  MenuItem(
+                    icon: const Icon(
                       LineIcons.truck,
                       color: Colors.white,
                     ),

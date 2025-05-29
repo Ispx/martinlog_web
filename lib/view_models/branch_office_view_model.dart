@@ -2,14 +2,11 @@ import 'package:get/get.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/profile_type_extension.dart';
-import 'package:martinlog_web/functions/futures.dart';
-import 'package:martinlog_web/models/auth_model.dart';
 import 'package:martinlog_web/models/branch_office_model.dart';
 import 'package:martinlog_web/repositories/create_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/get_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/get_company_repositoy.dart';
 import 'package:martinlog_web/repositories/link_company_to_branch_office_repository.dart';
-import 'package:martinlog_web/services/http_interceptor/switch_branch_office_interceptor.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/dashboard_view_model.dart';
@@ -22,6 +19,7 @@ abstract interface class BranchOfficeViewModel {
   Future<void> create(String name);
   Future<void> switchBranchOffice(BranchOfficeModel model);
   List<BranchOfficeModel> get branchs;
+  int? idBranchOfficeActivated;
 }
 
 class BranchOfficeViewModelImpl extends GetxController
@@ -87,7 +85,7 @@ class BranchOfficeViewModelImpl extends GetxController
 
   @override
   Future<void> switchBranchOffice(BranchOfficeModel? model) async {
-    idSwitchBranchOffice = model?.idBranchOffice;
+    idBranchOfficeActivated = model?.idBranchOffice;
     simple.get<OperationViewModel>().operations.clear();
     simple.get<OperationViewModel>().operationsFilted.clear();
     simple.get<DashboardViewModel>().operations.clear();
@@ -96,4 +94,7 @@ class BranchOfficeViewModelImpl extends GetxController
 
   @override
   List<BranchOfficeModel> get branchs => branchOfficeList ?? [];
+
+  @override
+  int? idBranchOfficeActivated = -1;
 }

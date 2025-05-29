@@ -132,6 +132,7 @@ class _OperationViewState extends State<OperationView> {
               children: [
                 IconButton(
                   onPressed: () async {
+                    /*
                     await showDateRangePickerDialog(
                       context: context,
                       builder: (context, date) {
@@ -191,6 +192,7 @@ class _OperationViewState extends State<OperationView> {
                           "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
                       setState(() {});
                     }
+                    */
                   },
                   icon: const Icon(Icons.date_range),
                   style: ButtonStyle(

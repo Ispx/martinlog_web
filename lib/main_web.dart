@@ -10,9 +10,11 @@ import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/repositories/auth_repository.dart';
 import 'package:martinlog_web/repositories/cancel_operation_repository.dart';
 import 'package:martinlog_web/repositories/complete_password_recovery_repository.dart';
+import 'package:martinlog_web/repositories/create_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/create_company_repository.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
 import 'package:martinlog_web/repositories/create_user_repository.dart';
+import 'package:martinlog_web/repositories/get_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/get_companies_repository.dart';
 import 'package:martinlog_web/repositories/get_company_repositoy.dart';
 import 'package:martinlog_web/repositories/get_docks_repository.dart';
@@ -20,6 +22,10 @@ import 'package:martinlog_web/repositories/get_operation_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_pending_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_repository.dart';
 import 'package:martinlog_web/repositories/get_users_repository.dart';
+import 'package:martinlog_web/repositories/link_company_to_branch_office_repository.dart'
+    show
+        LinkCompanyToBranchOfficeRepository,
+        LinkCompanyToBranchOfficeRepositoryImp;
 import 'package:martinlog_web/repositories/start_password_recovery_repository.dart';
 import 'package:martinlog_web/repositories/update_operation_repository.dart';
 import 'package:martinlog_web/repositories/update_user_repository.dart';
@@ -27,6 +33,7 @@ import 'package:martinlog_web/repositories/upload_file_operation_repository.dart
 import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';
 import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
+import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dashboard_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
@@ -150,6 +157,28 @@ void main() async {
           urlBase: EnvConfig.urlBase,
         ),
       );
+
+      i.addFactory<GetBranchOfficeRepository>(
+        () => GetBranchOfficeRepositoryImp(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
+
+      i.addFactory<CreateBranchOfficeRepository>(
+        () => CreateBranchOfficeRepositoryImp(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
+
+      i.addFactory<LinkCompanyToBranchOfficeRepository>(
+        () => LinkCompanyToBranchOfficeRepositoryImp(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
+
       i.addSingleton<AuthViewModel>(
         () => AuthViewModel(
           authRepository: i.get<AuthRepository>(),
@@ -194,20 +223,33 @@ void main() async {
               i.get<CompletePasswordRecoveryRepository>(),
         ),
       );
+      i.addSingleton<BranchOfficeViewModelImpl>(
+        () => BranchOfficeViewModelImpl(
+          createBranchOfficeRepository: i.get<CreateBranchOfficeRepository>(),
+          getBranchOfficeRepository: i.get<GetBranchOfficeRepository>(),
+          linkCompanyToBranchOfficeRepository:
+              i.get<LinkCompanyToBranchOfficeRepository>(),
+          getCompanyRepository: i.get<GetCompanyRepository>(),
+        ),
+      );
       i.addSingleton<DashboardViewModel>(
         () => DashboardViewModel(
           getOperationsRepository: i.get<GetOperationsRepository>(),
-   dashboardRepository: DashboardRepository(
+          dashboardRepository: DashboardRepository(
             http: i.get<Http>(),
             urlBase: EnvConfig.urlBase,
-          ),        ),
+          ),
+          branchOfficeViewModel: simple.get<BranchOfficeViewModelImpl>(),
+        ),
       );
       i.addSingleton<MenuViewModel>(
         () => MenuViewModel(),
       );
+
       return i;
     },
   );
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     name: null,

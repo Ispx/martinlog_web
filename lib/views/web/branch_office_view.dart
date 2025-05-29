@@ -73,8 +73,15 @@ class _BranchOfficeViewState extends State<BranchOfficeView> {
                           vertical: AppSize.padding / 2,
                         ),
                         child: BranchOfficeWidget(
-                          key: ObjectKey(branchOfficeModel),
                           branchOfficeModel: branchOfficeModel,
+                          isActicve: controller.idBranchOfficeActivated ==
+                              branchOfficeModel.idBranchOffice,
+                          onChanged: (isTrue) {
+                            if (isTrue) {
+                              controller.switchBranchOffice(branchOfficeModel);
+                              setState(() {});
+                            }
+                          },
                         ),
                       ),
                     )
@@ -240,9 +247,13 @@ class _CreateBranchOfficeWidgetState extends State<CreateBranchOfficeWidget>
 
 class BranchOfficeWidget extends StatelessWidget {
   final BranchOfficeModel branchOfficeModel;
+  final bool isActicve;
+  final Function(bool) onChanged;
   const BranchOfficeWidget({
     super.key,
     required this.branchOfficeModel,
+    required this.isActicve,
+    required this.onChanged,
   });
 
   @override
@@ -273,6 +284,13 @@ class BranchOfficeWidget extends StatelessWidget {
                 color: appTheme.titleColor,
               ),
             ),
+            const Expanded(
+              child: SizedBox.shrink(),
+            ),
+            Switch(
+              value: isActicve,
+              onChanged: onChanged,
+            )
           ],
         ),
       ),
