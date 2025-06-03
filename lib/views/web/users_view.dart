@@ -37,9 +37,9 @@ class UserView extends StatefulWidget {
 class _UserViewState extends State<UserView> {
   late final Worker worker;
   late final Worker workerSearch;
+  var textSearched = ''.obs;
 
   final controller = simple.get<UserViewModel>();
-  var textSearched = ''.obs;
   CompanyModel? companyModel;
   var operationsFilted = <OperationModel>[].obs;
   void clearFieldsFilters() {

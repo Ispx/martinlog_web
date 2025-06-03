@@ -18,7 +18,9 @@ abstract interface class BranchOfficeViewModel {
   Future<void> linkCompany(int idCompany, int idBranchOffice);
   Future<void> create(String name);
   Future<void> switchBranchOffice(BranchOfficeModel model);
+  Future<void> search(String src);
   List<BranchOfficeModel> get branchs;
+
   int? idBranchOfficeActivated;
 }
 
@@ -30,6 +32,7 @@ class BranchOfficeViewModelImpl extends GetxController
   final IGetCompanyRepository getCompanyRepository;
   var appState = AppState().obs;
   var branchOfficeList = <BranchOfficeModel>[].obs;
+  var branchsSearched = <BranchOfficeModel>[].obs;
 
   BranchOfficeViewModelImpl({
     required this.createBranchOfficeRepository,
@@ -97,4 +100,24 @@ class BranchOfficeViewModelImpl extends GetxController
 
   @override
   int? idBranchOfficeActivated = -1;
+
+  @override
+  Future<void> search(String src) async {
+    try {
+      List<BranchOfficeModel> branchs = <BranchOfficeModel>[];
+      branchs.addAll(branchOfficeList);
+      if (src.isEmpty) {
+        branchsSearched.value = [];
+        return;
+      }
+      final regex = RegExp(src);
+      branchsSearched.value = branchs
+          .where(
+            (p0) => regex.hasMatch(p0.name),
+          )
+          .toList();
+    } catch (e) {
+      branchsSearched.value = [];
+    }
+  }
 }

@@ -26,9 +26,12 @@ class BranchOfficeView extends StatefulWidget {
 class _BranchOfficeViewState extends State<BranchOfficeView> {
   late final Worker worker;
   final controller = simple.get<BranchOfficeViewModelImpl>();
-
+  late final Worker workerSearch;
+  var textSearched = ''.obs;
   @override
   void initState() {
+    workerSearch = debounce(textSearched, controller.search);
+
     worker = ever(controller.appState, (state) {
       if (state is AppStateDone) {
         BannerComponent(
@@ -44,6 +47,7 @@ class _BranchOfficeViewState extends State<BranchOfficeView> {
   @override
   void dispose() {
     worker.dispose();
+    workerSearch.dispose();
     super.dispose();
   }
 
@@ -63,10 +67,31 @@ class _BranchOfficeViewState extends State<BranchOfficeView> {
             const Gap(5),
             const Divider(),
             const Gap(30),
+            Row(
+              children: [
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+                Expanded(
+                  child: TextFormFieldWidget<OutlineInputBorder>(
+                    label: 'Pesquisar',
+                    hint: 'Pesquise por nome, documento ou transportadora',
+                    onChange: (e) => textSearched.value = e,
+                    maxLines: 1,
+                  ),
+                ),
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+              ],
+            ),
+            const Gap(10),
             Obx(() {
               return PageWidget(
                 key: ValueKey(DateTime.now()),
-                itens: controller.branchOfficeList.value
+                itens: (controller.branchsSearched.isEmpty
+                        ? controller.branchOfficeList.value
+                        : controller.branchsSearched.value)
                     .map(
                       (branchOfficeModel) => Padding(
                         padding: EdgeInsets.symmetric(
