@@ -34,6 +34,8 @@ class DockView extends StatefulWidget {
 
 class _DockViewState extends State<DockView> {
   late final Worker worker;
+  late final Worker workerSearch;
+  var textSearched = ''.obs;
   final controller = simple.get<DockViewModel>();
 
   @override
@@ -41,6 +43,8 @@ class _DockViewState extends State<DockView> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await simple.get<DockViewModel>().getAll();
     });
+    workerSearch = debounce(textSearched, controller.search);
+
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
         BannerComponent(
@@ -60,6 +64,13 @@ class _DockViewState extends State<DockView> {
   }
 
   @override
+  void dispose() {
+    worker.dispose();
+    workerSearch.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: double.maxFinite,
@@ -75,10 +86,32 @@ class _DockViewState extends State<DockView> {
             const Gap(5),
             const Divider(),
             const Gap(30),
+            Row(
+              children: [
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+                Expanded(
+                  child: TextFormFieldWidget<OutlineInputBorder>(
+                    label: 'Pesquisar',
+                    hint: 'Pesquise por nome',
+                    onChange: (e) => textSearched.value = e,
+                    maxLines: 1,
+                  ),
+                ),
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+              ],
+            ),
+            const Gap(10),
             Obx(() {
+              final itens = controller.docksSearched.isEmpty
+                  ? controller.docks.value
+                  : controller.docksSearched.value;
               return PageWidget(
                 key: ValueKey(DateTime.now()),
-                itens: controller.docks.value
+                itens: itens
                     .map(
                       (dockModel) => Padding(
                         padding: EdgeInsets.symmetric(

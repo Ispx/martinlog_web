@@ -137,7 +137,9 @@ class _DrawerMenuState extends State<DrawerMenuWidget> {
                     ),
                     isOpen: isOpen,
                     isSelected: widget.menuViewModel.menuState.value.menuEnum ==
-                        MenuEnum.Company,
+                            MenuEnum.Company ||
+                        widget.menuViewModel.menuState.value.menuEnum ==
+                            MenuEnum.BindBranchOffice,
                     title: 'Transportadoras',
                     onTap: () {
                       widget.menuViewModel.changeMenu(MenuEnum.Company);

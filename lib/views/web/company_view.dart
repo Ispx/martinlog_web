@@ -14,9 +14,11 @@ import 'package:martinlog_web/mixins/validators_mixin.dart';
 import 'package:martinlog_web/models/branch_office_model.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
+import 'package:martinlog_web/state/menu_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/branch_office_view_model.dart';
+import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
 import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:martinlog_web/widgets/page_widget.dart';
@@ -34,6 +36,9 @@ class CompanyView extends StatefulWidget {
 
 class _CompanyViewState extends State<CompanyView> {
   late final Worker worker;
+  late final Worker workerSearch;
+  var textSearched = ''.obs;
+
   final controller = simple.get<CompanyViewModel>();
 
   @override
@@ -41,6 +46,8 @@ class _CompanyViewState extends State<CompanyView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       simple.get<CompanyViewModel>().getAllCompanies();
     });
+    workerSearch = debounce(textSearched, controller.search);
+
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
         BannerComponent(
@@ -60,6 +67,13 @@ class _CompanyViewState extends State<CompanyView> {
   }
 
   @override
+  void dispose() {
+    workerSearch.dispose();
+    worker.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: double.maxFinite,
@@ -75,9 +89,31 @@ class _CompanyViewState extends State<CompanyView> {
             const Gap(5),
             const Divider(),
             const Gap(30),
+            Row(
+              children: [
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+                Expanded(
+                  child: TextFormFieldWidget<OutlineInputBorder>(
+                    label: 'Pesquisar',
+                    hint: 'Pesquise por razão social ou cnpj',
+                    onChange: (e) => textSearched.value = e,
+                    maxLines: 1,
+                  ),
+                ),
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+              ],
+            ),
+            const Gap(10),
             Obx(() {
+              final itens = controller.companiesSearched.value.isEmpty
+                  ? controller.companies.value
+                  : controller.companiesSearched.value;
               return PageWidget(
-                itens: controller.companies.value
+                itens: itens
                     .map(
                       (companyModel) => Padding(
                         padding: EdgeInsets.symmetric(
@@ -636,38 +672,22 @@ class _CompanyWidgetState extends State<CompanyWidget> {
                 ),
               ),
             ),
-            Flexible(
-              flex: 3,
-              child: Obx(
-                () {
-                  final branchOffices = simple
-                      .get<BranchOfficeViewModelImpl>()
-                      .branchOfficeList
-                      .value;
-                  return DropBoxWidget<BranchOfficeModel>(
-                    key: ObjectKey(widget.companyModel),
-                    label: 'Filial',
-                    width: 13.w,
-                    icon: const Icon(Icons.business),
-                    dropdownMenuEntries: [
-                      ...branchOffices
-                          .map(
-                            (e) => DropdownMenuEntry(value: e, label: e.name),
-                          )
-                          .toList()
-                    ],
-                    onSelected: (branchOffice) {
-                      if (branchOffice == null) return;
-                      simple.get<BranchOfficeViewModelImpl>().linkCompany(
-                            widget.companyModel.idCompany,
-                            branchOffice.idBranchOffice,
-                          );
-                    },
-                    controller: branchOfficeEdittinController,
-                  );
-                },
+            IconButton(
+              onPressed: () {
+                simple
+                    .get<BranchOfficeViewModelImpl>()
+                    .setCompanyToBind(widget.companyModel);
+                simple
+                    .get<MenuViewModel>()
+                    .changeMenu(MenuEnum.BindBranchOffice);
+              },
+              icon: Icon(
+                Icons.business,
+                color: widget.companyModel.branchOffices.isEmpty
+                    ? null
+                    : context.appTheme.secondColor,
               ),
-            ),
+            )
           ],
         ),
       ),

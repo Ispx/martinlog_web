@@ -5,6 +5,7 @@ import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
 import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile.dart';
+import 'package:martinlog_web/views/web/branch_office_view.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import '../../core/dependencie_injection_manager/simple.dart';
 import '../../enums/profile_type_enum.dart';
@@ -45,14 +46,17 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
         MenuEnum.Dock => const DockView(
             key: ObjectKey(MenuEnum.Dock),
           ),
-        MenuEnum.Company => const CompanyView(
+        MenuEnum.Company || MenuEnum.BindBranchOffice => const CompanyView(
             key: ObjectKey(MenuEnum.Company),
           ),
         MenuEnum.Users => const UserView(
             key: ObjectKey(MenuEnum.Users),
           ),
-        MenuEnum.BranchOffice => SizedBox.shrink(),
-        MenuEnum.Dashboard => const DashboardViewMobile()
+        MenuEnum.BranchOffice => BranchOfficeView(
+              key: ObjectKey(
+            MenuEnum.BranchOffice,
+          )),
+        MenuEnum.Dashboard => const DashboardViewMobile(),
       };
   @override
   void initState() {

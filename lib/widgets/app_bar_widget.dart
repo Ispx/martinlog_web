@@ -44,12 +44,46 @@ class _AppBarWidgetState extends State<AppBarWidget> {
               padding: EdgeInsets.symmetric(horizontal: AppSize.padding * 2),
               child: Row(
                 children: [
-                  Text(
-                    widget.title,
-                    style: AppTextStyle.displayLarge(context).copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.title,
+                        style: AppTextStyle.displayLarge(context).copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.sp,
+                        ),
+                      ),
+                      Obx(() {
+                        final branchName = simple
+                            .get<BranchOfficeViewModelImpl>()
+                            .branchOfficeActivated
+                            .value
+                            .name;
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text.rich(
+                            TextSpan(
+                              text: 'Filial: ',
+                              children: [
+                                TextSpan(
+                                  text: branchName.isEmpty
+                                      ? 'Não selecionada'
+                                      : branchName,
+                                  style: AppTextStyle.displaySmall(context)
+                                      .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            style:
+                                AppTextStyle.displaySmall(context).copyWith(),
+                          ),
+                        );
+                      }),
+                    ],
                   ),
                   Expanded(
                     child: Row(

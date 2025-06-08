@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
 import 'package:martinlog_web/models/branch_office_model.dart';
+import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
@@ -16,31 +16,27 @@ import 'package:martinlog_web/widgets/page_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class BranchOfficeView extends StatefulWidget {
-  const BranchOfficeView({super.key});
+class BindBranchOfficeView extends StatefulWidget {
+  const BindBranchOfficeView({super.key});
 
   @override
-  State<BranchOfficeView> createState() => _BranchOfficeViewState();
+  State<BindBranchOfficeView> createState() => _BindBranchOfficeViewState();
 }
 
-class _BranchOfficeViewState extends State<BranchOfficeView> {
+class _BindBranchOfficeViewState extends State<BindBranchOfficeView> {
   late final Worker worker;
   final controller = simple.get<BranchOfficeViewModelImpl>();
   late final Worker workerSearch;
   var textSearched = ''.obs;
+  var branchOfficesBindList = <BranchOfficeModel>[].obs;
+  CompanyModel get companyModel => controller.companyModel!;
   @override
   void initState() {
-    controller.getAll();
     workerSearch = debounce(textSearched, controller.search);
-
-    worker = ever(controller.appState, (state) {
-      if (state is AppStateDone) {
-        if (state.result is String) {
-          BannerComponent(
-            message: state.result,
-            backgroundColor: Colors.green,
-          );
-        }
+    branchOfficesBindList.value = controller.companyModel!.branchOffices;
+    worker = ever(branchOfficesBindList, (branchOffices) {
+      for (var branchOffice in branchOffices) {
+        controller.linkCompany(companyModel, branchOffice);
       }
     });
 
@@ -54,6 +50,15 @@ class _BranchOfficeViewState extends State<BranchOfficeView> {
     super.dispose();
   }
 
+  bool isActive(BranchOfficeModel branch) {
+    for (var branchOffice in branchOfficesBindList) {
+      if (branchOffice.idBranchOffice == branch.idBranchOffice) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -65,9 +70,22 @@ class _BranchOfficeViewState extends State<BranchOfficeView> {
       ),
       child: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CreateBranchOfficeWidget(),
             const Gap(5),
+            Text(
+              companyModel.socialRason.toUpperCase(),
+              style: AppTextStyle.displayLarge(context).copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const Gap(8),
+            Text(
+              "CNPJ: ${companyModel.cnpj.toUpperCase()}",
+              style: AppTextStyle.displayMedium(context).copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const Divider(),
             const Gap(30),
             Row(
@@ -102,13 +120,10 @@ class _BranchOfficeViewState extends State<BranchOfficeView> {
                         ),
                         child: BranchOfficeWidget(
                           branchOfficeModel: branchOfficeModel,
-                          isActicve: controller
-                                  .branchOfficeActivated.value.idBranchOffice ==
-                              branchOfficeModel.idBranchOffice,
+                          isActicve: isActive(branchOfficeModel),
                           onChanged: (isTrue) {
                             if (isTrue) {
-                              controller.switchBranchOffice(branchOfficeModel);
-                              setState(() {});
+                              branchOfficesBindList.add(branchOfficeModel);
                             }
                           },
                         ),

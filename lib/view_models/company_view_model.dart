@@ -12,6 +12,7 @@ abstract class ICompanyViewModel {
   Future<void> getAllCompanies();
   Future<void> createCompany(CompanyModel companyModel);
   Future<void> downloadFile();
+  Future<void> search(String src);
 }
 
 class CompanyViewModel extends GetxController implements ICompanyViewModel {
@@ -21,6 +22,7 @@ class CompanyViewModel extends GetxController implements ICompanyViewModel {
   final IGetCompaniesRepository getCompaniesRepository;
   final IGetCompanyRepository getCompanyRepository;
   final ICreateCompanyRepository createCompanyRepository;
+  var companiesSearched = <CompanyModel>[].obs;
 
   CompanyViewModel({
     required this.getCompaniesRepository,
@@ -119,6 +121,24 @@ class CompanyViewModel extends GetxController implements ICompanyViewModel {
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
+    }
+  }
+
+  @override
+  Future<void> search(String src) async {
+    try {
+      if (src.isEmpty) {
+        companiesSearched.value = [];
+        return;
+      }
+      final regex = RegExp(src);
+      companiesSearched.value = companies
+          .where(
+            (p0) => regex.hasMatch(p0.socialRason) || regex.hasMatch(p0.cnpj),
+          )
+          .toList();
+    } catch (e) {
+      companiesSearched.value = [];
     }
   }
 }

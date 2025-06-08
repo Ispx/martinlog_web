@@ -78,12 +78,13 @@ class UserViewModel implements IUserViewModel {
 
   @override
   Future<void> search(String text) async {
+    final regex = RegExp(text);
     usersFilted.value = users
         .where(
           (p0) =>
-              p0.document.contains(text) ||
-              p0.fullname.contains(text) ||
-              p0.companyModel.fantasyName.contains(text),
+              regex.hasMatch(p0.document) ||
+              regex.hasMatch(p0.fullname) ||
+              regex.hasMatch(p0.companyModel.fantasyName),
         )
         .toList();
   }

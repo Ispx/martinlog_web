@@ -8,5 +8,6 @@ extension MenuExt on MenuEnum {
         MenuEnum.Dock => "Docas",
         MenuEnum.Users => "Usuários",
         MenuEnum.BranchOffice => "Filial",
+        MenuEnum.BindBranchOffice => "Vincular Filial",
       };
 }

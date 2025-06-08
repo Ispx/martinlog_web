@@ -21,6 +21,7 @@ abstract interface class IDockViewModel {
   Future<void> getAll();
   Future<void> updateDock(DockModel dockModel);
   Future<void> downloadFile();
+  Future<void> search(String src);
 }
 
 class DockViewModel extends GetxController implements IDockViewModel {
@@ -28,6 +29,8 @@ class DockViewModel extends GetxController implements IDockViewModel {
   var appState = AppState().obs;
   final IGetDocksRepository getDocksRepository;
   final IUpsertDockRepository upsertDockRepository;
+  var docksSearched = <DockModel>[].obs;
+
   DockViewModel({
     required this.getDocksRepository,
     required this.upsertDockRepository,
@@ -150,6 +153,21 @@ class DockViewModel extends GetxController implements IDockViewModel {
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
+    }
+  }
+
+  @override
+  Future<void> search(String src) async {
+    try {
+      if (src.isEmpty) {
+        docksSearched.value = [];
+        return;
+      }
+      final regex = RegExp(src);
+      docksSearched.value =
+          docks.where((p0) => regex.hasMatch(p0.code)).toList();
+    } catch (e) {
+      docksSearched.value = [];
     }
   }
 }

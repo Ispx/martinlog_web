@@ -16,6 +16,7 @@ import 'package:martinlog_web/views/mobile/operation/views/operation_view_detail
 import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile.dart';
 import 'package:martinlog_web/views/mobile/password_recovery.dart';
 import 'package:martinlog_web/views/web/auth_view.dart';
+import 'package:martinlog_web/views/web/bind_branch_office_view.dart';
 import 'package:martinlog_web/views/web/company_view.dart';
 import 'package:martinlog_web/views/web/dashboard_view.dart';
 import 'package:martinlog_web/views/web/dock_view.dart';
@@ -70,6 +71,8 @@ class App extends StatelessWidget {
                   Routes.menu: (context) => const MenuView(),
                   Routes.passwordRecovery: (context) =>
                       const PassswordRecoveryView(),
+                  Routes.bindBranchOffice: (context) =>
+                      const BindBranchOfficeView(),
                 }
               : {
                   Routes.auth: (context) => const AuthViewMobile(),
@@ -82,6 +85,8 @@ class App extends StatelessWidget {
                       const PasswordRecoveryMobileView(),
                   Routes.operationDetails: (context) =>
                       const OperationViewDetailsMobile(),
+                  Routes.bindBranchOffice: (context) =>
+                      const BindBranchOfficeView(),
                 },
           onGenerateRoute: (settings) {
             if (isAuthenticated) return null;

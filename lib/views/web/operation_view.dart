@@ -28,6 +28,7 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
+import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
@@ -340,7 +341,16 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
 
     companies = simple.get<AuthViewModel>().authModel?.idProfile ==
             ProfileTypeEnum.MASTER.idProfileType
-        ? simple.get<CompanyViewModel>().companies.toList()
+        ? simple
+                    .get<BranchOfficeViewModelImpl>()
+                    .branchOfficeActivated
+                    .value
+                    .idBranchOffice >
+                0
+            ? simple
+                .get<BranchOfficeViewModelImpl>()
+                .companiesBindedBranchOffice
+            : simple.get<CompanyViewModel>().companies.toList()
         : [
             simple.get<CompanyViewModel>().companyModel!,
           ];

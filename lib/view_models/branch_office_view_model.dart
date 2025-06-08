@@ -3,25 +3,29 @@ import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/profile_type_extension.dart';
 import 'package:martinlog_web/models/branch_office_model.dart';
+import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/repositories/create_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/get_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/get_company_repositoy.dart';
 import 'package:martinlog_web/repositories/link_company_to_branch_office_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
+import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dashboard_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 
 abstract interface class BranchOfficeViewModel {
   Future<void> getAll();
-  Future<void> linkCompany(int idCompany, int idBranchOffice);
+  Future<void> linkCompany(
+      CompanyModel companyModel, BranchOfficeModel branchOffice);
   Future<void> create(String name);
   Future<void> switchBranchOffice(BranchOfficeModel model);
   Future<void> search(String src);
+  List<CompanyModel> get companiesBindedBranchOffice;
   List<BranchOfficeModel> get branchs;
-
-  int? idBranchOfficeActivated;
+  int get idBranchOfficeActivated;
+  CompanyModel? companyModel;
 }
 
 class BranchOfficeViewModelImpl extends GetxController
@@ -61,14 +65,17 @@ class BranchOfficeViewModelImpl extends GetxController
   }
 
   @override
-  Future<void> linkCompany(int idCompany, int idBranchOffice) async {
+  Future<void> linkCompany(
+      CompanyModel companyModel, BranchOfficeModel branchOffice) async {
     try {
       change(AppStateLoading());
       await linkCompanyToBranchOfficeRepository(
-        idCompany: idCompany,
-        idBranchOffice: idBranchOffice,
+        idCompany: companyModel.idCompany,
+        idBranchOffice: branchOffice.idBranchOffice,
       );
-      change(AppStateDone());
+      companyModel.branchOffices.add(branchOffice);
+
+      change(AppStateDone("Filial cadastrada com suceso"));
     } catch (e) {
       change(AppStateError("Ocorreu um erro ao vincular empresa a filial"));
     }
@@ -88,7 +95,9 @@ class BranchOfficeViewModelImpl extends GetxController
 
   @override
   Future<void> switchBranchOffice(BranchOfficeModel? model) async {
-    idBranchOfficeActivated = model?.idBranchOffice;
+    if (model != null) {
+      branchOfficeActivated.value = model;
+    }
     simple.get<OperationViewModel>().operations.clear();
     simple.get<OperationViewModel>().operationsFilted.clear();
     simple.get<DashboardViewModel>().operations.clear();
@@ -98,8 +107,8 @@ class BranchOfficeViewModelImpl extends GetxController
   @override
   List<BranchOfficeModel> get branchs => branchOfficeList ?? [];
 
-  @override
-  int? idBranchOfficeActivated = -1;
+  var branchOfficeActivated =
+      BranchOfficeModel(idBranchOffice: -1, name: '').obs;
 
   @override
   Future<void> search(String src) async {
@@ -119,5 +128,33 @@ class BranchOfficeViewModelImpl extends GetxController
     } catch (e) {
       branchsSearched.value = [];
     }
+  }
+
+  @override
+  CompanyModel? companyModel;
+
+  void setCompanyToBind(CompanyModel company) {
+    companyModel = company;
+  }
+
+  @override
+  int get idBranchOfficeActivated => branchOfficeActivated.value.idBranchOffice;
+
+  @override
+  List<CompanyModel> get companiesBindedBranchOffice {
+    final result = <CompanyModel>[];
+
+    if (branchOfficeActivated.value.idBranchOffice <= 0) {
+      return [];
+    }
+    for (var company in simple.get<CompanyViewModel>().companies) {
+      for (var branch in company.branchOffices) {
+        if (branch.idBranchOffice ==
+            branchOfficeActivated.value.idBranchOffice) {
+          result.add(company);
+        }
+      }
+    }
+    return result;
   }
 }

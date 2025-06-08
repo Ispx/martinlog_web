@@ -37,11 +37,6 @@ final class DashboardViewModel extends GetxController
   Future<void> fetchDashboard() async {
     try {
       changeState(AppStateLoading());
-      if (branchOfficeViewModel.idBranchOfficeActivated?.isNegative ?? true) {
-        await branchOfficeViewModel.getAll();
-        await branchOfficeViewModel
-            .switchBranchOffice(branchOfficeViewModel.branchs.first);
-      }
       dashboardResults.value = await dashboardRepository();
       operations.value = await getOperationsRepository(limit: 5);
       changeState(AppStateDone());
