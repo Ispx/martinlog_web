@@ -24,7 +24,6 @@ class BindBranchOfficeView extends StatefulWidget {
 }
 
 class _BindBranchOfficeViewState extends State<BindBranchOfficeView> {
-  late final Worker worker;
   final controller = simple.get<BranchOfficeViewModelImpl>();
   late final Worker workerSearch;
   var textSearched = ''.obs;
@@ -34,18 +33,11 @@ class _BindBranchOfficeViewState extends State<BindBranchOfficeView> {
   void initState() {
     workerSearch = debounce(textSearched, controller.search);
     branchOfficesBindList.value = controller.companyModel!.branchOffices;
-    worker = ever(branchOfficesBindList, (branchOffices) {
-      for (var branchOffice in branchOffices) {
-        controller.linkCompany(companyModel, branchOffice);
-      }
-    });
-
     super.initState();
   }
 
   @override
   void dispose() {
-    worker.dispose();
     workerSearch.dispose();
     super.dispose();
   }
@@ -123,7 +115,12 @@ class _BindBranchOfficeViewState extends State<BindBranchOfficeView> {
                           isActicve: isActive(branchOfficeModel),
                           onChanged: (isTrue) {
                             if (isTrue) {
-                              branchOfficesBindList.add(branchOfficeModel);
+                              controller.linkCompany(
+                                  companyModel, branchOfficeModel);
+                            } else {
+                              branchOfficesBindList.remove(branchOfficeModel);
+                              controller.unLinkCompany(
+                                  companyModel, branchOfficeModel);
                             }
                           },
                         ),
