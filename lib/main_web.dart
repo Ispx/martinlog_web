@@ -27,6 +27,7 @@ import 'package:martinlog_web/repositories/link_company_to_branch_office_reposit
         LinkCompanyToBranchOfficeRepository,
         LinkCompanyToBranchOfficeRepositoryImp;
 import 'package:martinlog_web/repositories/start_password_recovery_repository.dart';
+import 'package:martinlog_web/repositories/unlink_company_to_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/update_operation_repository.dart';
 import 'package:martinlog_web/repositories/update_user_repository.dart';
 import 'package:martinlog_web/repositories/upload_file_operation_repository.dart';
@@ -178,6 +179,12 @@ void main() async {
           urlBase: EnvConfig.urlBase,
         ),
       );
+      i.addFactory<UnLinkCompanyToBranchOfficeRepository>(
+        () => UnLinkCompanyToBranchOfficeRepositoryImp(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
 
       i.addSingleton<AuthViewModel>(
         () => AuthViewModel(
@@ -230,6 +237,8 @@ void main() async {
           linkCompanyToBranchOfficeRepository:
               i.get<LinkCompanyToBranchOfficeRepository>(),
           getCompanyRepository: i.get<GetCompanyRepository>(),
+          unlinkCompanyToBranchOfficeRepository:
+              i.get<UnLinkCompanyToBranchOfficeRepository>(),
         ),
       );
       i.addSingleton<DashboardViewModel>(

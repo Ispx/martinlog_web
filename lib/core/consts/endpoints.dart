@@ -21,6 +21,8 @@ class Endpoints {
   static const branchOfficeCreate = '/branch-office/create';
   static const branchOfficeAll = '/branch-office/all';
   static const branchOfficeCompanyLink = '/branch-office/company/link';
+  static const branchOfficeCompanyUnLink = '/branch-office/company/unlink';
+
   static const branchOfficeCompanyLinked = '/branch-office/company/linked';
   static const dashboard = '/dashboard';
 }

@@ -8,6 +8,7 @@ import 'package:martinlog_web/repositories/create_branch_office_repository.dart'
 import 'package:martinlog_web/repositories/get_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/get_company_repositoy.dart';
 import 'package:martinlog_web/repositories/link_company_to_branch_office_repository.dart';
+import 'package:martinlog_web/repositories/unlink_company_to_branch_office_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
@@ -17,6 +18,8 @@ import 'package:martinlog_web/view_models/operation_view_model.dart';
 
 abstract interface class BranchOfficeViewModel {
   Future<void> getAll();
+  Future<void> unLinkCompany(
+      CompanyModel companyModel, BranchOfficeModel branchOffice);
   Future<void> linkCompany(
       CompanyModel companyModel, BranchOfficeModel branchOffice);
   Future<void> create(String name);
@@ -30,6 +33,9 @@ abstract interface class BranchOfficeViewModel {
 
 class BranchOfficeViewModelImpl extends GetxController
     implements BranchOfficeViewModel {
+  final UnLinkCompanyToBranchOfficeRepository
+      unlinkCompanyToBranchOfficeRepository;
+
   final LinkCompanyToBranchOfficeRepository linkCompanyToBranchOfficeRepository;
   final GetBranchOfficeRepository getBranchOfficeRepository;
   final CreateBranchOfficeRepository createBranchOfficeRepository;
@@ -39,6 +45,7 @@ class BranchOfficeViewModelImpl extends GetxController
   var branchsSearched = <BranchOfficeModel>[].obs;
 
   BranchOfficeViewModelImpl({
+    required this.unlinkCompanyToBranchOfficeRepository,
     required this.createBranchOfficeRepository,
     required this.getBranchOfficeRepository,
     required this.linkCompanyToBranchOfficeRepository,
@@ -156,5 +163,22 @@ class BranchOfficeViewModelImpl extends GetxController
       }
     }
     return result;
+  }
+
+  @override
+  Future<void> unLinkCompany(
+      CompanyModel companyModel, BranchOfficeModel branchOffice) async {
+    try {
+      change(AppStateLoading());
+      await unlinkCompanyToBranchOfficeRepository(
+        idCompany: companyModel.idCompany,
+        idBranchOffice: branchOffice.idBranchOffice,
+      );
+      companyModel.branchOffices.add(branchOffice);
+
+      change(AppStateDone("Filial cadastrada com suceso"));
+    } catch (e) {
+      change(AppStateError("Ocorreu um erro ao vincular empresa a filial"));
+    }
   }
 }
