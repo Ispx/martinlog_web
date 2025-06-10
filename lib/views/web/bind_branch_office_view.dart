@@ -115,6 +115,7 @@ class _BindBranchOfficeViewState extends State<BindBranchOfficeView> {
                           isActicve: isActive(branchOfficeModel),
                           onChanged: (isTrue) {
                             if (isTrue) {
+                              branchOfficesBindList.add(branchOfficeModel);
                               controller.linkCompany(
                                   companyModel, branchOfficeModel);
                             } else {
@@ -122,6 +123,7 @@ class _BindBranchOfficeViewState extends State<BindBranchOfficeView> {
                               controller.unLinkCompany(
                                   companyModel, branchOfficeModel);
                             }
+                            setState(() {});
                           },
                         ),
                       ),

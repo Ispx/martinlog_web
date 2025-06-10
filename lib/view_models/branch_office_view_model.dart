@@ -174,11 +174,11 @@ class BranchOfficeViewModelImpl extends GetxController
         idCompany: companyModel.idCompany,
         idBranchOffice: branchOffice.idBranchOffice,
       );
-      companyModel.branchOffices.add(branchOffice);
+      companyModel.branchOffices.remove(branchOffice);
 
-      change(AppStateDone("Filial cadastrada com suceso"));
+      change(AppStateDone());
     } catch (e) {
-      change(AppStateError("Ocorreu um erro ao vincular empresa a filial"));
+      change(AppStateError("Ocorreu um erro ao desvincular empresa a filial"));
     }
   }
 }

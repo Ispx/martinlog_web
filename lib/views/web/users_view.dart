@@ -136,6 +136,7 @@ class _UserViewState extends State<UserView> {
                 onRefresh: () async => await controller.getAll(),
                 onDownload: () async =>
                     await controller.downloadFile(controller.usersFilted),
+                isLoadingItens: controller.appState.value is AppStateLoading,
                 totalByPage: 10,
               );
             }),

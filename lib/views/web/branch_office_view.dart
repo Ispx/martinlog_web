@@ -116,6 +116,7 @@ class _BranchOfficeViewState extends State<BranchOfficeView> {
                     )
                     .toList(),
                 onRefresh: () async => await controller.getAll(),
+                isLoadingItens: controller.appState.value is AppStateLoading,
                 onDownload: null,
                 totalByPage: 10,
               );
