@@ -223,6 +223,17 @@ void main() async {
               i.get<CompletePasswordRecoveryRepository>(),
         ),
       );
+      i.addSingleton<BranchOfficeViewModelImpl>(
+        () => BranchOfficeViewModelImpl(
+          createBranchOfficeRepository: i.get<CreateBranchOfficeRepository>(),
+          getBranchOfficeRepository: i.get<GetBranchOfficeRepository>(),
+          linkCompanyToBranchOfficeRepository:
+              i.get<LinkCompanyToBranchOfficeRepository>(),
+          getCompanyRepository: i.get<GetCompanyRepository>(),
+          unlinkCompanyToBranchOfficeRepository:
+              i.get<UnLinkCompanyToBranchOfficeRepository>(),
+        ),
+      );
       i.addSingleton<DashboardViewModel>(
         () => DashboardViewModel(
           getOperationsRepository: i.get<GetOperationsRepository>(),
@@ -236,17 +247,7 @@ void main() async {
       i.addSingleton<MenuViewModel>(
         () => MenuViewModel(),
       );
-      i.addSingleton<BranchOfficeViewModelImpl>(
-        () => BranchOfficeViewModelImpl(
-          createBranchOfficeRepository: i.get<CreateBranchOfficeRepository>(),
-          getBranchOfficeRepository: i.get<GetBranchOfficeRepository>(),
-          linkCompanyToBranchOfficeRepository:
-              i.get<LinkCompanyToBranchOfficeRepository>(),
-          getCompanyRepository: i.get<GetCompanyRepository>(),
-          unlinkCompanyToBranchOfficeRepository:
-              i.get<UnLinkCompanyToBranchOfficeRepository>(),
-        ),
-      );
+
       return i;
     },
   );
