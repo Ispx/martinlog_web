@@ -23,6 +23,8 @@ abstract interface class BranchOfficeViewModel {
   Future<void> linkCompany(
       CompanyModel companyModel, BranchOfficeModel branchOffice);
   Future<void> create(String name);
+  void unlinkfullyBranchOffice();
+
   Future<void> switchBranchOffice(BranchOfficeModel model);
   Future<void> search(String src);
   List<CompanyModel> get companiesBindedBranchOffice;
@@ -180,5 +182,11 @@ class BranchOfficeViewModelImpl extends GetxController
     } catch (e) {
       change(AppStateError("Ocorreu um erro ao desvincular empresa a filial"));
     }
+  }
+
+  @override
+  void unlinkfullyBranchOffice() {
+    branchOfficeActivated.value =
+        BranchOfficeModel(idBranchOffice: -1, name: '');
   }
 }

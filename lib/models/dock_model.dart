@@ -40,17 +40,18 @@ class DockModel {
     };
   }
 
-  DockModel copyWith({
-    int? idDockType,
-    bool? isActive,
-    String? operationKey,
-  }) {
+  DockModel copyWith(
+      {int? idDockType,
+      bool? isActive,
+      String? operationKey,
+      BranchOfficeModel? branchOfficeModel}) {
     return DockModel(
       code: code,
       idDockType: idDockType ?? this.idDockType,
       createdAt: createdAt,
       isActive: isActive ?? this.isActive,
       operationKey: operationKey ?? this.operationKey,
+      branchOfficeModel: branchOfficeModel ?? this.branchOfficeModel,
     );
   }
 }

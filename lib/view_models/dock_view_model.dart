@@ -133,6 +133,20 @@ class DockViewModel extends GetxController implements IDockViewModel {
         isActive: dockModel.isActive,
         idBranchOffice: dockModel.branchOfficeModel?.idBranchOffice,
       );
+      final index = docks.indexWhere(
+        (element) =>
+            element.code == dockModel.code &&
+            dockModel.idDockType == element.idDockType &&
+            dockModel.branchOfficeModel?.idBranchOffice ==
+                element.branchOfficeModel?.idBranchOffice,
+      );
+      docks.replaceRange(
+        index,
+        index + 1,
+        [
+          dockModel,
+        ],
+      );
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -150,6 +164,24 @@ class DockViewModel extends GetxController implements IDockViewModel {
         isActive: dockModel.isActive,
         idBranchOffice: branchOffice.idBranchOffice,
       );
+
+      final index = docks.indexWhere(
+        (element) =>
+            element.code == dockModel.code &&
+            dockModel.idDockType == element.idDockType &&
+            dockModel.branchOfficeModel?.idBranchOffice ==
+                element.branchOfficeModel?.idBranchOffice,
+      );
+      docks.replaceRange(
+        index,
+        index + 1,
+        [
+          dockModel.copyWith(
+            branchOfficeModel: branchOffice,
+          ),
+        ],
+      );
+
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));

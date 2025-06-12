@@ -38,6 +38,8 @@ import 'package:martinlog_web/widgets/page_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart'
+    as dataPicker;
 
 var pageWidgetMobileKey = 'state_key';
 
@@ -133,8 +135,7 @@ class _OperationViewState extends State<OperationView> {
               children: [
                 IconButton(
                   onPressed: () async {
-                    /*
-                    await showDateRangePickerDialog(
+                    await dataPicker.showDateRangePickerModalDialog(
                       context: context,
                       builder: (context, date) {
                         return DateRangePickerWidget(
@@ -193,7 +194,6 @@ class _OperationViewState extends State<OperationView> {
                           "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
                       setState(() {});
                     }
-                    */
                   },
                   icon: const Icon(Icons.date_range),
                   style: ButtonStyle(

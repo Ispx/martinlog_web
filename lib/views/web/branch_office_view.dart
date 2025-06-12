@@ -109,6 +109,8 @@ class _BranchOfficeViewState extends State<BranchOfficeView> {
                             if (isTrue) {
                               controller.switchBranchOffice(branchOfficeModel);
                               setState(() {});
+                            } else {
+                              controller.unlinkfullyBranchOffice();
                             }
                           },
                         ),
