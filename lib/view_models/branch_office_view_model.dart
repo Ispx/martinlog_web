@@ -27,6 +27,8 @@ abstract interface class BranchOfficeViewModel {
 
   Future<void> switchBranchOffice(BranchOfficeModel model);
   Future<void> search(String src);
+  void resetFilter();
+
   List<CompanyModel> get companiesBindedBranchOffice;
   List<BranchOfficeModel> get branchs;
   int get idBranchOfficeActivated;
@@ -188,5 +190,10 @@ class BranchOfficeViewModelImpl extends GetxController
   void unlinkfullyBranchOffice() {
     branchOfficeActivated.value =
         BranchOfficeModel(idBranchOffice: -1, name: '');
+  }
+
+  @override
+  void resetFilter() {
+    branchsSearched.value = [];
   }
 }

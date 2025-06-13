@@ -22,6 +22,7 @@ abstract interface class IDockViewModel {
   Future<void> updateDock(DockModel dockModel);
   Future<void> downloadFile();
   Future<void> search(String src);
+  void resetFilter();
 }
 
 class DockViewModel extends GetxController implements IDockViewModel {
@@ -201,5 +202,10 @@ class DockViewModel extends GetxController implements IDockViewModel {
     } catch (e) {
       docksSearched.value = [];
     }
+  }
+
+  @override
+  void resetFilter() async {
+    docksSearched.value = [];
   }
 }

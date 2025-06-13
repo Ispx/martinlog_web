@@ -13,6 +13,7 @@ abstract class ICompanyViewModel {
   Future<void> createCompany(CompanyModel companyModel);
   Future<void> downloadFile();
   Future<void> search(String src);
+  void resetFilter();
 }
 
 class CompanyViewModel extends GetxController implements ICompanyViewModel {
@@ -140,5 +141,10 @@ class CompanyViewModel extends GetxController implements ICompanyViewModel {
     } catch (e) {
       companiesSearched.value = [];
     }
+  }
+
+  @override
+  void resetFilter() async {
+    companiesSearched.value = [];
   }
 }

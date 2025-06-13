@@ -44,6 +44,7 @@ class _CompanyViewState extends State<CompanyView> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      simple.get<CompanyViewModel>().resetFilter();
       simple.get<CompanyViewModel>().getAllCompanies();
     });
     workerSearch = debounce(textSearched, controller.search);

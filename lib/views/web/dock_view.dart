@@ -41,6 +41,7 @@ class _DockViewState extends State<DockView> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      controller.resetFilter();
       await simple.get<DockViewModel>().getAll();
     });
     workerSearch = debounce(textSearched, controller.search);
