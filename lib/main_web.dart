@@ -186,11 +186,6 @@ void main() async {
         ),
       );
 
-      i.addSingleton<AuthViewModel>(
-        () => AuthViewModel(
-          authRepository: i.get<AuthRepository>(),
-        ),
-      );
       i.addSingleton<CompanyViewModel>(
         () => CompanyViewModel(
           getCompaniesRepository: i.get<GetCompaniesRepository>(),
@@ -249,6 +244,14 @@ void main() async {
             urlBase: EnvConfig.urlBase,
           ),
           branchOfficeViewModel: simple.get<BranchOfficeViewModelImpl>(),
+        ),
+      );
+
+      i.addSingleton<AuthViewModel>(
+        () => AuthViewModel(
+          authRepository: i.get<AuthRepository>(),
+          branchOfficeViewModel: i.get<BranchOfficeViewModelImpl>(),
+          companyViewModel: i.get<CompanyViewModel>(),
         ),
       );
       i.addSingleton<MenuViewModel>(

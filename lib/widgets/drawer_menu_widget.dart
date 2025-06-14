@@ -108,7 +108,6 @@ class _DrawerMenuState extends State<DrawerMenuWidget> {
                     onTap: () {
                       widget.menuViewModel.changeMenu(MenuEnum.Dock);
                     },
-                    profiles: const [ProfileTypeEnum.MASTER],
                   ),
                   SizedBox(
                     height: AppSize.padding,
@@ -125,7 +124,6 @@ class _DrawerMenuState extends State<DrawerMenuWidget> {
                     onTap: () {
                       widget.menuViewModel.changeMenu(MenuEnum.BranchOffice);
                     },
-                    profiles: const [ProfileTypeEnum.MASTER],
                   ),
                   SizedBox(
                     height: AppSize.padding,

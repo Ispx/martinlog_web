@@ -179,11 +179,6 @@ void main() async {
           urlBase: EnvConfig.urlBase,
         ),
       );
-      i.addSingleton<AuthViewModel>(
-        () => AuthViewModel(
-          authRepository: i.get<AuthRepository>(),
-        ),
-      );
       i.addSingleton<CompanyViewModel>(
         () => CompanyViewModel(
           getCompaniesRepository: i.get<GetCompaniesRepository>(),
@@ -247,14 +242,19 @@ void main() async {
       i.addSingleton<MenuViewModel>(
         () => MenuViewModel(),
       );
-
+      i.addSingleton<AuthViewModel>(
+        () => AuthViewModel(
+          authRepository: i.get<AuthRepository>(),
+          branchOfficeViewModel: i.get<BranchOfficeViewModelImpl>(),
+          companyViewModel: i.get<CompanyViewModel>(),
+        ),
+      );
       return i;
     },
   );
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    name:
-        null, //const String.fromEnvironment("PLATFORM") == "web" ? null : "App",
+    name: "App",
     options: const FirebaseOptions(
       apiKey: "AIzaSyBojaKfglolWvClT-VwYW9QzU2RGKi_e9E",
       appId: "1:1062375327946:web:3ae61c6e184e8e75130c33",

@@ -78,6 +78,8 @@ class _OperationViewState extends State<OperationView> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      simple.get<OperationViewModel>().operations.clear();
+      simple.get<OperationViewModel>().operationsFilted.clear();
       await Future.wait([
         simple.get<DockViewModel>().getAll(),
         simple.get<CompanyViewModel>().getCompany(),
