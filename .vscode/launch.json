@@ -23,7 +23,7 @@
             "name": "[PROD WEB] martinlog_web",
             "request": "launch",
             "type": "dart",
-            "program": "lib/main.dart",
+            "program": "lib/main_web.dart",
             "args": [
                 "-d",
                 "chrome",
