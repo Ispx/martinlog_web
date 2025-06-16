@@ -1,3 +1,4 @@
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,7 @@ class PageWidget extends StatefulWidget {
   final VoidCallback? onRefresh;
   final VoidCallback? onDownload;
   final VoidCallback? onLoadMoreItens;
+  final Function(int? index)? onPageChanged;
   final bool isLoadingItens;
   const PageWidget({
     Key? key,
@@ -22,6 +24,7 @@ class PageWidget extends StatefulWidget {
     this.onRefresh,
     this.onLoadMoreItens,
     this.isLoadingItens = false,
+    this.onPageChanged,
   }) : super(key: key);
 
   @override
@@ -30,11 +33,15 @@ class PageWidget extends StatefulWidget {
 
 class _PageWidgetState extends State<PageWidget> {
   var currentIndexPage = 0.obs;
+  late final Worker worker;
   int get totalPages =>
       widget.itens.length ~/ widget.totalByPage +
       (widget.itens.length % widget.totalByPage > 0 ? 1 : 0);
   @override
   void initState() {
+    worker = ever(currentIndexPage, (index) {
+      widget.onPageChanged?.call(index);
+    });
     super.initState();
   }
 
@@ -46,11 +53,13 @@ class _PageWidgetState extends State<PageWidget> {
   void nextPage() {
     if (currentIndexPage.value < totalPages - 1) {
       currentIndexPage.value++;
+
       setState(() {});
       return;
     }
     if (widget.onLoadMoreItens != null) {
       currentIndexPage.value++;
+
       widget.onLoadMoreItens!();
       return;
     }
@@ -63,6 +72,12 @@ class _PageWidgetState extends State<PageWidget> {
     if (currentIndexPage.value == 0) return;
     currentIndexPage.value--;
     setState(() {});
+  }
+
+  @override
+  void dispose() {
+    worker.dispose();
+    super.dispose();
   }
 
   @override

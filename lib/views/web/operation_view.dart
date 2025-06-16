@@ -292,6 +292,9 @@ class _OperationViewState extends State<OperationView> {
                 totalByPage: controller.limitPaginationOffset,
                 isLoadingItens:
                     controller.appState.value is AppStateLoadingMore,
+                onPageChanged: (index) {
+                  
+                },
                 onLoadMoreItens: controller.isEnableLoadMoreItens.value
                     ? controller.nextPage
                     : null,

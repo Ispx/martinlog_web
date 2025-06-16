@@ -5,6 +5,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/dock_type_enum.dart';
+import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
@@ -16,6 +17,7 @@ import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
+import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/views/web/operation_view.dart';
@@ -230,14 +232,22 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
   Widget build(BuildContext context) {
     return Obx(() {
       return !isOpen.value
-          ? Align(
-              alignment: Alignment.topRight,
-              child: SizedBox(
-                width: 15.w,
-                child: IconButtonWidget(
-                  onTap: open,
-                  title: 'Nova Doca',
-                  icon: const Icon(LineIcons.warehouse),
+          ? Visibility(
+              visible: simple
+                      .get<AuthViewModel>()
+                      .authModel!
+                      .idProfile
+                      .getProfile() ==
+                  ProfileTypeEnum.MASTER,
+              child: Align(
+                alignment: Alignment.topRight,
+                child: SizedBox(
+                  width: 15.w,
+                  child: IconButtonWidget(
+                    onTap: open,
+                    title: 'Nova Doca',
+                    icon: const Icon(LineIcons.warehouse),
+                  ),
                 ),
               ),
             )
@@ -486,6 +496,12 @@ class _DockWidgetState extends State<DockWidget> {
                       .value;
                   return DropBoxWidget<BranchOfficeModel>(
                     key: ObjectKey(widget.dockModel),
+                    enable: simple
+                            .get<AuthViewModel>()
+                            .authModel!
+                            .idProfile
+                            .getProfile() ==
+                        ProfileTypeEnum.MASTER,
                     label: 'Filial',
                     width: 13.w,
                     icon: const Icon(Icons.business),
