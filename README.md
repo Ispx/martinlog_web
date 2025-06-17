@@ -46,4 +46,4 @@ Deploy: flutter clean && flutter build web -t lib/main_web.dart --dart-define UR
 
 
 
-flutter clean && flutter build apk --split-per-abi --dart-define URL_BASE=https://api.martinlog.com.br --dart-define PLATFORM=mobile --dart-define APP_NAME="Plataforma Martin log"
+flutter clean && flutter build apk --split-per-abi -t lib/main.dart --dart-define URL_BASE=https://api.martinlog.com.br --dart-define PLATFORM=mobile --dart-define APP_NAME="Plataforma Martin log"
