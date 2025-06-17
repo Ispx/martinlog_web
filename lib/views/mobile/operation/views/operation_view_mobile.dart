@@ -419,22 +419,22 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
             ),
             const Gap(10),
             Obx(() {
-              final itens = controller.operationsFilted.value.isEmpty
-                  ? <Widget>[]
-                  : controller.operationsFilted
-                      .map(
-                        (operationModel) => Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: AppSize.padding / 2,
-                          ),
-                          child: OperationWidgetMobile(
-                              key: ValueKey(operationModel.operationKey),
-                              operationModel: operationModel,
-                              createOperationState: createOperationState,
-                              scrollController: scrollController),
-                        ),
-                      )
-                      .toList();
+              final itens = (controller.operationsFilted.value.isEmpty
+                      ? controller.operations.value
+                      : controller.operationsFilted)
+                  .map(
+                    (operationModel) => Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: AppSize.padding / 2,
+                      ),
+                      child: OperationWidgetMobile(
+                          key: ValueKey(operationModel.operationKey),
+                          operationModel: operationModel,
+                          createOperationState: createOperationState,
+                          scrollController: scrollController),
+                    ),
+                  )
+                  .toList();
               return PageWidgetMobile(
                 key: ValueKey(pageWidgetMobileKey),
                 itens: itens,
@@ -449,7 +449,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                     await controller.downloadFile(controller.operationsFilted),
                 totalByPage: controller.limitPaginationOffset,
                 isLoadingItens:
-                    controller.appState.value is AppStateLoadingMore,
+                    controller.appState.value is AppStateLoadingMore ||
+                        controller.appState.value is AppStateLoading,
                 onLoadMoreItens: controller.isEnableLoadMoreItens.value
                     ? controller.nextPage
                     : null,

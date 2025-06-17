@@ -47,6 +47,7 @@ class AuthViewModel implements IAuthViewModel {
 
       authModel = await authRepository(document, password);
       await companyViewModel.getCompany();
+      await branchOfficeViewModel.getAll();
       final branchOffice =
           companyViewModel.companyModel!.branchOffices.firstOrNull;
       if (branchOffice != null) {
