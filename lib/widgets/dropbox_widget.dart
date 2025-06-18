@@ -33,7 +33,14 @@ class DropBoxWidget<T> extends StatelessWidget {
       menuHeight: 40.h,
       enableFilter: false,
       enableSearch: false,
-      label: label != null ? Text(label!) : null,
+      label: label != null
+          ? Text(
+              label!,
+              style: AppTextStyle.displayMedium(context).copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          : null,
       onSelected: (value) => onSelected(value),
       leadingIcon: icon,
       inputDecorationTheme: InputDecorationTheme(

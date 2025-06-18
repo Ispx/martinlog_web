@@ -75,6 +75,7 @@ abstract interface class IOperationViewModel {
 
   Future<void> search(String text);
   Future<void> onRefresh();
+  Future<void> getItensByPageIndex(int index);
   void resetFilter();
 }
 
@@ -94,7 +95,6 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
 
   final _bucket = 'operations-file';
   final limitPaginationOffset = 10;
-  var currentIndexPage = 0.obs;
   var isEnableLoadMoreItens = true.obs;
   OperationViewModel({
     required this.cancelOperationRepository,
@@ -179,15 +179,19 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         dateUntil: dateUntil,
         status: status,
         limit: limitPaginationOffset,
-        skip: operations.length < 20 ? null : operations.length,
+        skip: operations.length < limitPaginationOffset
+            ? null
+            : operations.length,
       );
       if (result.isEmpty) {
         isEnableLoadMoreItens.value = false;
         changeState(AppStateEmpity());
         return;
       }
-      operations.value =
-          operations.length < 20 ? [...result] : [...operations, ...result];
+
+      operations.value = operations.length < limitPaginationOffset
+          ? [...result]
+          : [...operations, ...result];
       operationsFilted.value = operations;
       isEnableLoadMoreItens.value = true;
       changeState(AppStateDone());
@@ -485,21 +489,10 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   }
 
   @override
-  Future<void> nextPage() async {
-    if (currentIndexPage.value ==
-        (operations.length ~/ limitPaginationOffset) - 1) {
-      currentIndexPage++;
-      getAll();
-    } else {
-      currentIndexPage++;
-    }
-  }
+  Future<void> nextPage() async {}
 
   @override
-  Future<void> peviousPage() async {
-    if (currentIndexPage.value == 0) return;
-    currentIndexPage--;
-  }
+  Future<void> peviousPage() async {}
 
   @override
   Future<void> onRefresh() async {
@@ -527,5 +520,21 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     } catch (e) {
       changeState(AppStateError(e.toString()));
     }
+  }
+
+  @override
+  Future<void> getItensByPageIndex(int index) async {
+    index++;
+    final endIndexPage = index * limitPaginationOffset;
+    final beginIndexPage = endIndexPage - limitPaginationOffset;
+    if (endIndexPage > operations.length) {
+      await getAll();
+      operationsFilted.value =
+          operations.sublist(beginIndexPage, operations.length);
+      changeState(AppStateDone());
+      return;
+    }
+    operationsFilted.value = operations.sublist(beginIndexPage, endIndexPage);
+    changeState(AppStateDone());
   }
 }

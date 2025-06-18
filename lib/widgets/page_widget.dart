@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +13,8 @@ class PageWidget extends StatefulWidget {
   final VoidCallback? onRefresh;
   final VoidCallback? onDownload;
   final VoidCallback? onLoadMoreItens;
+  final bool? isEnableLoadMoreItens;
+
   final Function(int? index)? onPageChanged;
   final bool isLoadingItens;
   const PageWidget({
@@ -24,6 +25,7 @@ class PageWidget extends StatefulWidget {
     this.onRefresh,
     this.onLoadMoreItens,
     this.isLoadingItens = false,
+    this.isEnableLoadMoreItens,
     this.onPageChanged,
   }) : super(key: key);
 
@@ -51,19 +53,6 @@ class _PageWidgetState extends State<PageWidget> {
         widgets: widget.itens,
       );
   void nextPage() {
-    if (currentIndexPage.value < totalPages - 1) {
-      currentIndexPage.value++;
-
-      setState(() {});
-      return;
-    }
-    if (widget.onLoadMoreItens != null) {
-      currentIndexPage.value++;
-
-      widget.onLoadMoreItens!();
-      return;
-    }
-    if (currentIndexPage.value == totalPages - 1) return;
     currentIndexPage.value++;
     setState(() {});
   }
@@ -93,7 +82,7 @@ class _PageWidgetState extends State<PageWidget> {
           children: [
             Obx(() {
               final bool canPreviousPage = currentIndexPage.value > 0;
-              final bool canNextPage = widget.onLoadMoreItens != null
+              final bool canNextPage = widget.isEnableLoadMoreItens ?? false
                   ? true
                   : currentIndexPage.value < totalPages - 1;
               return Row(
@@ -113,7 +102,7 @@ class _PageWidgetState extends State<PageWidget> {
                       ),
                       Text("${currentIndexPage.value + 1}"),
                       IconButton(
-                        onPressed: nextPage,
+                        onPressed: !canNextPage ? null : () => nextPage(),
                         icon: Icon(
                           LineIcons.angleRight,
                           color: canNextPage

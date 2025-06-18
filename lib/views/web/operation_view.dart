@@ -293,11 +293,10 @@ class _OperationViewState extends State<OperationView> {
                 isLoadingItens:
                     controller.appState.value is AppStateLoadingMore,
                 onPageChanged: (index) {
-                  
+                  controller.getItensByPageIndex(index ?? 0);
                 },
-                onLoadMoreItens: controller.isEnableLoadMoreItens.value
-                    ? controller.nextPage
-                    : null,
+             
+                isEnableLoadMoreItens: controller.isEnableLoadMoreItens.value,
               );
             }),
           ],

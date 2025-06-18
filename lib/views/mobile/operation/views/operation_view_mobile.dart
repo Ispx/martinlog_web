@@ -454,6 +454,10 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                 onLoadMoreItens: controller.isEnableLoadMoreItens.value
                     ? controller.nextPage
                     : null,
+                onPageChanged: (index) {
+                  controller.getItensByPageIndex(index ?? 0);
+                },
+                isEnableLoadMoreItens: controller.isEnableLoadMoreItens.value,
               );
             }),
           ],

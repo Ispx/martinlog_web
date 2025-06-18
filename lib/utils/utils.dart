@@ -161,7 +161,7 @@ abstract class Utils {
           : (currentIndexPage * totalByPage) + totalByPage;
       return widgets.sublist(startIndex, lastIndex);
     } catch (e) {
-      return [];
+      return widgets;
     }
   }
 

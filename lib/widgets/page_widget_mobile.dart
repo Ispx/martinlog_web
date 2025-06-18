@@ -14,6 +14,9 @@ class PageWidgetMobile extends StatefulWidget {
   final VoidCallback? onDownload;
   final VoidCallback? onLoadMoreItens;
   final bool isLoadingItens;
+  final bool? isEnableLoadMoreItens;
+
+  final Function(int? index)? onPageChanged;
   const PageWidgetMobile({
     Key? key,
     required this.itens,
@@ -22,6 +25,8 @@ class PageWidgetMobile extends StatefulWidget {
     this.onRefresh,
     this.onLoadMoreItens,
     this.isLoadingItens = false,
+    this.isEnableLoadMoreItens,
+    this.onPageChanged,
   }) : super(key: key);
 
   @override
@@ -29,12 +34,17 @@ class PageWidgetMobile extends StatefulWidget {
 }
 
 class _PageWidgetMobileState extends State<PageWidgetMobile> {
+  late final Worker worker;
+
   var currentIndexPage = 0.obs;
   int get totalPages =>
       widget.itens.length ~/ widget.totalByPage +
       (widget.itens.length % widget.totalByPage > 0 ? 1 : 0);
   @override
   void initState() {
+    worker = ever(currentIndexPage, (index) {
+      widget.onPageChanged?.call(index);
+    });
     super.initState();
   }
 
@@ -44,17 +54,6 @@ class _PageWidgetMobileState extends State<PageWidgetMobile> {
         widgets: widget.itens,
       );
   void nextPage() {
-    if (currentIndexPage.value < totalPages - 1) {
-      currentIndexPage.value++;
-      setState(() {});
-      return;
-    }
-    if (widget.onLoadMoreItens != null) {
-      currentIndexPage.value++;
-      widget.onLoadMoreItens!();
-      return;
-    }
-    if (currentIndexPage.value == totalPages - 1) return;
     currentIndexPage.value++;
     setState(() {});
   }
@@ -63,6 +62,13 @@ class _PageWidgetMobileState extends State<PageWidgetMobile> {
     if (currentIndexPage.value == 0) return;
     currentIndexPage.value--;
     setState(() {});
+  }
+
+  @override
+  void dispose() {
+    worker.dispose();
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -154,20 +160,21 @@ class _PageWidgetMobileState extends State<PageWidgetMobile> {
             padding: EdgeInsets.symmetric(vertical: AppSize.padding),
             child: widget.isLoadingItens
                 ? SizedBox(
-                  height: 800,
-                  child: ListView.builder(
-                      itemCount: 10,
-                      physics:
-                          !kIsWeb ? const NeverScrollableScrollPhysics() : null,
-                      itemBuilder: (context, index) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Shimmer.fromColors(
-                              baseColor: Colors.grey.shade300,
-                              highlightColor: Colors.white,
-                              child: const OperatioSkeleton(),
-                            ),
-                          )),
-                )
+                    height: 800,
+                    child: ListView.builder(
+                        itemCount: 10,
+                        physics: !kIsWeb
+                            ? const NeverScrollableScrollPhysics()
+                            : null,
+                        itemBuilder: (context, index) => Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Shimmer.fromColors(
+                                baseColor: Colors.grey.shade300,
+                                highlightColor: Colors.white,
+                                child: const OperatioSkeleton(),
+                              ),
+                            )),
+                  )
                 : ListView.builder(
                     shrinkWrap: true,
                     physics:
