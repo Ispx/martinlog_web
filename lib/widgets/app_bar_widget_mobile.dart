@@ -34,11 +34,7 @@ class AppBarWidgetMobile extends StatelessWidget
     this.prefix,
   });
 
-  List<BranchOfficeModel> get branchs =>
-      simple.get<AuthViewModel>().authModel?.idProfile.getProfile() ==
-              ProfileTypeEnum.MASTER
-          ? simple.get<BranchOfficeViewModelImpl>().branchs
-          : simple.get<CompanyViewModel>().companyModel?.branchOffices ?? [];
+  List<BranchOfficeModel> get branchs => simple.get<CompanyViewModel>().companyModel?.branchOffices ?? [];
 
   @override
   Widget build(BuildContext context) {
