@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site":"plataforma-martinlog",
+    "site":"martinlog-web",
     "source": ".",
     "ignore": [
       "firebase.json",

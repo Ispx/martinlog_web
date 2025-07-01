@@ -5,21 +5,18 @@ import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
 import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile.dart';
+import 'package:martinlog_web/views/web/branch_office_view.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import '../../core/dependencie_injection_manager/simple.dart';
 import '../../enums/profile_type_enum.dart';
 import '../../images/app_images.dart';
-import '../../state/app_state.dart';
 import '../../state/menu_state.dart';
 import '../../style/size/app_size.dart';
 import '../../style/text/app_text_style.dart';
 import '../../view_models/auth_view_model.dart';
-import '../../view_models/company_view_model.dart';
-import '../../view_models/dashboard_view_model.dart';
-import '../../view_models/dock_view_model.dart';
+
 import '../../view_models/menu_view_model.dart';
-import '../../view_models/operation_view_model.dart';
-import '../../view_models/user_view_model.dart';
+
 import '../../widgets/app_bar_widget_mobile.dart';
 import '../web/company_view.dart';
 import '../web/dock_view.dart';
@@ -36,7 +33,6 @@ class MenuViewMobile extends StatefulWidget {
 class _MenuViewMobileState extends State<MenuViewMobile> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late final MenuViewModel menuViewModel;
-  late final Worker worker;
 
   Widget getViewByMenu(MenuEnum menuEnum) => switch (menuEnum) {
         MenuEnum.Operations => const OperationViewMobile(
@@ -45,25 +41,20 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
         MenuEnum.Dock => const DockView(
             key: ObjectKey(MenuEnum.Dock),
           ),
-        MenuEnum.Company => const CompanyView(
+        MenuEnum.Company || MenuEnum.BindBranchOffice => const CompanyView(
             key: ObjectKey(MenuEnum.Company),
           ),
         MenuEnum.Users => const UserView(
             key: ObjectKey(MenuEnum.Users),
           ),
-        MenuEnum.Dashboard => const DashboardViewMobile()
+        MenuEnum.BranchOffice => BranchOfficeView(
+              key: ObjectKey(
+            MenuEnum.BranchOffice,
+          )),
+        MenuEnum.Dashboard => const DashboardViewMobile(),
       };
   @override
   void initState() {
-    worker = everAll([
-      simple.get<OperationViewModel>().appState,
-      simple.get<DockViewModel>().appState,
-      simple.get<CompanyViewModel>().appState,
-      simple.get<UserViewModel>().appState,
-      simple.get<DashboardViewModel>().appState
-    ], (state) {
-      menuViewModel.changeStatus(state as AppState);
-    });
     menuViewModel = simple.get<MenuViewModel>();
 
     super.initState();
@@ -71,7 +62,6 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
 
   @override
   void dispose() {
-    worker.dispose();
     super.dispose();
   }
 

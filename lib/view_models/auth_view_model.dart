@@ -6,6 +6,7 @@ import 'package:martinlog_web/models/auth_model.dart';
 import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/repositories/auth_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
+import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 
 const passwordKey = 'passwordKey';
@@ -20,13 +21,18 @@ abstract interface class IAuthViewModel {
 
 class AuthViewModel implements IAuthViewModel {
   final IAuthRepository authRepository;
+  final BranchOfficeViewModel branchOfficeViewModel;
+  final ICompanyViewModel companyViewModel;
   var appState = AppState().obs;
   var documentStored = ''.obs;
   var passwordStored = ''.obs;
   final _storage = const FlutterSecureStorage();
 
   AuthModel? authModel;
-  AuthViewModel({required this.authRepository});
+  AuthViewModel(
+      {required this.authRepository,
+      required this.branchOfficeViewModel,
+      required this.companyViewModel});
 
   @override
   Future<void> loggout() async {
@@ -40,12 +46,19 @@ class AuthViewModel implements IAuthViewModel {
       changeState(AppStateLoading());
 
       authModel = await authRepository(document, password);
-
-
+      await companyViewModel.getCompany();
+      await branchOfficeViewModel.getAll();
+      final branchOffice =
+          companyViewModel.companyModel!.branchOffices.firstOrNull;
+      if (branchOffice != null) {
+        branchOfficeViewModel.switchBranchOffice(
+            companyViewModel.companyModel!.branchOffices.first);
+      }
       _saveValueInLocalStorage(documentKey, document);
       _saveValueInLocalStorage(passwordKey, password);
 
       simple.update<AuthViewModel>(() => this);
+
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));

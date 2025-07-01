@@ -23,6 +23,8 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
   final OverlayVisibilityMode? prefixMode;
   final List<TextInputFormatter>? inputFormatters;
   final Widget? sufix;
+    final Widget? prefix;
+
   final String? prefixText;
   final TextInputAction? textInputAction;
   final TextCapitalization textCapitalization;
@@ -38,6 +40,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
   const TextFormFieldWidget({
     super.key,
     this.initialValue,
+    this.prefix,
     this.fillColor,
     this.label = '',
     this.autofocus = false,
@@ -102,6 +105,7 @@ class TextFormFieldWidget<T extends InputBorder> extends StatelessWidget {
       onChanged: onChange,
       textCapitalization: textCapitalization,
       decoration: InputDecoration(
+        prefix:prefix,
         filled: true,
         fillColor: fillColor ?? Colors.white,
         helperText: helpText,

@@ -35,7 +35,9 @@ class IconButtonWidget extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
-              vertical: AppSize.padding, horizontal: AppSize.padding / 2),
+            vertical: AppSize.padding,
+            horizontal: AppSize.padding * 1.5,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [

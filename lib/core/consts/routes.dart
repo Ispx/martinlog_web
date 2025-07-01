@@ -10,5 +10,5 @@ class Routes {
   static const operation = "/operation";
   static const operationDetails = "/operation-details";
   static const dashboard = "/dashboard";
-
+  static const bindBranchOffice = '/company/bind-branch-office';
 }

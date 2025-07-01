@@ -108,7 +108,22 @@ class _DrawerMenuState extends State<DrawerMenuWidget> {
                     onTap: () {
                       widget.menuViewModel.changeMenu(MenuEnum.Dock);
                     },
-                    profiles: const [ProfileTypeEnum.MASTER],
+                  ),
+                  SizedBox(
+                    height: AppSize.padding,
+                  ),
+                  MenuItem(
+                    icon: const Icon(
+                      Icons.business,
+                      color: Colors.white,
+                    ),
+                    isOpen: isOpen,
+                    isSelected: widget.menuViewModel.menuState.value.menuEnum ==
+                        MenuEnum.BranchOffice,
+                    title: 'Filial',
+                    onTap: () {
+                      widget.menuViewModel.changeMenu(MenuEnum.BranchOffice);
+                    },
                   ),
                   SizedBox(
                     height: AppSize.padding,
@@ -120,7 +135,9 @@ class _DrawerMenuState extends State<DrawerMenuWidget> {
                     ),
                     isOpen: isOpen,
                     isSelected: widget.menuViewModel.menuState.value.menuEnum ==
-                        MenuEnum.Company,
+                            MenuEnum.Company ||
+                        widget.menuViewModel.menuState.value.menuEnum ==
+                            MenuEnum.BindBranchOffice,
                     title: 'Transportadoras',
                     onTap: () {
                       widget.menuViewModel.changeMenu(MenuEnum.Company);

@@ -13,6 +13,9 @@ class PageWidget extends StatefulWidget {
   final VoidCallback? onRefresh;
   final VoidCallback? onDownload;
   final VoidCallback? onLoadMoreItens;
+  final bool? isEnableLoadMoreItens;
+
+  final Function(int? index)? onPageChanged;
   final bool isLoadingItens;
   const PageWidget({
     Key? key,
@@ -22,6 +25,8 @@ class PageWidget extends StatefulWidget {
     this.onRefresh,
     this.onLoadMoreItens,
     this.isLoadingItens = false,
+    this.isEnableLoadMoreItens,
+    this.onPageChanged,
   }) : super(key: key);
 
   @override
@@ -30,11 +35,15 @@ class PageWidget extends StatefulWidget {
 
 class _PageWidgetState extends State<PageWidget> {
   var currentIndexPage = 0.obs;
+  late final Worker worker;
   int get totalPages =>
       widget.itens.length ~/ widget.totalByPage +
       (widget.itens.length % widget.totalByPage > 0 ? 1 : 0);
   @override
   void initState() {
+    worker = ever(currentIndexPage, (index) {
+      widget.onPageChanged?.call(index);
+    });
     super.initState();
   }
 
@@ -44,17 +53,6 @@ class _PageWidgetState extends State<PageWidget> {
         widgets: widget.itens,
       );
   void nextPage() {
-    if (currentIndexPage.value < totalPages - 1) {
-      currentIndexPage.value++;
-      setState(() {});
-      return;
-    }
-    if (widget.onLoadMoreItens != null) {
-      currentIndexPage.value++;
-      widget.onLoadMoreItens!();
-      return;
-    }
-    if (currentIndexPage.value == totalPages - 1) return;
     currentIndexPage.value++;
     setState(() {});
   }
@@ -63,6 +61,12 @@ class _PageWidgetState extends State<PageWidget> {
     if (currentIndexPage.value == 0) return;
     currentIndexPage.value--;
     setState(() {});
+  }
+
+  @override
+  void dispose() {
+    worker.dispose();
+    super.dispose();
   }
 
   @override
@@ -78,7 +82,7 @@ class _PageWidgetState extends State<PageWidget> {
           children: [
             Obx(() {
               final bool canPreviousPage = currentIndexPage.value > 0;
-              final bool canNextPage = widget.onLoadMoreItens != null
+              final bool canNextPage = widget.isEnableLoadMoreItens ?? false
                   ? true
                   : currentIndexPage.value < totalPages - 1;
               return Row(
@@ -98,7 +102,7 @@ class _PageWidgetState extends State<PageWidget> {
                       ),
                       Text("${currentIndexPage.value + 1}"),
                       IconButton(
-                        onPressed: nextPage,
+                        onPressed: !canNextPage ? null : () => nextPage(),
                         icon: Icon(
                           LineIcons.angleRight,
                           color: canNextPage
@@ -158,7 +162,7 @@ class _PageWidgetState extends State<PageWidget> {
                         itemCount: 5,
                         physics: !kIsWeb
                             ? const NeverScrollableScrollPhysics()
-                            : null,
+                            : NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Shimmer.fromColors(
@@ -179,7 +183,7 @@ class _PageWidgetState extends State<PageWidget> {
                     : ListView.builder(
                         physics: !kIsWeb
                             ? const NeverScrollableScrollPhysics()
-                            : null,
+                            : NeverScrollableScrollPhysics(),
                         itemCount: sublistItens.length,
                         itemBuilder: (context, index) => sublistItens[index],
                       ),

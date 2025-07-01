@@ -6,10 +6,12 @@ import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/models/dock_model.dart';
 
 abstract interface class IUpsertDockRepository {
-  Future<DockModel> call(
-      {required String code,
-      required DockType dockType,
-      required bool isActive});
+  Future<DockModel> call({
+    required String code,
+    required DockType dockType,
+    required bool isActive,
+    required int? idBranchOffice,
+  });
 }
 
 class UpsertDockRepository implements IUpsertDockRepository {
@@ -17,10 +19,12 @@ class UpsertDockRepository implements IUpsertDockRepository {
   final String urlBase;
   UpsertDockRepository({required this.http, required this.urlBase});
   @override
-  Future<DockModel> call(
-      {required String code,
-      required DockType dockType,
-      required bool isActive}) async {
+  Future<DockModel> call({
+    required String code,
+    required DockType dockType,
+    required bool isActive,
+    required int? idBranchOffice,
+  }) async {
     try {
       final response = await http.request<Response>(
         url: urlBase + Endpoints.dock,
@@ -29,6 +33,7 @@ class UpsertDockRepository implements IUpsertDockRepository {
           "code": code,
           "type": dockType.idDockType,
           "isActive": isActive,
+          "idBranchOffice": idBranchOffice,
         },
       );
       return DockModel.fromJson(response.data);

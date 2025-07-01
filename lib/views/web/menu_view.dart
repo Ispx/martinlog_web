@@ -5,6 +5,8 @@ import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
 import 'package:martinlog_web/state/menu_state.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
+import 'package:martinlog_web/views/web/bind_branch_office_view.dart';
+import 'package:martinlog_web/views/web/branch_office_view.dart';
 import 'package:martinlog_web/views/web/company_view.dart';
 import 'package:martinlog_web/views/web/dashboard_view.dart';
 import 'package:martinlog_web/views/web/dock_view.dart';
@@ -30,7 +32,11 @@ class _MenuViewState extends State<MenuView> {
         MenuEnum.Company => const CompanyView(key: ObjectKey(MenuEnum.Company)),
         MenuEnum.Users => const UserView(key: ObjectKey(MenuEnum.Users)),
         MenuEnum.Dashboard =>
-          const DashboardView(key: ObjectKey(MenuEnum.Dashboard))
+          const DashboardView(key: ObjectKey(MenuEnum.Dashboard)),
+        MenuEnum.BranchOffice =>
+          const BranchOfficeView(key: ObjectKey(MenuEnum.BranchOffice)),
+        MenuEnum.BindBranchOffice =>
+          const BindBranchOfficeView(key: ObjectKey(MenuEnum.BindBranchOffice))
       };
   @override
   void initState() {

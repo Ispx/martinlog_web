@@ -28,6 +28,7 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
+import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
@@ -37,6 +38,8 @@ import 'package:martinlog_web/widgets/page_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart'
+    as dataPicker;
 
 var pageWidgetMobileKey = 'state_key';
 
@@ -75,6 +78,8 @@ class _OperationViewState extends State<OperationView> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      simple.get<OperationViewModel>().operations.clear();
+      simple.get<OperationViewModel>().operationsFilted.clear();
       await Future.wait([
         simple.get<DockViewModel>().getAll(),
         simple.get<CompanyViewModel>().getCompany(),
@@ -132,7 +137,7 @@ class _OperationViewState extends State<OperationView> {
               children: [
                 IconButton(
                   onPressed: () async {
-                    await showDateRangePickerDialog(
+                    await dataPicker.showDateRangePickerModalDialog(
                       context: context,
                       builder: (context, date) {
                         return DateRangePickerWidget(
@@ -287,9 +292,11 @@ class _OperationViewState extends State<OperationView> {
                 totalByPage: controller.limitPaginationOffset,
                 isLoadingItens:
                     controller.appState.value is AppStateLoadingMore,
-                onLoadMoreItens: controller.isEnableLoadMoreItens.value
-                    ? controller.nextPage
-                    : null,
+                onPageChanged: (index) {
+                  controller.getItensByPageIndex(index ?? 0);
+                },
+             
+                isEnableLoadMoreItens: controller.isEnableLoadMoreItens.value,
               );
             }),
           ],
@@ -338,7 +345,16 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
 
     companies = simple.get<AuthViewModel>().authModel?.idProfile ==
             ProfileTypeEnum.MASTER.idProfileType
-        ? simple.get<CompanyViewModel>().companies.toList()
+        ? simple
+                    .get<BranchOfficeViewModelImpl>()
+                    .branchOfficeActivated
+                    .value
+                    .idBranchOffice >
+                0
+            ? simple
+                .get<BranchOfficeViewModelImpl>()
+                .companiesBindedBranchOffice
+            : simple.get<CompanyViewModel>().companies.toList()
         : [
             simple.get<CompanyViewModel>().companyModel!,
           ];

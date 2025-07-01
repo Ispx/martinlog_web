@@ -4,6 +4,7 @@ import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
+import 'package:martinlog_web/models/branch_office_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';
 import 'package:martinlog_web/repositories/get_docks_repository.dart';
@@ -13,11 +14,15 @@ abstract interface class IDockViewModel {
   Future<void> create({
     required String code,
     required DockType dockType,
+    required BranchOfficeModel branchOffice,
   });
-
+  Future<void> bindBranchOffice(
+      BranchOfficeModel branchOffice, DockModel dockModel);
   Future<void> getAll();
   Future<void> updateDock(DockModel dockModel);
   Future<void> downloadFile();
+  Future<void> search(String src);
+  void resetFilter();
 }
 
 class DockViewModel extends GetxController implements IDockViewModel {
@@ -25,6 +30,8 @@ class DockViewModel extends GetxController implements IDockViewModel {
   var appState = AppState().obs;
   final IGetDocksRepository getDocksRepository;
   final IUpsertDockRepository upsertDockRepository;
+  var docksSearched = <DockModel>[].obs;
+
   DockViewModel({
     required this.getDocksRepository,
     required this.upsertDockRepository,
@@ -46,6 +53,7 @@ class DockViewModel extends GetxController implements IDockViewModel {
   Future<void> create({
     required String code,
     required DockType dockType,
+    required BranchOfficeModel branchOffice,
   }) async {
     try {
       changeState(AppStateLoading());
@@ -53,6 +61,7 @@ class DockViewModel extends GetxController implements IDockViewModel {
         code: code,
         dockType: dockType,
         isActive: true,
+        idBranchOffice: branchOffice.idBranchOffice,
       );
       _internalGetAll();
       changeState(AppStateDone());
@@ -123,10 +132,80 @@ class DockViewModel extends GetxController implements IDockViewModel {
         code: dockModel.code,
         dockType: dockModel.idDockType.getDockType(),
         isActive: dockModel.isActive,
+        idBranchOffice: dockModel.branchOfficeModel?.idBranchOffice,
+      );
+      final index = docks.indexWhere(
+        (element) =>
+            element.code == dockModel.code &&
+            dockModel.idDockType == element.idDockType &&
+            dockModel.branchOfficeModel?.idBranchOffice ==
+                element.branchOfficeModel?.idBranchOffice,
+      );
+      docks.replaceRange(
+        index,
+        index + 1,
+        [
+          dockModel,
+        ],
       );
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
     }
+  }
+
+  @override
+  Future<void> bindBranchOffice(
+      BranchOfficeModel branchOffice, DockModel dockModel) async {
+    try {
+      changeState(AppStateLoading());
+      await upsertDockRepository(
+        code: dockModel.code,
+        dockType: dockModel.idDockType.getDockType(),
+        isActive: dockModel.isActive,
+        idBranchOffice: branchOffice.idBranchOffice,
+      );
+
+      final index = docks.indexWhere(
+        (element) =>
+            element.code == dockModel.code &&
+            dockModel.idDockType == element.idDockType &&
+            dockModel.branchOfficeModel?.idBranchOffice ==
+                element.branchOfficeModel?.idBranchOffice,
+      );
+      docks.replaceRange(
+        index,
+        index + 1,
+        [
+          dockModel.copyWith(
+            branchOfficeModel: branchOffice,
+          ),
+        ],
+      );
+
+      changeState(AppStateDone());
+    } catch (e) {
+      changeState(AppStateError(e.toString()));
+    }
+  }
+
+  @override
+  Future<void> search(String src) async {
+    try {
+      if (src.isEmpty) {
+        docksSearched.value = [];
+        return;
+      }
+      final regex = RegExp(src);
+      docksSearched.value =
+          docks.where((p0) => regex.hasMatch(p0.code)).toList();
+    } catch (e) {
+      docksSearched.value = [];
+    }
+  }
+
+  @override
+  void resetFilter() async {
+    docksSearched.value = [];
   }
 }

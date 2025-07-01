@@ -31,7 +31,9 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
   final DashboardViewModel controller = simple.get<DashboardViewModel>();
   @override
   void initState() {
-    onRefresh();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      onRefresh();
+    });
 
     super.initState();
   }
@@ -174,7 +176,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
         ),
-        padding: EdgeInsets.only(left: 1.w, right: 1.w),
+        padding: EdgeInsets.all(2.w),
         child: LayoutBuilder(builder: (context, snapshot) {
           final widthIndicator = snapshot.maxWidth / 3.5;
           return Column(

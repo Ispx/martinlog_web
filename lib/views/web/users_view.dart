@@ -37,9 +37,9 @@ class UserView extends StatefulWidget {
 class _UserViewState extends State<UserView> {
   late final Worker worker;
   late final Worker workerSearch;
+  var textSearched = ''.obs;
 
   final controller = simple.get<UserViewModel>();
-  var textSearched = ''.obs;
   CompanyModel? companyModel;
   var operationsFilted = <OperationModel>[].obs;
   void clearFieldsFilters() {
@@ -136,6 +136,7 @@ class _UserViewState extends State<UserView> {
                 onRefresh: () async => await controller.getAll(),
                 onDownload: () async =>
                     await controller.downloadFile(controller.usersFilted),
+                isLoadingItens: controller.appState.value is AppStateLoading,
                 totalByPage: 10,
               );
             }),
