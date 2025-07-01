@@ -595,6 +595,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                               width: AppSize.padding * 2,
                             ),
                             Flexible(
+                              flex: 2,
                               child: Center(
                                 child: buildSelectable(
                                   context: context,

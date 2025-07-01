@@ -237,10 +237,13 @@ class CardSummaryOperationWidget extends StatelessWidget {
                   SizedBox(
                     width: 0.5.w,
                   ),
-                  Text(
-                    dockType.description,
-                    style: AppTextStyle.displayLarge(context).copyWith(
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      dockType.description,
+                      style: AppTextStyle.displayLarge(context).copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
