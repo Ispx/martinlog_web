@@ -37,9 +37,9 @@ class UserView extends StatefulWidget {
 class _UserViewState extends State<UserView> {
   late final Worker worker;
   late final Worker workerSearch;
+  var textSearched = ''.obs;
 
   final controller = simple.get<UserViewModel>();
-  var textSearched = ''.obs;
   CompanyModel? companyModel;
   var operationsFilted = <OperationModel>[].obs;
   void clearFieldsFilters() {
@@ -49,6 +49,12 @@ class _UserViewState extends State<UserView> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.wait([
+        simple.get<UserViewModel>().getAll(),
+        simple.get<CompanyViewModel>().getAllCompanies(),
+      ]);
+    });
     workerSearch = debounce(textSearched, controller.search);
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
@@ -101,6 +107,7 @@ class _UserViewState extends State<UserView> {
                     label: 'Pesquisar',
                     hint: 'Pesquise por nome, documento ou transportadora',
                     onChange: (e) => textSearched.value = e,
+                    maxLines: 1,
                   ),
                 ),
                 SizedBox(
@@ -129,6 +136,7 @@ class _UserViewState extends State<UserView> {
                 onRefresh: () async => await controller.getAll(),
                 onDownload: () async =>
                     await controller.downloadFile(controller.usersFilted),
+                isLoadingItens: controller.appState.value is AppStateLoading,
                 totalByPage: 10,
               );
             }),

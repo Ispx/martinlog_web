@@ -75,6 +75,7 @@ abstract interface class IOperationViewModel {
 
   Future<void> search(String text);
   Future<void> onRefresh();
+  Future<void> getItensByPageIndex(int index);
   void resetFilter();
 }
 
@@ -93,8 +94,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   final IGetOperationsPedingRepository getOperationsPedingRepository;
 
   final _bucket = 'operations-file';
-  final limitPaginationOffset = 20;
-  var currentIndexPage = 0.obs;
+  final limitPaginationOffset = 10;
   var isEnableLoadMoreItens = true.obs;
   OperationViewModel({
     required this.cancelOperationRepository,
@@ -179,14 +179,19 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         dateUntil: dateUntil,
         status: status,
         limit: limitPaginationOffset,
-        skip: operations.length,
+        skip: operations.length < limitPaginationOffset
+            ? null
+            : operations.length,
       );
       if (result.isEmpty) {
-        changeState(AppStateEmpity());
         isEnableLoadMoreItens.value = false;
+        changeState(AppStateEmpity());
         return;
       }
-      operations.value = [...operations, ...result];
+
+      operations.value = operations.length < limitPaginationOffset
+          ? [...result]
+          : [...operations, ...result];
       operationsFilted.value = operations;
       isEnableLoadMoreItens.value = true;
       changeState(AppStateDone());
@@ -375,14 +380,13 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         resetFilter();
         return;
       }
-
+      final regex = RegExp(text);
       operationsFilted.value = operations
-          .where((p0) =>
-              p0.companyModel.fantasyName
-                  .toString()
-                  .toLowerCase()
-                  .startsWith(text.toLowerCase()) ||
-              p0.dockModel!.code.compareTo(text) == 0)
+          .where(
+            (p0) =>
+                regex.hasMatch(p0.companyModel.fantasyName) ||
+                regex.hasMatch(p0.dockModel!.code),
+          )
           .toList();
     } catch (e) {
       operationsFilted.value = [];
@@ -421,8 +425,9 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   Future<void> filterByDate(DateTime start, DateTime end) async {
     try {
       if (appState is AppStateLoading) return;
-      changeState(AppStateLoading());
-      isEnableLoadMoreItens.value = false;
+      operationsFilted.value = [];
+      this.operations.value = [];
+      changeState(AppStateLoadingMore());
       final operations = await getOperationsRepository(
           dateFrom:
               DateTime(start.year, start.month, start.day, 00, 00, 00).toUtc(),
@@ -484,21 +489,10 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   }
 
   @override
-  Future<void> nextPage() async {
-    if (currentIndexPage.value ==
-        (operations.length ~/ limitPaginationOffset) - 1) {
-      currentIndexPage++;
-      getAll();
-    } else {
-      currentIndexPage++;
-    }
-  }
+  Future<void> nextPage() async {}
 
   @override
-  Future<void> peviousPage() async {
-    if (currentIndexPage.value == 0) return;
-    currentIndexPage--;
-  }
+  Future<void> peviousPage() async {}
 
   @override
   Future<void> onRefresh() async {
@@ -526,5 +520,21 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
     } catch (e) {
       changeState(AppStateError(e.toString()));
     }
+  }
+
+  @override
+  Future<void> getItensByPageIndex(int index) async {
+    index++;
+    final endIndexPage = index * limitPaginationOffset;
+    final beginIndexPage = endIndexPage - limitPaginationOffset;
+    if (endIndexPage > operations.length) {
+      await getAll();
+      operationsFilted.value =
+          operations.sublist(beginIndexPage, operations.length);
+      changeState(AppStateDone());
+      return;
+    }
+    operationsFilted.value = operations.sublist(beginIndexPage, endIndexPage);
+    changeState(AppStateDone());
   }
 }

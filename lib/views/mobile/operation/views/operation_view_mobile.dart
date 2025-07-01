@@ -21,6 +21,8 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
+import 'package:martinlog_web/view_models/company_view_model.dart';
+import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/views/mobile/operation/widgets/new_operation_widget.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
@@ -67,6 +69,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
 
   @override
   void initState() {
+    simple.get<DockViewModel>().getAll();
+    simple.get<CompanyViewModel>().getAllCompanies();
     operationStatusEditingController = TextEditingController();
     dockTypeEditingController = TextEditingController();
     createOperationState = GlobalKey<CreateOperationWidgetState>();
@@ -415,22 +419,22 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
             ),
             const Gap(10),
             Obx(() {
-              final itens = controller.operationsFilted.value.isEmpty
-                  ? <Widget>[]
-                  : controller.operationsFilted
-                      .map(
-                        (operationModel) => Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: AppSize.padding / 2,
-                          ),
-                          child: OperationWidgetMobile(
-                              key: ValueKey(operationModel.operationKey),
-                              operationModel: operationModel,
-                              createOperationState: createOperationState,
-                              scrollController: scrollController),
-                        ),
-                      )
-                      .toList();
+              final itens = (controller.operationsFilted.value.isEmpty
+                      ? controller.operations.value
+                      : controller.operationsFilted)
+                  .map(
+                    (operationModel) => Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: AppSize.padding / 2,
+                      ),
+                      child: OperationWidgetMobile(
+                          key: ValueKey(operationModel.operationKey),
+                          operationModel: operationModel,
+                          createOperationState: createOperationState,
+                          scrollController: scrollController),
+                    ),
+                  )
+                  .toList();
               return PageWidgetMobile(
                 key: ValueKey(pageWidgetMobileKey),
                 itens: itens,
@@ -445,10 +449,15 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                     await controller.downloadFile(controller.operationsFilted),
                 totalByPage: controller.limitPaginationOffset,
                 isLoadingItens:
-                    controller.appState.value is AppStateLoadingMore,
+                    controller.appState.value is AppStateLoadingMore ||
+                        controller.appState.value is AppStateLoading,
                 onLoadMoreItens: controller.isEnableLoadMoreItens.value
                     ? controller.nextPage
                     : null,
+                onPageChanged: (index) {
+                  controller.getItensByPageIndex(index ?? 0);
+                },
+                isEnableLoadMoreItens: controller.isEnableLoadMoreItens.value,
               );
             }),
           ],

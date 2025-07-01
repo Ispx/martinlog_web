@@ -51,7 +51,7 @@ dependencies:
   flutter_svg:
   line_icons: 
   flutter_excel:
-  flutter_date_range_picker:
+  flutter_date_range_picker: ^0.2.1
   firebase_core: 
   cloud_firestore:
   image_picker:

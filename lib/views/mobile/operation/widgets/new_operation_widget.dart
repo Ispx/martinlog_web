@@ -18,6 +18,7 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
+import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
@@ -50,8 +51,26 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
     'route': TextEditingController(),
     'place': TextEditingController(),
   };
-
-  late final List<CompanyModel> companies;
+  bool get isProfileMaster =>
+      simple.get<AuthViewModel>().authModel?.idProfile ==
+      ProfileTypeEnum.MASTER.idProfileType;
+  List<CompanyModel> get companies => isProfileMaster
+      ? simple.get<CompanyViewModel>().companies.where((e) {
+          for (var branch in e.branchOffices) {
+            if (branch.idBranchOffice ==
+                simple
+                    .get<BranchOfficeViewModelImpl>()
+                    .branchOfficeActivated
+                    .value
+                    .idBranchOffice) {
+              return true;
+            }
+          }
+          return false;
+        }).toList()
+      : [
+          simple.get<CompanyViewModel>().companyModel!,
+        ];
   late final GlobalKey<FormState> formState;
   final controller = simple.get<OperationViewModel>();
   RxBool isOpen = false.obs;
@@ -59,14 +78,6 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
   @override
   void initState() {
     formState = GlobalKey<FormState>();
-    bool isProfileMaster = simple.get<AuthViewModel>().authModel?.idProfile ==
-        ProfileTypeEnum.MASTER.idProfileType;
-
-    companies = isProfileMaster
-        ? simple.get<CompanyViewModel>().companies.toList()
-        : [
-            simple.get<CompanyViewModel>().companyModel!,
-          ];
 
     super.initState();
   }

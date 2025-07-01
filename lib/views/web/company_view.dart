@@ -11,10 +11,15 @@ import 'package:martinlog_web/extensions/date_time_extension.dart';
 import 'package:martinlog_web/helpers/formater_helper.dart';
 import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
+import 'package:martinlog_web/models/branch_office_model.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
+import 'package:martinlog_web/state/menu_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
+import 'package:martinlog_web/view_models/branch_office_view_model.dart';
+import 'package:martinlog_web/view_models/menu_view_model.dart';
+import 'package:martinlog_web/widgets/dropbox_widget.dart';
 import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:martinlog_web/widgets/page_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
@@ -31,10 +36,19 @@ class CompanyView extends StatefulWidget {
 
 class _CompanyViewState extends State<CompanyView> {
   late final Worker worker;
+  late final Worker workerSearch;
+  var textSearched = ''.obs;
+
   final controller = simple.get<CompanyViewModel>();
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      simple.get<CompanyViewModel>().resetFilter();
+      simple.get<CompanyViewModel>().getAllCompanies();
+    });
+    workerSearch = debounce(textSearched, controller.search);
+
     worker = ever(controller.appState, (appState) {
       if (appState is AppStateError) {
         BannerComponent(
@@ -54,6 +68,13 @@ class _CompanyViewState extends State<CompanyView> {
   }
 
   @override
+  void dispose() {
+    workerSearch.dispose();
+    worker.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: double.maxFinite,
@@ -69,9 +90,31 @@ class _CompanyViewState extends State<CompanyView> {
             const Gap(5),
             const Divider(),
             const Gap(30),
+            Row(
+              children: [
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+                Expanded(
+                  child: TextFormFieldWidget<OutlineInputBorder>(
+                    label: 'Pesquisar',
+                    hint: 'Pesquise por razão social ou cnpj',
+                    onChange: (e) => textSearched.value = e,
+                    maxLines: 1,
+                  ),
+                ),
+                SizedBox(
+                  width: AppSize.padding,
+                ),
+              ],
+            ),
+            const Gap(10),
             Obx(() {
+              final itens = controller.companiesSearched.value.isEmpty
+                  ? controller.companies.value
+                  : controller.companiesSearched.value;
               return PageWidget(
-                itens: controller.companies.value
+                itens: itens
                     .map(
                       (companyModel) => Padding(
                         padding: EdgeInsets.symmetric(
@@ -114,9 +157,11 @@ class _CreateCompanyWidgetState extends State<CreateCompanyWidget>
   late final TextEditingController zipcodeEditingController;
   late final TextEditingController streetNumberEditingController;
   late final TextEditingController streetComplementEditingController;
+  late final TextEditingController branchOfficeEditingController;
+
   var isLoading = false.obs;
   var isOpen = false.obs;
-
+  List<BranchOfficeModel> branchOfficesSelected = [];
   late final GlobalKey<FormState> formState;
   final controller = simple.get<CompanyViewModel>();
   @override
@@ -131,6 +176,10 @@ class _CreateCompanyWidgetState extends State<CreateCompanyWidget>
     zipcodeEditingController = TextEditingController();
     streetNumberEditingController = TextEditingController();
     streetComplementEditingController = TextEditingController();
+    branchOfficeEditingController = TextEditingController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {});
+    });
 
     super.initState();
   }
@@ -145,6 +194,7 @@ class _CreateCompanyWidgetState extends State<CreateCompanyWidget>
     zipcodeEditingController.clear();
     streetNumberEditingController.clear();
     streetComplementEditingController.clear();
+    branchOfficeEditingController.clear();
     setState(() {});
   }
 
@@ -171,6 +221,7 @@ class _CreateCompanyWidgetState extends State<CreateCompanyWidget>
           zipcode: zipcodeEditingController.text,
           streetNumber: streetNumberEditingController.text,
           streetComplement: streetComplementEditingController.text,
+          branchOffices: branchOfficesSelected,
         ),
       );
       isLoading.value = false;
@@ -391,6 +442,41 @@ class _CreateCompanyWidgetState extends State<CreateCompanyWidget>
                         ),
                         Row(
                           children: [
+                            buildSelectable(
+                              context: context,
+                              title: "Filial",
+                              child: DropBoxWidget<BranchOfficeModel>(
+                                enable: controller.appState.value
+                                    is! AppStateLoading,
+                                width: 15.w,
+                                dropdownMenuEntries: simple
+                                    .get<BranchOfficeViewModelImpl>()
+                                    .branchs
+                                    .map(
+                                      (e) =>
+                                          DropdownMenuEntry<BranchOfficeModel>(
+                                        value: e,
+                                        label: e.name,
+                                      ),
+                                    )
+                                    .toList(),
+                                onSelected: (BranchOfficeModel? e) {
+                                  if (!branchOfficesSelected.contains(e)) {
+                                    branchOfficesSelected.add(e!);
+                                  }
+                                  branchOfficeEditingController.clear();
+                                  setState(() {});
+                                },
+                                controller: branchOfficeEditingController,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: AppSize.padding * 2,
+                        ),
+                        Row(
+                          children: [
                             const Expanded(flex: 3, child: SizedBox.shrink()),
                             Flexible(
                               child: Center(
@@ -470,13 +556,19 @@ class CompanyWidget extends StatefulWidget {
 }
 
 class _CompanyWidgetState extends State<CompanyWidget> {
+  late final TextEditingController branchOfficeEdittinController;
+
   @override
   void initState() {
+    branchOfficeEdittinController = TextEditingController(
+      text: widget.companyModel.branchOffices.firstOrNull?.name,
+    );
     super.initState();
   }
 
   @override
   void dispose() {
+    branchOfficeEdittinController.dispose();
     super.dispose();
   }
 
@@ -581,9 +673,59 @@ class _CompanyWidgetState extends State<CompanyWidget> {
                 ),
               ),
             ),
+            IconButton(
+              onPressed: () {
+                simple
+                    .get<BranchOfficeViewModelImpl>()
+                    .setCompanyToBind(widget.companyModel);
+                simple
+                    .get<MenuViewModel>()
+                    .changeMenu(MenuEnum.BindBranchOffice);
+              },
+              icon: Icon(
+                Icons.business,
+                color: widget.companyModel.branchOffices.isEmpty
+                    ? null
+                    : context.appTheme.secondColor,
+              ),
+            )
           ],
         ),
       ),
     );
+  }
+}
+
+class LinkCompanyBranchOfficeWidget extends StatefulWidget {
+  final CompanyModel companyModel;
+  const LinkCompanyBranchOfficeWidget({
+    super.key,
+    required this.companyModel,
+  });
+
+  @override
+  State<LinkCompanyBranchOfficeWidget> createState() =>
+      _LinkCompanyBranchOfficeWidgetState();
+}
+
+class _LinkCompanyBranchOfficeWidgetState
+    extends State<LinkCompanyBranchOfficeWidget> {
+  late BranchOfficeViewModel controller;
+  @override
+  void initState() {
+    controller = simple.get<BranchOfficeViewModelImpl>();
+    controller.getAll();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: 90.w,
+        height: 80.h,
+        color: Colors.white,
+        child: Column(
+          children: [],
+        ));
   }
 }
