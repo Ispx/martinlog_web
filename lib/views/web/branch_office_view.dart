@@ -298,10 +298,12 @@ class BranchOfficeWidget extends StatefulWidget {
 
 class _BranchOfficeWidgetState extends State<BranchOfficeWidget> {
   late final GlobalKey<FormState> formState;
+  late final TextEditingController textEditingController;
 
   @override
   void initState() {
     formState = GlobalKey<FormState>();
+    textEditingController = TextEditingController();
     super.initState();
   }
 
@@ -395,15 +397,6 @@ class _BranchOfficeWidgetState extends State<BranchOfficeWidget> {
                                 SizedBox(
                                   height: 5.h,
                                 ),
-                                Text(
-                                  "Tipos de opereções:",
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyle.displayMedium(context)
-                                      .copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: appTheme.titleColor,
-                                  ),
-                                ),
                                 SizedBox(
                                   height: AppSize.padding,
                                 ),
@@ -418,7 +411,7 @@ class _BranchOfficeWidgetState extends State<BranchOfficeWidget> {
                                           child: TextFormFieldWidget<
                                               UnderlineInputBorder>(
                                             label: 'Nome da operação',
-                                            helpText: 'Ex.: Retirada',
+                                            hint: 'Ex.: Retirada',
                                             validator: (e) {
                                               if (e?.isEmpty ?? true) {
                                                 return "Campo não pode estar em branco";
@@ -473,7 +466,22 @@ class _BranchOfficeWidgetState extends State<BranchOfficeWidget> {
                                   ],
                                 ),
                                 SizedBox(
+                                  height: AppSize.padding,
+                                ),
+                                SizedBox(
                                   height: AppSize.padding * 3,
+                                ),
+                                Text(
+                                  "Tipos de opereções:",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyle.displayMedium(context)
+                                      .copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: appTheme.titleColor,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: AppSize.padding * 1.5,
                                 ),
                                 Container(
                                   height: 35.h,
@@ -541,6 +549,9 @@ class _BranchOfficeWidgetState extends State<BranchOfficeWidget> {
                                                               FontWeight.bold,
                                                         ),
                                                       ),
+                                                      const Expanded(
+                                                          child: SizedBox
+                                                              .shrink()),
                                                     ],
                                                   ),
                                                   const Divider(),
