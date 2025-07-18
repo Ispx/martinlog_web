@@ -7,12 +7,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
-import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/enums/operation_status_enum.dart';
 import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
-import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/extensions/profile_type_extension.dart';
@@ -22,6 +20,7 @@ import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
+import 'package:martinlog_web/models/dock_type_model.dart';
 import 'package:martinlog_web/models/operation_model.dart';
 import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/state/app_state.dart';
@@ -30,6 +29,7 @@ import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
+import 'package:martinlog_web/view_models/dock_type_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
@@ -60,7 +60,7 @@ class _OperationViewState extends State<OperationView> {
   late final TextEditingController dockTypeEditingController;
   var textSearched = ''.obs;
   var textDateRangeSelected = ''.obs;
-  DockType? dockTypeSelected;
+  DockTypeModel? dockTypeSelected;
   DateRange? dateRangeSelected;
   var operationsFilted = <OperationModel>[].obs;
   void clearFieldsFilters() {
@@ -84,7 +84,8 @@ class _OperationViewState extends State<OperationView> {
         simple.get<DockViewModel>().getAll(),
         simple.get<CompanyViewModel>().getCompany(),
         simple.get<CompanyViewModel>().getAllCompanies(),
-        simple.get<OperationViewModel>().getAll()
+        simple.get<OperationViewModel>().getAll(),
+        simple.get<DockTypeViewModel>().getAll(),
       ]);
     });
 
@@ -236,22 +237,31 @@ class _OperationViewState extends State<OperationView> {
                 SizedBox(
                   width: AppSize.padding,
                 ),
-                DropBoxWidget<DockType>(
-                  controller: dockTypeEditingController,
-                  label: 'Tipo',
-                  dropdownMenuEntries: [
-                    ...DockType.values
-                        .map(
-                          (e) =>
-                              DropdownMenuEntry(value: e, label: e.description),
-                        )
-                        .toList()
-                  ],
-                  onSelected: (e) {
-                    if (e == null) return;
-                    simple.get<OperationViewModel>().filterByDock(e);
-                  },
-                ),
+                Obx(() {
+                  return DropBoxWidget<DockTypeModel>(
+                    controller: dockTypeEditingController,
+                    enable: simple.get<DockTypeViewModel>().appState
+                        is! AppStateLoading,
+                    label: 'Tipo',
+                    dropdownMenuEntries: [
+                      ...simple
+                          .get<DockTypeViewModel>()
+                          .dockTypes
+                          .value
+                          .map(
+                            (e) => DropdownMenuEntry(value: e, label: e.name),
+                          )
+                          .toList()
+                    ],
+                    onSelected: (e) {
+                      if (e == null) {
+                        simple.get<OperationViewModel>().resetFilter();
+                        return;
+                      }
+                      simple.get<OperationViewModel>().filterByDock(e);
+                    },
+                  );
+                }),
                 SizedBox(
                   width: AppSize.padding,
                 ),
@@ -295,7 +305,6 @@ class _OperationViewState extends State<OperationView> {
                 onPageChanged: (index) {
                   controller.getItensByPageIndex(index ?? 0);
                 },
-             
                 isEnableLoadMoreItens: controller.isEnableLoadMoreItens.value,
               );
             }),
@@ -315,7 +324,7 @@ class CreateOperationWidget extends StatefulWidget {
 
 class _CreateOperationWidgetState extends State<CreateOperationWidget>
     with ValidatorsMixin {
-  DockType? dockTypeSelected = null;
+  DockTypeModel? dockTypeSelected = null;
   DockModel? dockModelSelected = null;
   CompanyModel? companyModelSelected = null;
 
@@ -366,7 +375,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
       .docks
       .where((e) => dockTypeSelected == null
           ? true
-          : e.idDockType.getDockType() == dockTypeSelected)
+          : e.dockTypeModel?.idDockType == dockTypeSelected?.idDockType)
       .toList();
 
   void clearFields() {
@@ -449,30 +458,37 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                         Row(
                           children: [
                             Expanded(
-                              child: buildSelectable(
-                                context: context,
-                                title: "Tipo",
-                                child: DropBoxWidget<DockType>(
-                                  controller: dockTypeEditingController,
-                                  enable: controller.appState.value
-                                      is! AppStateLoading,
-                                  width: 15.w,
-                                  dropdownMenuEntries: DockType.values
-                                      .map(
-                                        (e) => DropdownMenuEntry<DockType>(
-                                          value: e,
-                                          label: e.description,
-                                        ),
-                                      )
-                                      .toList(),
-                                  onSelected: (DockType? e) {
-                                    dockTypeSelected = e;
-                                    dockModelSelected = null;
-                                    dockCodeEditingController.clear();
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
+                              child: Obx(() {
+                                return buildSelectable(
+                                  context: context,
+                                  title: "Tipo",
+                                  child: DropBoxWidget<DockTypeModel>(
+                                    controller: dockTypeEditingController,
+                                    enable: simple
+                                        .get<DockTypeViewModel>()
+                                        .appState is! AppStateLoading,
+                                    width: 15.w,
+                                    dropdownMenuEntries: simple
+                                        .get<DockTypeViewModel>()
+                                        .dockTypes
+                                        .value
+                                        .map(
+                                          (e) =>
+                                              DropdownMenuEntry<DockTypeModel>(
+                                            value: e,
+                                            label: e.name,
+                                          ),
+                                        )
+                                        .toList(),
+                                    onSelected: (DockTypeModel? e) {
+                                      dockTypeSelected = e;
+                                      dockModelSelected = null;
+                                      dockCodeEditingController.clear();
+                                      setState(() {});
+                                    },
+                                  ),
+                                );
+                              }),
                             ),
                             Expanded(
                               child: buildSelectable(
@@ -595,6 +611,7 @@ class _CreateOperationWidgetState extends State<CreateOperationWidget>
                               width: AppSize.padding * 2,
                             ),
                             Flexible(
+                              flex: 2,
                               child: Center(
                                 child: buildSelectable(
                                   context: context,
@@ -756,7 +773,7 @@ class _OperationWidgetState extends State<OperationWidget>
     final appTheme = context.appTheme;
     return Obx(() {
       return Card(
-        elevation: 0.0,
+        elevation: 6.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -806,9 +823,8 @@ class _OperationWidgetState extends State<OperationWidget>
                 width: 8.w,
                 child: Center(
                   child: Text(
-                    widget.operationModel.dockModel!.idDockType
-                        .getDockType()
-                        .description,
+                    widget.operationModel.dockModel!.dockTypeModel?.name ??
+                        'N/D',
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyle.displayMedium(context).copyWith(
                       fontWeight: FontWeight.w600,
@@ -1064,11 +1080,10 @@ class _DetailsWidgetState extends State<DetailsWidget>
                     value: widget.operationModel.dockModel!.code,
                   ),
                   ValuesDetailsWidget(
-                    title: 'Tipo:',
-                    value: widget.operationModel.dockModel!.idDockType
-                        .getDockType()
-                        .description,
-                  ),
+                      title: 'Tipo:',
+                      value: widget
+                              .operationModel.dockModel!.dockTypeModel?.name ??
+                          'N/D'),
                   ValuesDetailsWidget(
                       title: 'Status:',
                       value: widget.operationModel.idOperationStatus

@@ -13,6 +13,7 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dashboard_view_model.dart';
+import 'package:martinlog_web/view_models/dock_type_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 
@@ -60,7 +61,6 @@ class BranchOfficeViewModelImpl extends GetxController
   @override
   Future<void> getAll() async {
     try {
-      if (branchOfficeList.isNotEmpty) return;
       change(AppStateLoading());
       if (simple.get<AuthViewModel>().authModel?.idProfile ==
           ProfileTypeEnum.MASTER.idProfileType) {
@@ -113,10 +113,11 @@ class BranchOfficeViewModelImpl extends GetxController
     simple.get<OperationViewModel>().operationsFilted.clear();
     simple.get<DashboardViewModel>().operations.clear();
     simple.get<DockViewModel>().docks.clear();
+    simple.get<DockTypeViewModel>().dockTypes.clear();
   }
 
   @override
-  List<BranchOfficeModel> get branchs => branchOfficeList ?? [];
+  List<BranchOfficeModel> get branchs => branchOfficeList;
 
   var branchOfficeActivated =
       BranchOfficeModel(idBranchOffice: -1, name: '').obs;

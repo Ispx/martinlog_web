@@ -1,8 +1,0 @@
-enum DockType {
-  UNDEFINED,
-  EXPEDITION,
-  RECEIPT,
-  KAMIKAZE,
-  TRANSFER,
-  REVERSE,
-}

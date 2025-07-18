@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -9,16 +8,15 @@ import 'package:flutter_excel/excel.dart';
 import 'package:get/get.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
-import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/enums/event_type_enum.dart';
 import 'package:martinlog_web/enums/operation_status_enum.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
-import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/event_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
+import 'package:martinlog_web/models/dock_type_model.dart';
 import 'package:martinlog_web/models/operation_model.dart';
 import 'package:martinlog_web/repositories/cancel_operation_repository.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
@@ -69,7 +67,7 @@ abstract interface class IOperationViewModel {
   });
 
   Future<void> filterByStatus(OperationStatusEnum statusEnum);
-  Future<void> filterByDock(DockType dockType);
+  Future<void> filterByDock(DockTypeModel dockTypeModel);
   Future<void> filterByDate(DateTime start, DateTime end);
   Future<void> getPending();
 
@@ -328,7 +326,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
       excel.updateCell(sheetName, CellIndex.indexByString("C$index"),
           operationModel.dockModel?.code);
       excel.updateCell(sheetName, CellIndex.indexByString("D$index"),
-          operationModel.dockModel?.idDockType.getDockType().description);
+          operationModel.dockModel?.dockTypeModel?.name);
       excel.updateCell(sheetName, CellIndex.indexByString("E$index"),
           operationModel.idOperationStatus.getOperationStatus().description);
 
@@ -355,20 +353,14 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   }
 
   @override
-  Future<void> filterByDock(DockType dockType) async {
-    if (dockType.idDockType == -1) {
+  Future<void> filterByDock(DockTypeModel dockTypeModel) async {
+    if (dockTypeModel.idDockType == -1) {
       operationsFilted.value = operations;
       return;
     }
-    if (operationsFilted.isNotEmpty) {
-      operationsFilted.value = operationsFilted
-          .where((p0) => p0.dockModel!.idDockType == dockType.idDockType)
-          .toList();
-    } else {
-      operationsFilted.value = operations
-          .where((p0) => p0.dockModel!.idDockType == dockType.idDockType)
-          .toList();
-    }
+    operationsFilted.value = operations
+        .where((p0) => p0.dockModel!.idDockType == dockTypeModel.idDockType)
+        .toList();
   }
 
   @override

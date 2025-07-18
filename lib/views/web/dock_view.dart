@@ -4,21 +4,21 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
-import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
-import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
 import 'package:martinlog_web/models/branch_office_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
+import 'package:martinlog_web/models/dock_type_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/branch_office_view_model.dart';
+import 'package:martinlog_web/view_models/dock_type_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/views/web/operation_view.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
@@ -157,7 +157,7 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
 
   late TextEditingController isActiveEditingController;
 
-  DockType? dockTypeSelected = null;
+  DockTypeModel? dockTypeSelected = null;
   BranchOfficeModel? branchOfficeSelected = null;
 
   late final GlobalKey<FormState> formState;
@@ -177,7 +177,7 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
       .docks
       .where((e) => dockTypeSelected == null
           ? true
-          : e.idDockType.getDockType() == dockTypeSelected)
+          : e.dockTypeModel?.idDockType == dockTypeSelected?.idDockType)
       .toList();
 
   void clearFields() {
@@ -212,7 +212,7 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
     if (formState.currentState?.validate() ?? false) {
       isLoading.value = true;
       await controller.create(
-        dockType: dockTypeSelected!,
+        idDockType: dockTypeSelected!.idDockType,
         code: dockCodeEditingController.text,
         branchOffice: branchOfficeSelected!,
       );
@@ -267,20 +267,22 @@ class _CreateDockWidgetState extends State<CreateDockWidget>
                             buildSelectable(
                               context: context,
                               title: "Tipo",
-                              child: DropBoxWidget<DockType>(
+                              child: DropBoxWidget<DockTypeModel>(
                                 controller: dockTypeEditingController,
                                 enable: controller.appState.value
                                     is! AppStateLoading,
                                 width: 15.w,
-                                dropdownMenuEntries: DockType.values
+                                dropdownMenuEntries: simple
+                                    .get<DockTypeViewModel>()
+                                    .dockTypes
                                     .map(
-                                      (e) => DropdownMenuEntry<DockType>(
+                                      (e) => DropdownMenuEntry<DockTypeModel>(
                                         value: e,
-                                        label: e.description,
+                                        label: e.name,
                                       ),
                                     )
                                     .toList(),
-                                onSelected: (DockType? e) {
+                                onSelected: (DockTypeModel? e) {
                                   dockTypeSelected = e;
                                   dockCodeEditingController.clear();
                                   setState(() {});
@@ -449,7 +451,7 @@ class _DockWidgetState extends State<DockWidget> {
     final appTheme = context.appTheme;
     return Obx(() {
       return Card(
-        elevation: 0.0,
+        elevation: 6.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -478,7 +480,7 @@ class _DockWidgetState extends State<DockWidget> {
                   width: 10.w,
                   child: Center(
                     child: Text(
-                      widget.dockModel.idDockType.getDockType().description,
+                      widget.dockModel.dockTypeModel?.name ?? 'N/D',
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyle.displayMedium(context).copyWith(
                         fontWeight: FontWeight.w600,
@@ -508,7 +510,8 @@ class _DockWidgetState extends State<DockWidget> {
                     dropdownMenuEntries: [
                       ...branchOffices
                           .map(
-                            (e) => DropdownMenuEntry(value: e, label: e.name),
+                            (e) =>
+                                DropdownMenuEntry(value: e, label: e.name),
                           )
                           .toList()
                     ],
@@ -564,7 +567,8 @@ class _DockWidgetState extends State<DockWidget> {
                     horizontal: AppSize.padding,
                   ),
                   onAction: () async {
-                    if (controller.appState.value is AppStateLoading) return;
+                    if (controller.appState.value is AppStateLoading)
+                      return;
                     await controller.updateDock(
                       widget.dockModel.copyWith(
                         isActive: !widget.dockModel.isActive,

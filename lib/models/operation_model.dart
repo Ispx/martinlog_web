@@ -6,7 +6,6 @@ class OperationModel {
   String operationKey;
   DockModel? dockModel;
   CompanyModel companyModel;
-
   int idUser;
   String liscensePlate;
   int progress;

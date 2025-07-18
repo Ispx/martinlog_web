@@ -4,13 +4,11 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
-import 'package:martinlog_web/extensions/dock_type_extension.dart';
+import 'package:martinlog_web/models/dashboard_model.dart';
 import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/widgets/page_widget_mobile.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-
 import '../../core/dependencie_injection_manager/simple.dart';
-import '../../enums/dock_type_enum.dart';
 import '../../state/app_state.dart';
 import '../../state/menu_state.dart';
 import '../../style/size/app_size.dart';
@@ -79,40 +77,26 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
                       padding: EdgeInsets.symmetric(horizontal: 2.w),
                       child: LayoutBuilder(builder: (context, constraint) {
                         final width = constraint.maxWidth;
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            CardSummaryOperationWidget(
-                              width: width,
-                              controller: controller,
-                              dockType: DockType.RECEIPT,
-                            ),
-                            const Gap(16),
-                            CardSummaryOperationWidget(
-                              width: width,
-                              controller: controller,
-                              dockType: DockType.EXPEDITION,
-                            ),
-                            const Gap(16),
-                            CardSummaryOperationWidget(
-                              width: width,
-                              controller: controller,
-                              dockType: DockType.TRANSFER,
-                            ),
-                            const Gap(16),
-                            CardSummaryOperationWidget(
-                              width: width,
-                              controller: controller,
-                              dockType: DockType.KAMIKAZE,
-                            ),
-                            const Gap(16),
-                            CardSummaryOperationWidget(
-                              width: width,
-                              controller: controller,
-                              dockType: DockType.REVERSE,
-                            ),
-                          ],
-                        );
+                        return Obx(() {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ...controller.dashboardResults.value
+                                  .map((dashboardModel) {
+                                return Column(
+                                  children: [
+                                    const Gap(16),
+                                    CardSummaryOperationWidget(
+                                      width: width,
+                                      controller: controller,
+                                      dashboardModel: dashboardModel,
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
+                            ],
+                          );
+                        });
                       }),
                     ),
                   ),
@@ -155,13 +139,13 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
 }
 
 class CardSummaryOperationWidget extends StatelessWidget {
-  final DockType dockType;
+  final DashboardModel dashboardModel;
   final DashboardViewModel controller;
   final double width;
   const CardSummaryOperationWidget({
     super.key,
     required this.width,
-    required this.dockType,
+    required this.dashboardModel,
     required this.controller,
   });
 
@@ -193,12 +177,12 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     height: 6.w,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      color: Utils.getColorIconDockType(dockType),
+                      color: context.iconColor,
                     ),
                     alignment: Alignment.center,
                     child: Center(
                       child: Icon(
-                        Utils.getIconDataByDockType(dockType),
+                        LineIcons.truck,
                         color: Colors.white,
                         size: 4.w,
                       ),
@@ -208,7 +192,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     width: 1.w,
                   ),
                   Text(
-                    dockType.description,
+                    dashboardModel.name,
                     style: AppTextStyle.displayLarge(context).copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -219,8 +203,6 @@ class CardSummaryOperationWidget extends StatelessWidget {
                 height: 3.w,
               ),
               Obx(() {
-                final dashboardModel =
-                    controller.getDashboard(idDockType: dockType.idDockType);
                 return SizedBox(
                   width: width,
                   child: Row(
@@ -229,7 +211,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       CardIndicatorWidget(
                         isLoading: controller.appState.value is AppStateLoading,
                         width: widthIndicator,
-                        value: dashboardModel?.total ?? 0,
+                        value: dashboardModel.total,
                         title: "15º atual",
                         backgroundColor: Colors.blue,
                       ),
@@ -237,7 +219,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       CardIndicatorWidget(
                         isLoading: controller.appState.value is AppStateLoading,
                         width: widthIndicator,
-                        value: dashboardModel?.today ?? 0,
+                        value: dashboardModel.today,
                         title: "Hoje",
                         backgroundColor: context.appTheme.primaryColor,
                       ),
@@ -245,7 +227,7 @@ class CardSummaryOperationWidget extends StatelessWidget {
                       CardIndicatorWidget(
                         isLoading: controller.appState.value is AppStateLoading,
                         width: widthIndicator,
-                        value: dashboardModel?.inProgress ?? 0,
+                        value: dashboardModel.inProgress,
                         title: "Em execução",
                         backgroundColor: context.appTheme.primaryVariant,
                       ),

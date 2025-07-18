@@ -15,7 +15,7 @@ class GetDockTypeRepository implements IGetDockTypeRepository {
   Future<List<DockTypeModel>> call() async {
     try {
       final response = await http.request<Response>(
-        url: urlBase + Endpoints.dockAll,
+        url: urlBase + Endpoints.dockType,
         method: HttpMethod.GET,
       );
 

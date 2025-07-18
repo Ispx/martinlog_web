@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
@@ -7,10 +8,13 @@ import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
 import 'package:martinlog_web/models/branch_office_model.dart';
+import 'package:martinlog_web/navigator/go_to.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/branch_office_view_model.dart';
+import 'package:martinlog_web/view_models/dock_type_view_model.dart';
+import 'package:martinlog_web/widgets/buttom_widget.dart';
 import 'package:martinlog_web/widgets/icon_buttom_widget.dart';
 import 'package:martinlog_web/widgets/page_widget.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
@@ -277,7 +281,7 @@ class _CreateBranchOfficeWidgetState extends State<CreateBranchOfficeWidget>
   }
 }
 
-class BranchOfficeWidget extends StatelessWidget {
+class BranchOfficeWidget extends StatefulWidget {
   final BranchOfficeModel branchOfficeModel;
   final bool isActicve;
   final Function(bool) onChanged;
@@ -289,10 +293,29 @@ class BranchOfficeWidget extends StatelessWidget {
   });
 
   @override
+  State<BranchOfficeWidget> createState() => _BranchOfficeWidgetState();
+}
+
+class _BranchOfficeWidgetState extends State<BranchOfficeWidget> {
+  late final GlobalKey<FormState> formState;
+
+  @override
+  void initState() {
+    formState = GlobalKey<FormState>();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    formState.currentState?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final appTheme = context.appTheme;
     return Card(
-      elevation: 0.0,
+      elevation: 6.0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -309,7 +332,7 @@ class BranchOfficeWidget extends StatelessWidget {
               width: AppSize.padding,
             ),
             Text(
-              branchOfficeModel.name,
+              widget.branchOfficeModel.name,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyle.displayMedium(context).copyWith(
                 fontWeight: FontWeight.w600,
@@ -320,8 +343,230 @@ class BranchOfficeWidget extends StatelessWidget {
               child: SizedBox.shrink(),
             ),
             Switch(
-              value: isActicve,
-              onChanged: onChanged,
+              value: widget.isActicve,
+              onChanged: widget.onChanged,
+            ),
+            SizedBox(
+              width: AppSize.padding,
+            ),
+            IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return Stack(
+                      children: [
+                        Positioned(
+                          right: 0,
+                          child: Container(
+                            width: 35.w,
+                            height: 100.h,
+                            color: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: AppSize.padding * 2,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: 5.h,
+                                ),
+                                GestureDetector(
+                                  onTap: GoTo.pop,
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.black,
+                                    size: 2.w,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5.h,
+                                ),
+                                Text(
+                                  widget.branchOfficeModel.name,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyle.displayMedium(context)
+                                      .copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: appTheme.titleColor,
+                                    fontSize: 16.sp,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5.h,
+                                ),
+                                Text(
+                                  "Tipos de opereções:",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyle.displayMedium(context)
+                                      .copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: appTheme.titleColor,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: AppSize.padding,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Form(
+                                      key: formState,
+                                      child: Expanded(
+                                        child: Material(
+                                          child: TextFormFieldWidget<
+                                              UnderlineInputBorder>(
+                                            label: 'Nome da operação',
+                                            helpText: 'Ex.: Retirada',
+                                            validator: (e) {
+                                              if (e?.isEmpty ?? true) {
+                                                return "Campo não pode estar em branco";
+                                              }
+                                              if (e?.length == 1) {
+                                                return 'Nome inválido';
+                                              }
+                                              return null;
+                                            },
+                                            onSaved: (name) async {
+                                              await simple
+                                                  .get<DockTypeViewModel>()
+                                                  .create(
+                                                    name: name,
+                                                    branchOffice: widget
+                                                        .branchOfficeModel,
+                                                  );
+                                              await simple
+                                                  .get<
+                                                      BranchOfficeViewModelImpl>()
+                                                  .getAll();
+                                              GoTo.pop();
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: AppSize.padding * 2,
+                                    ),
+                                    SizedBox(
+                                      width: 90,
+                                      height: 40,
+                                      child: Obx(() {
+                                        return ButtomWidget(
+                                          onTap: () {
+                                            if (formState.currentState
+                                                    ?.validate() ??
+                                                false) {
+                                              formState.currentState?.save();
+                                            }
+                                          },
+                                          isLoading: simple
+                                              .get<DockTypeViewModel>()
+                                              .appState
+                                              .value is AppStateLoading,
+                                          radius: 20,
+                                          title: 'Criar',
+                                        );
+                                      }),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: AppSize.padding * 3,
+                                ),
+                                Container(
+                                  height: 35.h,
+                                  width: double.maxFinite,
+                                  color: Colors.white,
+                                  child: (widget.branchOfficeModel.dockTypes
+                                              ?.isEmpty ??
+                                          true)
+                                      ? Center(
+                                          child: Text(
+                                            "Nenhuma operação criada",
+                                            style: AppTextStyle.displayMedium(
+                                                    context)
+                                                .copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color: appTheme.titleColor,
+                                            ),
+                                          ),
+                                        )
+                                      : ListView.separated(
+                                          itemBuilder: (context, i) {
+                                            final dockTypeModel = widget
+                                                .branchOfficeModel
+                                                .dockTypes![i];
+                                            return SizedBox(
+                                              width: double.maxFinite,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Container(
+                                                        width: 2.w,
+                                                        height: 2.w,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(5),
+                                                          color: context
+                                                              .appTheme
+                                                              .secondColor,
+                                                        ),
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: Center(
+                                                          child: Icon(
+                                                            LineIcons.dolly,
+                                                            color: Colors.white,
+                                                            size: 1.w,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: AppSize.padding,
+                                                      ),
+                                                      Text(
+                                                        dockTypeModel.name,
+                                                        style: AppTextStyle
+                                                                .displaySmall(
+                                                                    context)
+                                                            .copyWith(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const Divider(),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                          separatorBuilder: (c, i) => SizedBox(
+                                                height: AppSize.padding,
+                                              ),
+                                          itemCount: widget.branchOfficeModel
+                                                  .dockTypes?.length ??
+                                              0),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    );
+                  },
+                );
+              },
+              icon: const Icon(
+                Icons.settings,
+              ),
             )
           ],
         ),

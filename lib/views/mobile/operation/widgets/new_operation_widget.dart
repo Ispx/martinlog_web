@@ -4,9 +4,7 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
-import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/enums/profile_type_enum.dart';
-import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/profile_type_extension.dart';
 import 'package:martinlog_web/input_formaters/liscense_plate_input_formatter.dart';
@@ -14,12 +12,14 @@ import 'package:martinlog_web/input_formaters/upper_case_text_formatter.dart';
 import 'package:martinlog_web/mixins/validators_mixin.dart';
 import 'package:martinlog_web/models/company_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
+import 'package:martinlog_web/models/dock_type_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
+import 'package:martinlog_web/view_models/dock_type_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile.dart';
@@ -36,7 +36,7 @@ class CreateOperationWidget extends StatefulWidget {
 
 class CreateOperationWidgetState extends State<CreateOperationWidget>
     with ValidatorsMixin {
-  DockType? dockTypeSelected;
+  DockTypeModel? dockTypeSelected;
   DockModel? dockModelSelected;
   CompanyModel? companyModelSelected;
 
@@ -85,10 +85,7 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
   @override
   void activate() {
     textControllers['dockType']!.value = TextEditingValue(
-        text: operationModelToUpdate?.dockModel?.idDockType
-                .getDockType()
-                .description ??
-            '');
+        text: operationModelToUpdate?.dockModel?.dockTypeModel?.name ?? '');
     textControllers['dockCode']!.value = TextEditingValue(
       text: operationModelToUpdate?.dockModel?.code ?? '',
     );
@@ -202,6 +199,14 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
     );
   }
 
+  List<DockModel> getDocksByDockType() => simple
+      .get<DockViewModel>()
+      .docks
+      .where((e) => dockTypeSelected == null
+          ? true
+          : e.dockTypeModel?.idDockType == dockTypeSelected?.idDockType)
+      .toList();
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -234,15 +239,17 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
                     buildSelectable(
                       context: context,
                       title: "Tipo",
-                      child: DropBoxWidget<DockType>(
+                      child: DropBoxWidget<DockTypeModel>(
                         controller: textControllers['dockType']!,
                         enable: controller.appState.value is! AppStateLoading,
                         width: MediaQuery.of(context).size.width - 16,
-                        dropdownMenuEntries: DockType.values
+                        dropdownMenuEntries: simple
+                            .get<DockTypeViewModel>()
+                            .dockTypes
                             .map(
-                              (e) => DropdownMenuEntry<DockType>(
+                              (e) => DropdownMenuEntry<DockTypeModel>(
                                 value: e,
-                                label: e.description,
+                                label: e.name,
                                 style: ButtonStyle(
                                   textStyle: MaterialStateProperty.resolveWith(
                                     (states) =>
@@ -255,7 +262,7 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
                               ),
                             )
                             .toList(),
-                        onSelected: (DockType? e) {
+                        onSelected: (DockTypeModel? e) {
                           dockTypeSelected = e;
                           dockModelSelected = null;
                           textControllers['dockCode']!.clear();
@@ -271,9 +278,7 @@ class CreateOperationWidgetState extends State<CreateOperationWidget>
                         controller: textControllers['dockCode']!,
                         enable: controller.appState.value is! AppStateLoading,
                         width: MediaQuery.of(context).size.width - 16,
-                        dropdownMenuEntries: simple
-                            .get<DockViewModel>()
-                            .getDocksByDockType(dockTypeSelected)
+                        dropdownMenuEntries: getDocksByDockType()
                             .map(
                               (e) => DropdownMenuEntry<DockModel>(
                                 value: e,

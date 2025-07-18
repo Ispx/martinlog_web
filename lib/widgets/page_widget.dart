@@ -5,6 +5,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/utils/utils.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
 
 class PageWidget extends StatefulWidget {
@@ -73,7 +74,7 @@ class _PageWidgetState extends State<PageWidget> {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.zero,
-      height: double.maxFinite,
+      height: 80.h,
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: AppSize.padding / 2,
@@ -154,9 +155,19 @@ class _PageWidgetState extends State<PageWidget> {
                 ],
               );
             }),
+            SizedBox(
+              height: AppSize.padding * 2,
+            ),
             Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: AppSize.padding),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.symmetric(
+                  vertical: AppSize.padding,
+                  horizontal: AppSize.padding,
+                ),
                 child: widget.isLoadingItens
                     ? ListView.builder(
                         itemCount: 5,
@@ -183,12 +194,13 @@ class _PageWidgetState extends State<PageWidget> {
                     : ListView.builder(
                         physics: !kIsWeb
                             ? const NeverScrollableScrollPhysics()
-                            : NeverScrollableScrollPhysics(),
+                            : BouncingScrollPhysics(),
                         itemCount: sublistItens.length,
                         itemBuilder: (context, index) => sublistItens[index],
                       ),
               ),
             ),
+            SizedBox(height:5.h),
           ],
         ),
       ),
