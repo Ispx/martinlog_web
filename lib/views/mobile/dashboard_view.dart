@@ -78,24 +78,60 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
                       child: LayoutBuilder(builder: (context, constraint) {
                         final width = constraint.maxWidth;
                         return Obx(() {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              ...controller.dashboardResults.value
-                                  .map((dashboardModel) {
-                                return Column(
-                                  children: [
-                                    const Gap(16),
-                                    CardSummaryOperationWidget(
-                                      width: width,
-                                      controller: controller,
-                                      dashboardModel: dashboardModel,
+                          final state = controller.appState.value;
+
+                          return controller.dashboardResults.value.isEmpty &&
+                                  (state is AppStateDone ||
+                                      state is AppStateLoading)
+                              ? SizedBox(
+                                  height: 30.h,
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          LineIcons.dolly,
+                                          color: Colors.grey,
+                                          size: 10.h,
+                                        ),
+                                        SizedBox(
+                                          height: AppSize.padding * 2,
+                                        ),
+                                        Text(
+                                          state is AppStateDone
+                                              ? 'Nenhuma operação registrada até o momento.'
+                                              : "Carregando dados, por favor aguarde...",
+                                          style:
+                                              AppTextStyle.displayLarge(context)
+                                                  .copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16.sp,
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                  ),
+                                )
+                              : Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    ...controller.dashboardResults.value
+                                        .map((dashboardModel) {
+                                      return Column(
+                                        children: [
+                                          const Gap(16),
+                                          CardSummaryOperationWidget(
+                                            width: width,
+                                            controller: controller,
+                                            dashboardModel: dashboardModel,
+                                          ),
+                                        ],
+                                      );
+                                    }).toList(),
                                   ],
                                 );
-                              }).toList(),
-                            ],
-                          );
                         });
                       }),
                     ),
@@ -177,12 +213,12 @@ class CardSummaryOperationWidget extends StatelessWidget {
                     height: 6.w,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      color: context.iconColor,
+                      color: context.appTheme.secondColor,
                     ),
                     alignment: Alignment.center,
                     child: Center(
                       child: Icon(
-                        LineIcons.truck,
+                        LineIcons.dolly,
                         color: Colors.white,
                         size: 4.w,
                       ),

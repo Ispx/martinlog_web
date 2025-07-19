@@ -11,7 +11,7 @@ abstract class Utils {
   }
 
   static bool isLiscensePlate(String liscensePlate) => RegExp(
-          r'[A-Z][A-Z][A-Z]-[0-9][0-9][0-9][0-9]|[A-Z0-9][A-Z0-9][A-Z0-9][0-9][A-Z][0-9][0-9]|[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]')
+          r'[A-Z][A-Z][A-Z]-[0-9][0-9][0-9][0-9]|[A-Z0-9][A-Z0-9][A-Z0-9][0-9][A-Z][0-9][0-9]|[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]|[A-Z0-9]')
       .hasMatch(liscensePlate);
 
   static bool isDocument(String document) => RegExp(
