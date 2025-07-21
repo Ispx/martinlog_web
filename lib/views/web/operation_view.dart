@@ -296,7 +296,7 @@ class _OperationViewState extends State<OperationView> {
               return PageWidget(
                 key: ValueKey(pageWidgetMobileKey),
                 itens: itens,
-                onRefresh: () async => await controller.getAll(),
+                onRefresh: () async => await controller.onRefresh(),
                 onDownload: () async =>
                     await controller.downloadFile(controller.operationsFilted),
                 totalByPage: controller.limitPaginationOffset,

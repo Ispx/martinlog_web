@@ -52,7 +52,6 @@ abstract interface class IOperationViewModel {
 
   Future<void> getAll(
       {DateTime? dateFrom, DateTime? dateUntil, List<int>? status});
-
   Future<void> nextPage();
   Future<void> peviousPage();
   Future<void> getOperation({
