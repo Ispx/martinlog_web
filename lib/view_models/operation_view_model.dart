@@ -58,7 +58,13 @@ abstract interface class IOperationViewModel {
     required String operationKey,
   });
 
-  Future<void> downloadFile(List<OperationModel> operations);
+  Future<void> downloadFile({
+    DateTime? dateFrom,
+    DateTime? dateUntil,
+    List<int>? status,
+    List<OperationModel>? values,
+  });
+
   Future<void> uploadFile({
     required OperationModel operationModel,
     required String filename,
@@ -67,13 +73,14 @@ abstract interface class IOperationViewModel {
 
   Future<void> filterByStatus(OperationStatusEnum statusEnum);
   Future<void> filterByDock(DockTypeModel dockTypeModel);
-  Future<void> filterByDate(DateTime start, DateTime end);
   Future<void> getPending();
 
   Future<void> search(String text);
   Future<void> onRefresh();
-  Future<void> getItensByPageIndex(int index);
+  Future<void> getItensByPageIndex(int index,
+      {DateTime? dateFrom, DateTime? dateUntil});
   void resetFilter();
+  void clear();
 }
 
 class OperationViewModel extends GetxController implements IOperationViewModel {
@@ -164,12 +171,23 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   }
 
   @override
-  Future<void> getAll(
-      {DateTime? dateFrom, DateTime? dateUntil, List<int>? status}) async {
+  Future<void> getAll({
+    DateTime? dateFrom,
+    DateTime? dateUntil,
+    List<int>? status,
+  }) async {
     try {
       if (appState is AppStateLoading || appState is AppStateLoadingMore) {
         return;
       }
+      dateFrom = dateFrom != null
+          ? DateTime(dateFrom.year, dateFrom.month, dateFrom.day, 00, 00, 00)
+              .toUtc()
+          : null;
+      dateUntil = dateUntil != null
+          ? DateTime(dateUntil.year, dateUntil.month, dateUntil.day, 23, 59, 59)
+              .toUtc()
+          : null;
       changeState(AppStateLoadingMore());
       final result = await getOperationsRepository(
         dateFrom: dateFrom,
@@ -180,30 +198,19 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
             ? null
             : operations.length,
       );
+
       if (result.isEmpty) {
         isEnableLoadMoreItens.value = false;
         changeState(AppStateEmpity());
         return;
       }
-
-      operations.value = operations.length < limitPaginationOffset
-          ? [...result]
-          : [...operations, ...result];
+      operations.addAll(result);
       operationsFilted.value = operations;
       isEnableLoadMoreItens.value = true;
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
     }
-  }
-
-  Future<void> _internalGetAll() async {
-    final result = await getOperationsRepository(
-      limit: limitPaginationOffset,
-      skip: 0,
-    );
-    operations.value = result;
-    operationsFilted.value = result;
   }
 
   @override
@@ -293,8 +300,33 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   }
 
   @override
-  Future<void> downloadFile(List<OperationModel> operations) async {
+  Future<void> downloadFile({
+    DateTime? dateFrom,
+    DateTime? dateUntil,
+    List<int>? status,
+    List<OperationModel>? values,
+  }) async {
+    if (appState is AppStateLoading || appState is AppStateLoadingMore) {
+      return;
+    }
     changeState(AppStateLoading());
+    dateFrom = dateFrom != null
+        ? DateTime(dateFrom.year, dateFrom.month, dateFrom.day, 00, 00, 00)
+            .toUtc()
+        : null;
+    dateUntil = dateUntil != null
+        ? DateTime(dateUntil.year, dateUntil.month, dateUntil.day, 23, 59, 59)
+            .toUtc()
+        : null;
+    values = values ??
+        await getOperationsRepository(
+          dateFrom: dateFrom,
+          dateUntil: dateUntil,
+          status: status,
+          limit: 100000,
+          skip: 0,
+        );
+
     final excel = Excel.createExcel();
     const sheetName = "Operações";
     excel.updateCell(
@@ -313,9 +345,9 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         sheetName, CellIndex.indexByString("J1"), "Chave da operação");
     excel.updateCell(sheetName, CellIndex.indexByString("K1"), "Rota");
     excel.updateCell(sheetName, CellIndex.indexByString("L1"), "Loja");
-    for (int i = 0; i < operationsFilted.length; i++) {
+    for (int i = 0; i < values.length; i++) {
       var index = i + 2;
-      final operationModel = operationsFilted[i];
+      final operationModel = values[i];
 
       excel.updateCell(sheetName, CellIndex.indexByString("A$index"),
           operationModel.companyModel.fantasyName);
@@ -371,12 +403,18 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         resetFilter();
         return;
       }
-      final regex = RegExp(text);
+      final regex = RegExp(text.toLowerCase());
       operationsFilted.value = operations
           .where(
             (p0) =>
-                regex.hasMatch(p0.companyModel.fantasyName) ||
-                regex.hasMatch(p0.dockModel!.code),
+                regex.hasMatch(p0.companyModel.fantasyName.toLowerCase()) ||
+                regex.hasMatch(p0.dockModel!.code.toLowerCase()) ||
+                regex.hasMatch(
+                    p0.dockModel!.dockTypeModel?.name.toLowerCase() ?? '') ||
+                regex.hasMatch(p0.idOperationStatus
+                    .getOperationStatus()
+                    .description
+                    .toLowerCase()),
           )
           .toList();
     } catch (e) {
@@ -385,8 +423,8 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   }
 
   @override
-  Future<void> filterByStatus(OperationStatusEnum statusEnum) async {
-    if (statusEnum.idOperationStatus == -1) {
+  Future<void> filterByStatus(OperationStatusEnum? statusEnum) async {
+    if (statusEnum == null || statusEnum.idOperationStatus == -1) {
       await onRefresh();
       return;
     }
@@ -410,26 +448,6 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   @override
   void resetFilter() {
     operationsFilted.value = operations;
-  }
-
-  @override
-  Future<void> filterByDate(DateTime start, DateTime end) async {
-    try {
-      if (appState is AppStateLoading) return;
-      operationsFilted.value = [];
-      this.operations.value = [];
-      changeState(AppStateLoadingMore());
-      final operations = await getOperationsRepository(
-          dateFrom:
-              DateTime(start.year, start.month, start.day, 00, 00, 00).toUtc(),
-          dateUntil: DateTime(end.year, end.month, end.day, 23, 59, 59).toUtc(),
-          status: null);
-      operationsFilted.value = operations;
-      this.operations.value = operations;
-      changeState(AppStateDone());
-    } catch (e) {
-      changeState(AppStateError(e.toString()));
-    }
   }
 
   @override
@@ -514,18 +532,31 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   }
 
   @override
-  Future<void> getItensByPageIndex(int index) async {
+  Future<void> getItensByPageIndex(int index,
+      {DateTime? dateFrom, DateTime? dateUntil}) async {
     index++;
     final endIndexPage = index * limitPaginationOffset;
     final beginIndexPage = endIndexPage - limitPaginationOffset;
     if (endIndexPage > operations.length) {
-      await getAll();
+      await getAll(
+        dateFrom: dateFrom,
+        dateUntil: dateUntil,
+      );
       operationsFilted.value =
           operations.sublist(beginIndexPage, operations.length);
       changeState(AppStateDone());
       return;
     }
     operationsFilted.value = operations.sublist(beginIndexPage, endIndexPage);
+    if (isEnableLoadMoreItens.value == false) {
+      isEnableLoadMoreItens.value = true;
+    }
     changeState(AppStateDone());
+  }
+
+  @override
+  void clear() {
+    operations.clear();
+    operationsFilted.clear();
   }
 }

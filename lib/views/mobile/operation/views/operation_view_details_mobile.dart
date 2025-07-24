@@ -80,7 +80,7 @@ class _OperationViewDetailsMobileState
   }
 
   Future<void> _downloadFile() async {
-    await controller.downloadFile([operationModel!]);
+    await controller.downloadFile(values: [operationModel!]);
   }
 
   Future<void> _doGetImageFromCamera() async {

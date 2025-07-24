@@ -114,9 +114,9 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
       textDateRangeSelected.value = '';
     }
     if (dateRangeSelected != null) {
-      await controller.filterByDate(
-        dateRangeSelected!.start,
-        dateRangeSelected!.end,
+      await controller.getAll(
+       dateFrom:  dateRangeSelected!.start,
+     dateUntil:    dateRangeSelected!.end,
       );
       textDateRangeSelected.value =
           "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
@@ -447,8 +447,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       "${DateTime.now().millisecondsSinceEpoch}";
                   setState(() {});
                 },
-                onDownload: () async =>
-                    await controller.downloadFile(controller.operationsFilted),
+                onDownload: () async => await controller.downloadFile(
+                    values: controller.operationsFilted),
                 totalByPage: controller.limitPaginationOffset,
                 isLoadingItens:
                     controller.appState.value is AppStateLoadingMore ||
@@ -552,7 +552,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
   }
 
   Future<void> downloadFile() async {
-    controller.downloadFile([operation]);
+    controller.downloadFile(values: [operation]);
   }
 
   Future<void> updateProgress() async {

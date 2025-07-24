@@ -62,6 +62,8 @@ class _OperationViewState extends State<OperationView> {
   var textDateRangeSelected = ''.obs;
   DockTypeModel? dockTypeSelected;
   DateRange? dateRangeSelected;
+  OperationStatusEnum? operationStatusSelected;
+
   var operationsFilted = <OperationModel>[].obs;
   void clearFieldsFilters() {
     operationStatusEditingController.clear();
@@ -185,13 +187,15 @@ class _OperationViewState extends State<OperationView> {
                       },
                     );
                     if (dateRangeSelected == null) {
-                      controller.resetFilter();
+                      controller.clear();
                       textDateRangeSelected.value = '';
+                      controller.getAll();
                     }
                     if (dateRangeSelected != null) {
-                      controller.filterByDate(
-                        dateRangeSelected!.start,
-                        dateRangeSelected!.end,
+                      controller.clear();
+                      controller.getAll(
+                        dateFrom: dateRangeSelected?.start,
+                        dateUntil: dateRangeSelected?.end,
                       );
                       textDateRangeSelected.value =
                           "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
@@ -230,8 +234,9 @@ class _OperationViewState extends State<OperationView> {
                         .toList()
                   ],
                   onSelected: (e) async {
-                    if (e == null) return;
-                    await simple.get<OperationViewModel>().filterByStatus(e);
+                    operationStatusSelected = e;
+                    simple.get<OperationViewModel>().filterByStatus(e);
+                    setState(() {});
                   },
                 ),
                 SizedBox(
@@ -297,13 +302,34 @@ class _OperationViewState extends State<OperationView> {
                 key: ValueKey(pageWidgetMobileKey),
                 itens: itens,
                 onRefresh: () async => await controller.onRefresh(),
-                onDownload: () async =>
-                    await controller.downloadFile(controller.operationsFilted),
+                onDownload: () async {
+                  if (dateRangeSelected == null) {
+                    BannerComponent(
+                      message: "Selecione um período para download do arquivo.",
+                      backgroundColor: Colors.red,
+                    );
+                    return;
+                  }
+                  controller.downloadFile(
+                    dateFrom: dateRangeSelected!.start,
+                    dateUntil: dateRangeSelected!.end,
+                    status: operationStatusSelected != null
+                        ? [
+                            operationStatusSelected!.idOperationStatus,
+                          ]
+                        : null,
+                  );
+                },
                 totalByPage: controller.limitPaginationOffset,
                 isLoadingItens:
                     controller.appState.value is AppStateLoadingMore,
-                onPageChanged: (index) {
-                  controller.getItensByPageIndex(index ?? 0);
+                onPageChanged: (index) async {
+                  await controller.getItensByPageIndex(
+                    index ?? 0,
+                    dateFrom: dateRangeSelected?.start,
+                    dateUntil: dateRangeSelected?.end,
+                  );
+                  controller.search(textSearched.value);
                 },
                 isEnableLoadMoreItens: controller.isEnableLoadMoreItens.value,
               );
@@ -746,7 +772,7 @@ class _OperationWidgetState extends State<OperationWidget>
   }
 
   Future<void> downloadFile() async {
-    controller.downloadFile([widget.operationModel]);
+    controller.downloadFile(values: [widget.operationModel]);
   }
 
   Future<void> update() async {
@@ -1374,11 +1400,86 @@ void showDialogDetailsOperation(
             child: IconButtonWidget(
               icon: const Icon(LineIcons.download),
               radius: 10,
-              title: 'Baixar arquivo',
-              onTap: () => simple
-                  .get<OperationViewModel>()
-                  .downloadFile([operationModel]),
+              title: 'Visualizar',
+              onTap: operationModel.urlImage != null
+                  ? () {
+                      showDialogDisplayImage(context, operationModel);
+                    }
+                  : null,
             ),
+          ),
+          SizedBox(
+            width: AppSize.padding,
+          ),
+          SizedBox(
+            width: 12.w,
+            child: Obx(() {
+              return IconButtonWidget(
+                icon: const Icon(LineIcons.download),
+                radius: 10,
+                title: 'Baixar arquivo',
+                onTap: simple.get<OperationViewModel>().appState.value
+                        is AppStateDone
+                    ? () => simple
+                        .get<OperationViewModel>()
+                        .downloadFile(values: [operationModel])
+                    : null,
+              );
+            }),
+          ),
+          SizedBox(
+            width: AppSize.padding,
+          ),
+          SizedBox(
+            width: 12.w,
+            child: IconButtonWidget(
+              icon: const Icon(Icons.close),
+              radius: 10,
+              title: 'Fechar',
+              onTap: () => GoTo.pop(),
+            ),
+          )
+        ],
+      );
+    },
+  );
+}
+
+void showDialogDisplayImage(
+    BuildContext context, OperationModel operationModel) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(
+          'Arquivo',
+          style: AppTextStyle.displayMedium(context).copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 18.sp,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        content: SizedBox(
+          height: 80.h,
+          width: 80.w,
+          child: Image.network(operationModel.urlImage!),
+        ),
+        actions: [
+          SizedBox(
+            width: 12.w,
+            child: Obx(() {
+              return IconButtonWidget(
+                icon: const Icon(LineIcons.download),
+                radius: 10,
+                title: 'Baixar arquivo',
+                onTap: simple.get<OperationViewModel>().appState.value
+                        is AppStateDone
+                    ? () => simple
+                        .get<OperationViewModel>()
+                        .downloadFile(values: [operationModel])
+                    : null,
+              );
+            }),
           ),
           SizedBox(
             width: AppSize.padding,

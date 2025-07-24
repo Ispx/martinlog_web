@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/models/dashboard_model.dart';
-import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/widgets/page_widget_mobile.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import '../../core/dependencie_injection_manager/simple.dart';
