@@ -303,7 +303,7 @@ class BranchOfficeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final appTheme = context.appTheme;
     return Card(
-      elevation: 0.0,
+      elevation: 6.0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),

@@ -1,9 +1,6 @@
 import 'package:flutter_excel/excel.dart';
 import 'package:get/get.dart';
-import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
-import 'package:martinlog_web/extensions/dock_type_extension.dart';
-import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/models/branch_office_model.dart';
 import 'package:martinlog_web/models/dock_model.dart';
 import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';
@@ -13,7 +10,7 @@ import 'package:martinlog_web/state/app_state.dart';
 abstract interface class IDockViewModel {
   Future<void> create({
     required String code,
-    required DockType dockType,
+    required int idDockType,
     required BranchOfficeModel branchOffice,
   });
   Future<void> bindBranchOffice(
@@ -37,29 +34,17 @@ class DockViewModel extends GetxController implements IDockViewModel {
     required this.upsertDockRepository,
   });
 
-  List<DockModel> getDocksByDockType(DockType? dockType) {
-    final docksFilted = docks
-        .where((e) =>
-            dockType == null ? true : e.idDockType == dockType.idDockType)
-        .toList();
-    docksFilted
-        .sort((a, b) => a.code.trimRight().compareTo(b.code.trimRight()));
-    return docksFilted;
-  }
-
-  List<DockType> get docksType => DockType.values;
-
   @override
   Future<void> create({
     required String code,
-    required DockType dockType,
+    required int idDockType,
     required BranchOfficeModel branchOffice,
   }) async {
     try {
       changeState(AppStateLoading());
       await upsertDockRepository(
         code: code,
-        dockType: dockType,
+        idDockType: idDockType,
         isActive: true,
         idBranchOffice: branchOffice.idBranchOffice,
       );
@@ -107,7 +92,7 @@ class DockViewModel extends GetxController implements IDockViewModel {
       var index = i + 2;
       final dockModel = docks[i];
       excel.updateCell(sheetName, CellIndex.indexByString("A$index"),
-          dockModel.idDockType.getDockType().description);
+          dockModel.dockTypeModel?.name);
       excel.updateCell(
           sheetName, CellIndex.indexByString("B$index"), dockModel.code);
       excel.updateCell(
@@ -130,7 +115,7 @@ class DockViewModel extends GetxController implements IDockViewModel {
       changeState(AppStateLoading());
       await upsertDockRepository(
         code: dockModel.code,
-        dockType: dockModel.idDockType.getDockType(),
+        idDockType: dockModel.idDockType,
         isActive: dockModel.isActive,
         idBranchOffice: dockModel.branchOfficeModel?.idBranchOffice,
       );
@@ -161,7 +146,7 @@ class DockViewModel extends GetxController implements IDockViewModel {
       changeState(AppStateLoading());
       await upsertDockRepository(
         code: dockModel.code,
-        dockType: dockModel.idDockType.getDockType(),
+        idDockType: dockModel.idDockType,
         isActive: dockModel.isActive,
         idBranchOffice: branchOffice.idBranchOffice,
       );

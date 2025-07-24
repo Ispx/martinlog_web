@@ -471,7 +471,7 @@ class _UserWidgetState extends State<UserWidget> {
     final appTheme = context.appTheme;
     return Obx(() {
       return Card(
-        elevation: 0.0,
+        elevation: 6.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),

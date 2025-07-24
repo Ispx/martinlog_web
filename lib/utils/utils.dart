@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/extensions/string_extension.dart';
 import 'package:martinlog_web/helpers/formater_helper.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +11,7 @@ abstract class Utils {
   }
 
   static bool isLiscensePlate(String liscensePlate) => RegExp(
-          r'[A-Z][A-Z][A-Z]-[0-9][0-9][0-9][0-9]|[A-Z][A-Z][A-Z][0-9][0-9A-Z][0-9][0-9]')
+          r'[A-Z][A-Z][A-Z]-[0-9][0-9][0-9][0-9]|[A-Z0-9][A-Z0-9][A-Z0-9][0-9][A-Z][0-9][0-9]|[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]|[A-Z0-9]')
       .hasMatch(liscensePlate);
 
   static bool isDocument(String document) => RegExp(
@@ -248,25 +247,17 @@ abstract class Utils {
   static String clearMaskBarcode(String barcode) =>
       barcode.replaceAll(RegExp(r'[.\s]'), '');
 
-  static Color getColorIconDockType(DockType dockType) {
-    return switch (dockType) {
-      DockType.EXPEDITION => Colors.blue,
-      DockType.RECEIPT => Colors.green,
-      DockType.TRANSFER => Colors.orange,
-      DockType.KAMIKAZE => Colors.red,
-      DockType.REVERSE => Colors.indigo,
-      _ => throw "Invalid icondata to dockType"
-    };
+  static Color getColorIconDockType(int idDockType) {
+    return [
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.red,
+      Colors.indigo,
+    ][idDockType];
   }
 
-  static IconData getIconDataByDockType(DockType dockType) {
-    return switch (dockType) {
-      DockType.EXPEDITION => LineIcons.arrowUp,
-      DockType.RECEIPT => LineIcons.arrowDown,
-      DockType.TRANSFER => LineIcons.alternateExchange,
-      DockType.KAMIKAZE => LineIcons.alternateArrows,
-      DockType.REVERSE => LineIcons.arrowLeft,
-      _ => throw "Invalid icondata to dockType"
-    };
+  static IconData getIconDataByDockType() {
+    return LineIcons.alternateExchange;
   }
 }
