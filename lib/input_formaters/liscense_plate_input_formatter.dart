@@ -8,6 +8,12 @@ class LiscensePlateInputFormatter extends TextInputFormatter {
 
     var prefixText = newValue.text.split('-').firstOrNull ?? newValue.text;
     var sufixText = newValue.text.split('-').lastOrNull ?? '';
+    if (newValue.text.length > 7) {
+      newValue = newValue.copyWith(
+        text: newValue.text.replaceAll('-', ''),
+        selection: TextSelection.collapsed(offset: newValue.text.length),
+      );
+    }
     if (newValue.selection.baseOffset == 0) {
       return newValue;
     }
@@ -35,7 +41,7 @@ class LiscensePlateInputFormatter extends TextInputFormatter {
       if (RegExp(r'[0-9]').hasMatch(prefixText[prefixText.length - 1])) {
         return newValue;
       }
-      return oldValue;
+      return newValue;
     } else if (prefixText.length == 5) {
       if (RegExp(r'[0-9]').hasMatch(sufixText[sufixText.length - 1])) {
         prefixText = newValue.text.substring(0, 3);

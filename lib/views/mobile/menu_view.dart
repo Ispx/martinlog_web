@@ -156,7 +156,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                 child: Center(
                   child: Image.asset(
                     isOpen ? AppImages.horizontal : AppImages.icon,
-                    width: !isOpen ? 3.w : 10.w,
+                    width: !isOpen ? 7.w : 25.w,
                   ),
                 ),
               ),

@@ -1,14 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
-import 'package:martinlog_web/enums/dock_type_enum.dart';
-import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/services/http/http.dart';
 import 'package:martinlog_web/models/dock_model.dart';
 
 abstract interface class IUpsertDockRepository {
   Future<DockModel> call({
     required String code,
-    required DockType dockType,
+    required int idDockType,
     required bool isActive,
     required int? idBranchOffice,
   });
@@ -21,7 +19,7 @@ class UpsertDockRepository implements IUpsertDockRepository {
   @override
   Future<DockModel> call({
     required String code,
-    required DockType dockType,
+    required int idDockType,
     required bool isActive,
     required int? idBranchOffice,
   }) async {
@@ -31,7 +29,7 @@ class UpsertDockRepository implements IUpsertDockRepository {
         method: HttpMethod.PUT,
         body: {
           "code": code,
-          "type": dockType.idDockType,
+          "type": idDockType,
           "isActive": isActive,
           "idBranchOffice": idBranchOffice,
         },

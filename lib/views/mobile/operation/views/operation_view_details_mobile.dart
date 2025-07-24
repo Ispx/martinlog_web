@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
-import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/state/app_state.dart';
@@ -81,7 +80,7 @@ class _OperationViewDetailsMobileState
   }
 
   Future<void> _downloadFile() async {
-    await controller.downloadFile([operationModel!]);
+    await controller.downloadFile(values: [operationModel!]);
   }
 
   Future<void> _doGetImageFromCamera() async {
@@ -212,9 +211,8 @@ class _OperationViewDetailsMobileState
                       const Gap(8),
                       ValuesDetailsWidget(
                         title: 'Tipo:',
-                        value: operationModel!.dockModel!.idDockType
-                            .getDockType()
-                            .description,
+                        value: operationModel!.dockModel!.dockTypeModel?.name ??
+                            'N/D',
                       ),
                       const Gap(8),
                       ValuesDetailsWidget(

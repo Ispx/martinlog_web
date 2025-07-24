@@ -12,11 +12,13 @@ import 'package:martinlog_web/repositories/cancel_operation_repository.dart';
 import 'package:martinlog_web/repositories/complete_password_recovery_repository.dart';
 import 'package:martinlog_web/repositories/create_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/create_company_repository.dart';
+import 'package:martinlog_web/repositories/create_dock_type_repository.dart';
 import 'package:martinlog_web/repositories/create_operation_repository.dart';
 import 'package:martinlog_web/repositories/create_user_repository.dart';
 import 'package:martinlog_web/repositories/get_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/get_companies_repository.dart';
 import 'package:martinlog_web/repositories/get_company_repositoy.dart';
+import 'package:martinlog_web/repositories/get_dock_type_repository.dart';
 import 'package:martinlog_web/repositories/get_docks_repository.dart';
 import 'package:martinlog_web/repositories/get_operation_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_pending_repository.dart';
@@ -37,6 +39,7 @@ import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dashboard_view_model.dart';
+import 'package:martinlog_web/view_models/dock_type_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
@@ -185,7 +188,18 @@ void main() async {
           urlBase: EnvConfig.urlBase,
         ),
       );
-
+      i.addFactory<CreateDockTypeRepository>(
+        () => CreateDockTypeRepository(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
+      i.addFactory<GetDockTypeRepository>(
+        () => GetDockTypeRepository(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
       i.addSingleton<CompanyViewModel>(
         () => CompanyViewModel(
           getCompaniesRepository: i.get<GetCompaniesRepository>(),
@@ -246,14 +260,21 @@ void main() async {
           branchOfficeViewModel: simple.get<BranchOfficeViewModelImpl>(),
         ),
       );
-
+      i.addSingleton<DockTypeViewModel>(
+        () => DockTypeViewModel(
+          createDockTypeRepository: i.get<CreateDockTypeRepository>(),
+          getDockTypeRepository: i.get<GetDockTypeRepository>(),
+        ),
+      );
       i.addSingleton<AuthViewModel>(
         () => AuthViewModel(
           authRepository: i.get<AuthRepository>(),
           branchOfficeViewModel: i.get<BranchOfficeViewModelImpl>(),
           companyViewModel: i.get<CompanyViewModel>(),
+          dockTypeViewModel: i.get<DockTypeViewModel>(),
         ),
       );
+
       i.addSingleton<MenuViewModel>(
         () => MenuViewModel(),
       );

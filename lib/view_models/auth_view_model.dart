@@ -8,6 +8,7 @@ import 'package:martinlog_web/repositories/auth_repository.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
+import 'package:martinlog_web/view_models/dock_type_view_model.dart';
 
 const passwordKey = 'passwordKey';
 const documentKey = 'documentKey';
@@ -23,16 +24,19 @@ class AuthViewModel implements IAuthViewModel {
   final IAuthRepository authRepository;
   final BranchOfficeViewModel branchOfficeViewModel;
   final ICompanyViewModel companyViewModel;
+  final DockTypeViewModel dockTypeViewModel;
   var appState = AppState().obs;
   var documentStored = ''.obs;
   var passwordStored = ''.obs;
   final _storage = const FlutterSecureStorage();
 
   AuthModel? authModel;
-  AuthViewModel(
-      {required this.authRepository,
-      required this.branchOfficeViewModel,
-      required this.companyViewModel});
+  AuthViewModel({
+    required this.authRepository,
+    required this.branchOfficeViewModel,
+    required this.companyViewModel,
+    required this.dockTypeViewModel,
+  });
 
   @override
   Future<void> loggout() async {
@@ -54,6 +58,7 @@ class AuthViewModel implements IAuthViewModel {
         branchOfficeViewModel.switchBranchOffice(
             companyViewModel.companyModel!.branchOffices.first);
       }
+      await dockTypeViewModel.getAll();
       _saveValueInLocalStorage(documentKey, document);
       _saveValueInLocalStorage(passwordKey, password);
 

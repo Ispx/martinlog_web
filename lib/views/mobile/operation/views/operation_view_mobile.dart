@@ -7,21 +7,21 @@ import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/consts/routes.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
-import 'package:martinlog_web/enums/dock_type_enum.dart';
 import 'package:martinlog_web/enums/operation_status_enum.dart';
 import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
-import 'package:martinlog_web/extensions/dock_type_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/operation_status_extension.dart';
 import 'package:martinlog_web/input_formaters/percentage_input_formatter.dart';
+import 'package:martinlog_web/models/dock_type_model.dart';
 import 'package:martinlog_web/models/operation_model.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
+import 'package:martinlog_web/view_models/dock_type_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/views/mobile/operation/widgets/new_operation_widget.dart';
@@ -52,7 +52,7 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
 
   var textSearched = ''.obs;
   var textDateRangeSelected = ''.obs;
-  DockType? dockTypeSelected;
+  DockTypeModel? dockTypeSelected;
   DateRange? dateRangeSelected;
   var operationsFilted = <OperationModel>[].obs;
   void clearFieldsFilters() {
@@ -114,9 +114,9 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
       textDateRangeSelected.value = '';
     }
     if (dateRangeSelected != null) {
-      await controller.filterByDate(
-        dateRangeSelected!.start,
-        dateRangeSelected!.end,
+      await controller.getAll(
+       dateFrom:  dateRangeSelected!.start,
+     dateUntil:    dateRangeSelected!.end,
       );
       textDateRangeSelected.value =
           "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
@@ -233,16 +233,18 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    DropBoxWidget<DockType>(
+                    DropBoxWidget<DockTypeModel>(
                       width: MediaQuery.of(context).size.width - 32,
                       controller: dockTypeEditingController,
                       label: 'Tipo',
                       dropdownMenuEntries: [
-                        ...DockType.values
+                        ...simple
+                            .get<DockTypeViewModel>()
+                            .dockTypes
                             .map(
                               (e) => DropdownMenuEntry(
                                 value: e,
-                                label: e.description,
+                                label: e.name,
                                 style: ButtonStyle(
                                   textStyle: MaterialStateProperty.resolveWith(
                                     (states) =>
@@ -445,8 +447,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
                       "${DateTime.now().millisecondsSinceEpoch}";
                   setState(() {});
                 },
-                onDownload: () async =>
-                    await controller.downloadFile(controller.operationsFilted),
+                onDownload: () async => await controller.downloadFile(
+                    values: controller.operationsFilted),
                 totalByPage: controller.limitPaginationOffset,
                 isLoadingItens:
                     controller.appState.value is AppStateLoadingMore ||
@@ -550,7 +552,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
   }
 
   Future<void> downloadFile() async {
-    controller.downloadFile([operation]);
+    controller.downloadFile(values: [operation]);
   }
 
   Future<void> updateProgress() async {
@@ -635,8 +637,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
                     width: null,
                   ),
                 OperationSubtitleTextWidget(
-                  text:
-                      operation.dockModel!.idDockType.getDockType().description,
+                  text: operation.dockModel!.dockTypeModel?.name ?? 'N/D',
                   width: null,
                 ),
                 OperationSubtitleTextWidget(
