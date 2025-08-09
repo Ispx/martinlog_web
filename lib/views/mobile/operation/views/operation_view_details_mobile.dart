@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -72,10 +74,7 @@ class _OperationViewDetailsMobileState
     if (imageFile == null) return;
 
     await simple.get<OperationViewModel>().uploadFile(
-          operationModel: operationModel!,
-          imageBytes: await imageFile.readAsBytes(),
-          filename: imageFile.name,
-        );
+        operationModel: operationModel!, file: File(imageFile.path));
     setState(() {});
   }
 
@@ -90,10 +89,10 @@ class _OperationViewDetailsMobileState
 
     await simple.get<OperationViewModel>().uploadFile(
           operationModel: operationModel!,
-          imageBytes: await imageFile.readAsBytes(),
-          filename: imageFile.name,
+          file: File(imageFile.path),
         );
     setState(() {});
+    GoTo.pop();
   }
 
   Widget _sendImageOptionsButton(
@@ -183,207 +182,202 @@ class _OperationViewDetailsMobileState
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height - 100,
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height - 100,
+            child: SingleChildScrollView(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    //    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      const Gap(48),
-                      ValuesDetailsWidget(
-                        title: 'Transportadora:',
-                        value: operationModel!.companyModel.fantasyName,
+                  ValuesDetailsWidget(
+                    title: 'Transportadora:',
+                    value: operationModel!.companyModel.fantasyName,
+                  ),
+                  const Gap(8),
+                  ValuesDetailsWidget(
+                    title: 'CNPJ:',
+                    value: operationModel!.companyModel.cnpj,
+                  ),
+                  const Gap(8),
+                  ValuesDetailsWidget(
+                    title: 'Doca:',
+                    value: operationModel!.dockModel!.code,
+                  ),
+                  const Gap(8),
+                  ValuesDetailsWidget(
+                    title: 'Tipo:',
+                    value:
+                        operationModel!.dockModel!.dockTypeModel?.name ?? 'N/D',
+                  ),
+                  const Gap(8),
+                  ValuesDetailsWidget(
+                    title: 'Status:',
+                    value: operationModel!.idOperationStatus
+                        .getOperationStatus()
+                        .description,
+                  ),
+                  const Gap(8),
+                  ValuesDetailsWidget(
+                    title: 'Data de início:',
+                    value: operationModel!.createdAt.ddMMyyyyHHmmss,
+                  ),
+                  const Gap(8),
+                  ValuesDetailsWidget(
+                    title: 'Data da finalização:',
+                    value: operationModel!.finishedAt?.ddMMyyyyHHmmss ?? '',
+                  ),
+                  const Gap(8),
+                  ValuesDetailsWidget(
+                    title: 'Placa:',
+                    value: operationModel!.liscensePlate,
+                  ),
+                  const Gap(8),
+                  ValuesDetailsWidget(
+                    title: 'Rota:',
+                    value: '/${operationModel!.route ?? ''}',
+                  ),
+                  const Gap(8),
+                  ValuesDetailsWidget(
+                    title: 'Loja:',
+                    value: operationModel!.place ?? '',
+                  ),
+                  const Gap(8),
+                  ValuesDetailsWidget(
+                    title: 'Descrição:',
+                    value: operationModel!.description ?? '',
+                  ),
+                  const Gap(8),
+                  Text.rich(
+                    TextSpan(
+                      text: 'Anexo: ',
+                      style: AppTextStyle.mobileDisplayMedium(context).copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      const Gap(8),
-                      ValuesDetailsWidget(
-                        title: 'CNPJ:',
-                        value: operationModel!.companyModel.cnpj,
-                      ),
-                      const Gap(8),
-                      ValuesDetailsWidget(
-                        title: 'Doca:',
-                        value: operationModel!.dockModel!.code,
-                      ),
-                      const Gap(8),
-                      ValuesDetailsWidget(
-                        title: 'Tipo:',
-                        value: operationModel!.dockModel!.dockTypeModel?.name ??
-                            'N/D',
-                      ),
-                      const Gap(8),
-                      ValuesDetailsWidget(
-                        title: 'Status:',
-                        value: operationModel!.idOperationStatus
-                            .getOperationStatus()
-                            .description,
-                      ),
-                      const Gap(8),
-                      ValuesDetailsWidget(
-                        title: 'Data de início:',
-                        value: operationModel!.createdAt.ddMMyyyyHHmmss,
-                      ),
-                      const Gap(8),
-                      ValuesDetailsWidget(
-                        title: 'Data da finalização:',
-                        value: operationModel!.finishedAt?.ddMMyyyyHHmmss ?? '',
-                      ),
-                      const Gap(8),
-                      ValuesDetailsWidget(
-                        title: 'Placa:',
-                        value: operationModel!.liscensePlate,
-                      ),
-                      const Gap(8),
-                      ValuesDetailsWidget(
-                        title: 'Rota:',
-                        value: '/${operationModel!.route ?? ''}',
-                      ),
-                      const Gap(8),
-                      ValuesDetailsWidget(
-                        title: 'Loja:',
-                        value: operationModel!.place ?? '',
-                      ),
-                      const Gap(8),
-                      ValuesDetailsWidget(
-                        title: 'Descrição:',
-                        value: operationModel!.description ?? '',
-                      ),
-                      const Gap(8),
-                      Text.rich(
+                      children: [
                         TextSpan(
-                          text: 'Anexo: ',
+                          text: operationModel!.urlImage != null
+                              ? '${operationModel!.urlImage!.substring(0, 40)}...'
+                              : '',
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              if (operationModel!.urlImage != null) {
+                                await launchUrl(
+                                  Uri.parse(operationModel!.urlImage!),
+                                );
+                              }
+                            },
                           style: AppTextStyle.mobileDisplayMedium(context)
                               .copyWith(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.blueAccent,
+                            color: Colors.blueAccent,
                           ),
-                          children: [
-                            TextSpan(
-                              text: operationModel!.urlImage != null
-                                  ? '${operationModel!.urlImage!.substring(0, 40)}...'
-                                  : '',
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () async {
-                                  if (operationModel!.urlImage != null) {
-                                    await launchUrl(
-                                      Uri.parse(operationModel!.urlImage!),
-                                    );
-                                  }
-                                },
-                              style: AppTextStyle.mobileDisplayMedium(context)
-                                  .copyWith(
-                                fontWeight: FontWeight.w500,
-                                decoration: TextDecoration.underline,
-                                decorationColor: Colors.blueAccent,
-                                color: Colors.blueAccent,
-                              ),
-                            )
-                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  const Gap(8),
+                  ValuesDetailsWidget(
+                    title: 'Chave da operação:',
+                    value: operationModel!.operationKey,
+                  ),
+                  const Gap(16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: const Border.fromBorderSide(
+                            BorderSide(width: 1, color: Colors.black),
+                          ),
                         ),
-                      ),
-                      const Gap(8),
-                      ValuesDetailsWidget(
-                        title: 'Chave da operação:',
-                        value: operationModel!.operationKey,
-                      ),
-                      const Gap(16),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: const Border.fromBorderSide(
-                                BorderSide(width: 1, color: Colors.black),
-                              ),
-                            ),
-                            width: MediaQuery.of(context).size.width,
-                            height: 174,
-                            padding: const EdgeInsets.all(8),
-                            child: TextField(
-                              controller: additionalDataEdittinController,
-                              enabled: operationModel!.idOperationStatus ==
-                                      OperationStatusEnum
-                                          .IN_PROGRESS.idOperationStatus &&
-                                  controller.appState is! AppStateLoading,
-                              maxLength: 255,
-                              maxLines: 10,
-                              style: AppTextStyle.mobileDisplayMedium(context)
-                                  .copyWith(
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: 'Descrição',
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                focusedErrorBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                helperStyle:
-                                    AppTextStyle.mobileDisplayMedium(context)
-                                        .copyWith(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              onChanged: (e) {
-                                additionalData.value = e;
-                              },
+                        width: MediaQuery.of(context).size.width,
+                        height: 150,
+                        padding: const EdgeInsets.all(8),
+                        child: TextField(
+                          controller: additionalDataEdittinController,
+                          enabled: operationModel!.idOperationStatus ==
+                                  OperationStatusEnum
+                                      .IN_PROGRESS.idOperationStatus &&
+                              controller.appState is! AppStateLoading,
+                          maxLength: 800,
+                          maxLines: 20,
+                          style: AppTextStyle.mobileDisplayMedium(context)
+                              .copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Descrição',
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            focusedErrorBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            helperStyle:
+                                AppTextStyle.mobileDisplayMedium(context)
+                                    .copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
                             ),
                           ),
-                          const Gap(8),
-                          Obx(
-                            () => SizedBox(
-                              width: 120,
-                              height: 40,
-                              child: ButtomWidget(
-                                elevation: 0,
-                                isLoading: controller.appState.value
-                                    is AppStateLoading,
-                                radius: 10,
-                                title: 'Salvar',
-                                onTap: () => _doSaveDescription(),
-                              ),
-                            ),
-                          ),
-                        ],
+                          onChanged: (e) {
+                            additionalData.value = e;
+                          },
+                        ),
                       ),
                     ],
                   ),
-                  const Gap(18),
-                  IconButtonWidget(
-                    icon: const Icon(LineIcons.upload),
-                    radius: 5,
-                    title: 'Enviar Imagem',
-                    onTap: () => _sendImageOptions(context),
-                  ),
-                  const Gap(18),
-                  Expanded(
-                    child: Row(
+                  const Gap(20),
+                  Obx(
+                    () => Row(
                       children: [
                         Expanded(
-                          child: IconButtonWidget(
-                            icon: const Icon(LineIcons.download),
-                            radius: 5,
-                            title: 'Baixar arquivo',
-                            onTap: () async => await _downloadFile(),
+                          child: ButtomWidget(
+                            elevation: 0,
+                            isLoading:
+                                controller.appState.value is AppStateLoading,
+                            radius: 10,
+                            title: 'Salvar',
+                            onTap: () => _doSaveDescription(),
                           ),
                         ),
                         const Gap(8),
                         Expanded(
-                          child: IconButtonWidget(
-                            icon: const Icon(Icons.close),
-                            radius: 5,
-                            title: 'Fechar',
-                            onTap: () => GoTo.pop(),
+                          child: ButtomWidget(
+                            radius: 10,
+                            elevation: 0,
+                            title: 'Enviar Imagem',
+                            onTap: () => _sendImageOptions(context),
                           ),
                         ),
                       ],
                     ),
+                  ),
+                  const Gap(20),
+                  const Gap(20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: IconButtonWidget(
+                          icon: const Icon(LineIcons.download),
+                          radius: 5,
+                          title: 'Baixar arquivo',
+                          onTap: () async => await _downloadFile(),
+                        ),
+                      ),
+                      const Gap(8),
+                      Expanded(
+                        child: IconButtonWidget(
+                          icon: const Icon(Icons.close),
+                          radius: 5,
+                          title: 'Fechar',
+                          onTap: () => GoTo.pop(),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

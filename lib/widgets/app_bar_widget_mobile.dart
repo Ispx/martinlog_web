@@ -34,7 +34,8 @@ class AppBarWidgetMobile extends StatelessWidget
     this.prefix,
   });
 
-  List<BranchOfficeModel> get branchs => simple.get<CompanyViewModel>().companyModel?.branchOffices ?? [];
+  List<BranchOfficeModel> get branchs =>
+      simple.get<CompanyViewModel>().companyModel?.branchOffices ?? [];
 
   @override
   Widget build(BuildContext context) {
@@ -74,31 +75,34 @@ class AppBarWidgetMobile extends StatelessWidget
                         children: [
                           SizedBox(
                             width: 25.w,
-                            child: ManagerBranchOfficeWidget(
-                              branchs: branchs,
-                              onSelected: (BranchOfficeModel b) {
-                                simple
-                                    .get<BranchOfficeViewModelImpl>()
-                                    .switchBranchOffice(b);
-                                simple
-                                    .get<DashboardViewModel>()
-                                    .fetchDashboard();
-                                simple.get<DockViewModel>().getAll();
-                                simple
-                                    .get<CompanyViewModel>()
-                                    .getAllCompanies();
-                                simple.get<OperationViewModel>().getAll();
-                              },
-                              value: branchs
-                                  .where((e) =>
-                                      e.idBranchOffice ==
+                            child: branchs.isEmpty
+                                ? const SizedBox.shrink()
+                                : ManagerBranchOfficeWidget(
+                                    branchs: branchs,
+                                    onSelected: (BranchOfficeModel b) {
                                       simple
                                           .get<BranchOfficeViewModelImpl>()
-                                          .branchOfficeActivated
-                                          .value
-                                          .idBranchOffice)
-                                  .firstOrNull,
-                            ),
+                                          .switchBranchOffice(b);
+                                      simple
+                                          .get<DashboardViewModel>()
+                                          .fetchDashboard();
+                                      simple.get<DockViewModel>().getAll();
+                                      simple
+                                          .get<CompanyViewModel>()
+                                          .getAllCompanies();
+                                      simple.get<OperationViewModel>().getAll();
+                                    },
+                                    value: branchs
+                                        .where((e) =>
+                                            e.idBranchOffice ==
+                                            simple
+                                                .get<
+                                                    BranchOfficeViewModelImpl>()
+                                                .branchOfficeActivated
+                                                .value
+                                                .idBranchOffice)
+                                        .firstOrNull,
+                                  ),
                           ),
                         ],
                       );
