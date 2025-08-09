@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -67,8 +68,7 @@ abstract interface class IOperationViewModel {
 
   Future<void> uploadFile({
     required OperationModel operationModel,
-    required String filename,
-    required Uint8List imageBytes,
+    required File file,
   });
 
   Future<void> filterByStatus(OperationStatusEnum statusEnum);
@@ -96,8 +96,6 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   final IUpdateOperationRepository updateOperationRepository;
   final IUploadFileOperationRepository uploadFileOperationRepository;
   final IGetOperationsPedingRepository getOperationsPedingRepository;
-
-  final _bucket = 'operations-file';
   final limitPaginationOffset = 10;
   var isEnableLoadMoreItens = true.obs;
   OperationViewModel({
@@ -345,6 +343,10 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         sheetName, CellIndex.indexByString("J1"), "Chave da operação");
     excel.updateCell(sheetName, CellIndex.indexByString("K1"), "Rota");
     excel.updateCell(sheetName, CellIndex.indexByString("L1"), "Loja");
+    excel.updateCell(
+        sheetName, CellIndex.indexByString("M1"), "Dados adicionais");
+    excel.updateCell(sheetName, CellIndex.indexByString("N1"), "Link");
+
     for (int i = 0; i < values.length; i++) {
       var index = i + 2;
       final operationModel = values[i];
@@ -376,6 +378,10 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
           operationModel.route ?? '');
       excel.updateCell(sheetName, CellIndex.indexByString("L$index"),
           operationModel.place ?? '');
+      excel.updateCell(sheetName, CellIndex.indexByString("M$index"),
+          operationModel.additionalData ?? '');
+      excel.updateCell(sheetName, CellIndex.indexByString("N$index"),
+          operationModel.urlImage ?? '');
     }
 
     excel.setDefaultSheet(sheetName);
@@ -453,28 +459,18 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   @override
   Future<void> uploadFile({
     required OperationModel operationModel,
-    required String filename,
-    required Uint8List imageBytes,
+    required File file,
   }) async {
     try {
       if (appState is AppStateLoading) return;
       changeState(AppStateLoading());
-      final reference = FirebaseStorage.instance
-          .ref()
-          .child('images/${operationModel.operationKey}');
-      await reference.putData(
-        imageBytes,
-        SettableMetadata(
-          contentType: "image/${Path.extension(filename).replaceAll(".", "")}",
-        ),
-      );
-      final url = await reference.getDownloadURL();
-      await updateOperationRepository(
+
+      final url = await uploadFileOperationRepository(
         operationKey: operationModel.operationKey,
-        progress: operationModel.progress,
-        additionalData: null,
-        urlImage: url,
+        file: file,
+        fileBytes: await file.readAsBytes(),
       );
+
       final index = operations.indexWhere(
           (element) => element.operationKey == operationModel.operationKey);
       operations.replaceRange(

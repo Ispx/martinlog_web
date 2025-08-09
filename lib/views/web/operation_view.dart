@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
@@ -1193,12 +1195,11 @@ class _DetailsWidgetState extends State<DetailsWidget>
                     padding: const EdgeInsets.all(8),
                     child: TextField(
                       controller: additionalDataEdittinController,
-                      enabled: widget.operationModel.idOperationStatus ==
-                              OperationStatusEnum
-                                  .IN_PROGRESS.idOperationStatus &&
-                          controller.appState is! AppStateLoading,
-                      maxLength: 255,
-                      maxLines: 10,
+                      readOnly: widget.operationModel.idOperationStatus ==
+                          OperationStatusEnum.FINISHED.idOperationStatus,
+                      enabled: controller.appState is! AppStateLoading,
+                      maxLength: 800,
+                      maxLines: 20,
                       style: AppTextStyle.displayMedium(context).copyWith(
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
@@ -1383,11 +1384,9 @@ void showDialogDetailsOperation(
                 final XFile? imageFile =
                     await picker.pickImage(source: ImageSource.gallery);
                 if (imageFile == null) return;
-
                 await simple.get<OperationViewModel>().uploadFile(
                       operationModel: operationModel,
-                      imageBytes: await imageFile.readAsBytes(),
-                      filename: imageFile.name,
+                      file: File(imageFile.path),
                     );
               },
             ),
