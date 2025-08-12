@@ -1391,6 +1391,7 @@ void showDialogDetailsOperation(
               },
             ),
           ),
+          /*
           SizedBox(
             width: AppSize.padding,
           ),
@@ -1407,6 +1408,7 @@ void showDialogDetailsOperation(
                   : null,
             ),
           ),
+          */
           SizedBox(
             width: AppSize.padding,
           ),

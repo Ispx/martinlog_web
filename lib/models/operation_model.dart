@@ -53,23 +53,27 @@ class OperationModel {
 
   factory OperationModel.fromJson(Map data) {
     return OperationModel(
-        operationKey: data['operationKey'],
-        companyModel: CompanyModel.fromJson(data['company']),
-        idUser: data['idUser'],
-        liscensePlate: data['liscensePlate'],
-        dockModel:
-            data['dock'] != null ? DockModel.fromJson(data['dock']) : null,
-        progress: data['progress'],
-        idOperationStatus: data['idOperationStatus'],
-        createdAt: data['createdAt'].toString().parseToDateTime()!.toLocal(),
-        finishedAt: data['finishedAt'] != null
-            ? data['finishedAt'].toString().parseToDateTime()!.toLocal()
-            : null,
-        description: data['description'],
-        additionalData: data['additionalData'],
-        urlImage: data['urlImage'],
-        route: data['route'],
-        place: data['place']);
+      operationKey: data['operationKey'],
+      companyModel: CompanyModel.fromJson(data['company']),
+      idUser: data['idUser'],
+      liscensePlate: data['liscensePlate'],
+      dockModel: data['dock'] != null ? DockModel.fromJson(data['dock']) : null,
+      progress: data['progress'],
+      idOperationStatus: data['idOperationStatus'],
+      createdAt: data['createdAt'].toString().parseToDateTime()!.toLocal(),
+      finishedAt: data['finishedAt'] != null
+          ? data['finishedAt'].toString().parseToDateTime()!.toLocal()
+          : null,
+      description: data['description'],
+      additionalData: data['additionalData'],
+      urlImage: data['urlImage'] != null
+          ? data['urlImage'].toString().replaceAll(
+              RegExp('https://media-operations.martinlog.com.br'),
+              'http://media-operations.martinlog.com.br')
+          : data['urlImage'],
+      route: data['route'],
+      place: data['place'],
+    );
   }
 
   OperationModel copyWith({
