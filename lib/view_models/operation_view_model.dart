@@ -240,7 +240,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         operationKey: operationModel.operationKey,
         progress: progress,
         additionalData: additionalData,
-        urlImage: null,
+        urlImage: operationModel.urlImage,
         idCompany: companyModel?.idCompany,
         dockCode: dockModel?.code,
         description: description,
@@ -266,6 +266,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
                 : null,
             route: route,
             place: place,
+            urlImage: operationModel.urlImage,
           ),
         ],
       );
