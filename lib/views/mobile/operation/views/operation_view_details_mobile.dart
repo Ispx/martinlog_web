@@ -4,7 +4,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
@@ -67,93 +66,8 @@ class _OperationViewDetailsMobileState
     );
   }
 
-  Future<void> _doImportFile() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? imageFile =
-        await picker.pickImage(source: ImageSource.gallery);
-    if (imageFile == null) return;
-
-    await simple.get<OperationViewModel>().uploadFile(
-        operationModel: operationModel!, file: File(imageFile.path));
-    setState(() {});
-  }
-
   Future<void> _downloadFile() async {
     await controller.downloadFile(values: [operationModel!]);
-  }
-
-  Future<void> _doGetImageFromCamera() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? imageFile = await picker.pickImage(source: ImageSource.camera);
-    if (imageFile == null) return;
-
-    await simple.get<OperationViewModel>().uploadFile(
-          operationModel: operationModel!,
-          file: File(imageFile.path),
-        );
-    setState(() {});
-    GoTo.pop();
-  }
-
-  Widget _sendImageOptionsButton(
-      {required VoidCallback onTap, required String title}) {
-    return TextButton(
-      onPressed: onTap,
-      style: TextButton.styleFrom(
-        alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.only(left: 16),
-        fixedSize: Size(MediaQuery.of(context).size.width, 48),
-      ),
-      child: Text(
-        title,
-        style: AppTextStyle.mobileDisplayMedium(context).copyWith(
-          fontWeight: FontWeight.bold,
-          color: context.appTheme.titleColor,
-        ),
-      ),
-    );
-  }
-
-  void _sendImageOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        final controller = simple.get<OperationViewModel>();
-        return Obx(
-          () => controller.appState.value is AppStateLoading
-              ? Center(
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: context.appTheme.primaryColor,
-                    ),
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _sendImageOptionsButton(
-                        onTap: () async => await _doImportFile(),
-                        title: 'Importar Arquivo',
-                      ),
-                      const Gap(8),
-                      const Divider(),
-                      const Gap(8),
-                      _sendImageOptionsButton(
-                        onTap: () async => await _doGetImageFromCamera(),
-                        title: 'Tirar Foto',
-                      ),
-                      const Gap(16),
-                    ],
-                  ),
-                ),
-        );
-      },
-    );
   }
 
   @override
@@ -340,17 +254,8 @@ class _OperationViewDetailsMobileState
                             isLoading:
                                 controller.appState.value is AppStateLoading,
                             radius: 10,
-                            title: 'Salvar',
+                            title: 'Salvar descrição',
                             onTap: () => _doSaveDescription(),
-                          ),
-                        ),
-                        const Gap(8),
-                        Expanded(
-                          child: ButtomWidget(
-                            radius: 10,
-                            elevation: 0,
-                            title: 'Enviar Imagem',
-                            onTap: () => _sendImageOptions(context),
                           ),
                         ),
                       ],
