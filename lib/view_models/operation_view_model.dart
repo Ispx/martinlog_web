@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_excel/excel.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:martinlog_web/components/banner_component.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/enums/event_type_enum.dart';
@@ -68,7 +69,8 @@ abstract interface class IOperationViewModel {
 
   Future<void> uploadFile({
     required OperationModel operationModel,
-    required File file,
+    required String filename,
+    required Uint8List imageBytes,
   });
 
   Future<void> filterByStatus(OperationStatusEnum statusEnum);
@@ -240,7 +242,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
         operationKey: operationModel.operationKey,
         progress: progress,
         additionalData: additionalData,
-        urlImage: null,
+        urlImage: operationModel.urlImage,
         idCompany: companyModel?.idCompany,
         dockCode: dockModel?.code,
         description: description,
@@ -266,6 +268,7 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
                 : null,
             route: route,
             place: place,
+            urlImage: operationModel.urlImage,
           ),
         ],
       );
@@ -459,16 +462,15 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   @override
   Future<void> uploadFile({
     required OperationModel operationModel,
-    required File file,
+    required String filename,
+    required Uint8List imageBytes,
   }) async {
     try {
       if (appState is AppStateLoading) return;
-      changeState(AppStateLoading());
-
       final url = await uploadFileOperationRepository(
         operationKey: operationModel.operationKey,
-        file: file,
-        fileBytes: await file.readAsBytes(),
+        filename: filename,
+        imageBytes: imageBytes,
       );
 
       final index = operations.indexWhere(

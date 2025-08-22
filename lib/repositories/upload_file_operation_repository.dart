@@ -1,15 +1,15 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/services/http/http.dart';
 
 abstract interface class IUploadFileOperationRepository {
   Future<String> call({
     required String operationKey,
-    required List<int> fileBytes,
-    required File file,
+    required String filename,
+    required Uint8List imageBytes,
   });
 }
 
@@ -24,16 +24,12 @@ final class UploadFileOperationRepository
   @override
   Future<String> call({
     required String operationKey,
-    required List<int> fileBytes,
-    required File file,
+    required String filename,
+    required Uint8List imageBytes,
   }) async {
     try {
-      FormData body = FormData.fromMap({
-        "file": kIsWeb
-            ? MultipartFile.fromBytes(fileBytes)
-            : MultipartFile.fromFile(
-                file.path,
-              ),
+      FormData formData = FormData.fromMap({
+        "file": MultipartFile.fromBytes(imageBytes, filename: filename),
       });
       final url = urlBase +
           Endpoints.operationUploadFile
@@ -42,10 +38,7 @@ final class UploadFileOperationRepository
       final response = await http.request<Response>(
         url: url,
         method: HttpMethod.POST,
-        body: body,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        body: formData,
       );
       return response.data['urlImage'];
     } catch (e) {

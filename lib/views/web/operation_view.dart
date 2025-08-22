@@ -1386,7 +1386,8 @@ void showDialogDetailsOperation(
                 if (imageFile == null) return;
                 await simple.get<OperationViewModel>().uploadFile(
                       operationModel: operationModel,
-                      file: File(imageFile.path),
+                      filename: 'file.png',
+                      imageBytes: await imageFile.readAsBytes(),
                     );
               },
             ),

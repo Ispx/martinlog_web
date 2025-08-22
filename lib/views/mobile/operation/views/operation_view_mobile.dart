@@ -28,6 +28,7 @@ import 'package:martinlog_web/views/mobile/operation/widgets/new_operation_widge
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
 import 'package:martinlog_web/widgets/page_widget_mobile.dart';
 import 'package:martinlog_web/widgets/text_form_field_widget.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../navigator/go_to.dart';
 
@@ -115,8 +116,8 @@ class _OperationViewMobileState extends State<OperationViewMobile> {
     }
     if (dateRangeSelected != null) {
       await controller.getAll(
-       dateFrom:  dateRangeSelected!.start,
-     dateUntil:    dateRangeSelected!.end,
+        dateFrom: dateRangeSelected!.start,
+        dateUntil: dateRangeSelected!.end,
       );
       textDateRangeSelected.value =
           "${dateRangeSelected!.start.ddMMyyyy} - ${dateRangeSelected!.end.ddMMyyyy}";
@@ -582,6 +583,83 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
         (element) => element.operationKey == operation.operationKey);
   }
 
+  Future<void> _doImportFile() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? imageFile =
+        await picker.pickImage(source: ImageSource.gallery);
+    if (imageFile == null) return;
+
+    simple.get<OperationViewModel>().uploadFile(
+          operationModel: widget.operationModel,
+          imageBytes: await imageFile.readAsBytes(),
+          filename: imageFile.name,
+        );
+    //setState(() {});
+    GoTo.pop();
+  }
+
+  Future<void> _doGetImageFromCamera() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? imageFile = await picker.pickImage(source: ImageSource.camera);
+    if (imageFile == null) return;
+
+    simple.get<OperationViewModel>().uploadFile(
+          operationModel: widget.operationModel,
+          imageBytes: await imageFile.readAsBytes(),
+          filename: imageFile.name,
+        );
+    // setState(() {});
+    GoTo.pop();
+  }
+
+  Widget _sendImageOptionsButton(
+      {required VoidCallback onTap, required String title}) {
+    return TextButton(
+      onPressed: onTap,
+      style: TextButton.styleFrom(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(left: 16),
+        fixedSize: Size(MediaQuery.of(context).size.width, 48),
+      ),
+      child: Text(
+        title,
+        style: AppTextStyle.mobileDisplayMedium(context).copyWith(
+          fontWeight: FontWeight.bold,
+          color: context.appTheme.titleColor,
+        ),
+      ),
+    );
+  }
+
+  void _sendImageOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _sendImageOptionsButton(
+                onTap: () async => await _doImportFile(),
+                title: 'Importar Arquivo',
+              ),
+              const Gap(8),
+              const Divider(),
+              const Gap(8),
+              _sendImageOptionsButton(
+                onTap: () async => await _doGetImageFromCamera(),
+                title: 'Tirar Foto',
+              ),
+              const Gap(16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     workerAppState.dispose();
@@ -758,6 +836,30 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
                           padding: EdgeInsets.all(8.0),
                           child: Icon(
                             LineIcons.edit,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Gap(16),
+                    InkWell(
+                      onTap: () {
+                        _sendImageOptions(context);
+                      },
+                      borderRadius: BorderRadius.circular(100),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: operation.idOperationStatus
+                                      .getOperationStatus() ==
+                                  OperationStatusEnum.IN_PROGRESS
+                              ? Colors.blueAccent
+                              : context.appTheme.greyColor,
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(
+                            LineIcons.camera,
                             color: Colors.white,
                           ),
                         ),
