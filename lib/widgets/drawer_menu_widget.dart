@@ -164,6 +164,22 @@ class _DrawerMenuState extends State<DrawerMenuWidget> {
                   SizedBox(
                     height: AppSize.padding,
                   ),
+                  MenuItem(
+                    icon: const Icon(
+                      Icons.settings,
+                      color: Colors.white,
+                    ),
+                    isOpen: isOpen,
+                    isSelected: widget.menuViewModel.menuState.value.menuEnum ==
+                        MenuEnum.Settings,
+                    title: 'Configurações',
+                    onTap: () {
+                      widget.menuViewModel.changeMenu(MenuEnum.Settings);
+                    },
+                  ),
+                  SizedBox(
+                    height: AppSize.padding,
+                  ),
                 ],
               )),
               IconButton(

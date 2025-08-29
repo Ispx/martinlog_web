@@ -543,7 +543,7 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
       Future.delayed(100.milliseconds).then(
         (value) {
           if (animationController.isDismissed) {
-            animationController.forward();
+            startAnimation();
           }
         },
       );
@@ -910,6 +910,12 @@ class _OperationWidgetMobileState extends State<OperationWidgetMobile>
   @override
   void detach() {
     setState(() {});
+  }
+
+  void startAnimation() {
+    try {
+      animationController.forward();
+    } catch (_) {}
   }
 
   @override

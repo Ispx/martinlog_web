@@ -5,6 +5,7 @@ import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
 import 'package:martinlog_web/views/mobile/operation/views/operation_view_mobile.dart';
+import 'package:martinlog_web/views/mobile/settings_view.dart';
 import 'package:martinlog_web/views/web/branch_office_view.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import '../../core/dependencie_injection_manager/simple.dart';
@@ -50,6 +51,10 @@ class _MenuViewMobileState extends State<MenuViewMobile> {
         MenuEnum.BranchOffice => BranchOfficeView(
               key: ObjectKey(
             MenuEnum.BranchOffice,
+          )),
+        MenuEnum.Settings => SettingsView(
+              key: ObjectKey(
+            MenuEnum.Settings,
           )),
         MenuEnum.Dashboard => const DashboardViewMobile(),
       };
@@ -194,6 +199,22 @@ class _DrawerMenuState extends State<DrawerMenu> {
                       setState(() {
                         widget.menuViewModel.changeMenu(MenuEnum.Operations);
                         // widget.scaffoldKey.currentState!.closeDrawer();
+                      });
+                    },
+                  ),
+                  SizedBox(height: AppSize.padding),
+                  MenuItem(
+                    icon: const Icon(
+                      Icons.settings,
+                      color: Colors.white,
+                    ),
+                    isOpen: isOpen,
+                    title: 'Configurações',
+                    isSelected: widget.menuViewModel.menuState.value.menuEnum ==
+                        MenuEnum.Settings,
+                    onTap: () {
+                      setState(() {
+                        widget.menuViewModel.changeMenu(MenuEnum.Settings);
                       });
                     },
                   ),

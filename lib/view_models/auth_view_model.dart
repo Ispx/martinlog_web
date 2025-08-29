@@ -63,7 +63,7 @@ class AuthViewModel implements IAuthViewModel {
       _saveValueInLocalStorage(passwordKey, password);
 
       simple.update<AuthViewModel>(() => this);
-
+      await simple.get<CompanyViewModel>().getCompany();
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -97,6 +97,12 @@ class AuthViewModel implements IAuthViewModel {
 
   @override
   Future<void> init() async {
-    documentStored.value = (await _getValueInLocalStorage(documentKey)) ?? '';
+    final document = await _getValueInLocalStorage(documentKey);
+    final password = await _getValueInLocalStorage(passwordKey);
+    if (document != null && password != null) {
+      documentStored.value = document;
+      passwordStored.value = password;
+      await login(document, password);
+    }
   }
 }

@@ -1,9 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:martinlog_web/app.dart';
 import 'package:martinlog_web/core/config/env_confg.dart';
+import 'package:martinlog_web/core/config/firebase_push_config.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/repositories/auth_repository.dart';
 import 'package:martinlog_web/repositories/cancel_operation_repository.dart';
@@ -288,6 +290,10 @@ void main() async {
       measurementId: "G-CWVH9LC3GF",
     ),
   );
+  await FirebasePushConfig.init();
+  FirebaseMessaging.onBackgroundMessage(
+      FirebasePushConfig.messagingBackgroundHandler);
+
   Intl.defaultLocale = 'pt_BR';
   await initializeDateFormatting('pt_BR', null);
 
