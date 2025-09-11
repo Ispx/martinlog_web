@@ -15,14 +15,14 @@ class AuthRepository implements IAuthRepository {
   @override
   Future<AuthModel> call(String document, String password) async {
     try {
-      //final deviceToken = await FirebaseMessaging.instance.getToken();
+      final deviceToken = await FirebaseMessaging.instance.getToken();
       final response = await http.request<Response>(
         url: urlBase + Endpoints.auth,
         method: HttpMethod.POST,
         body: {
           "document": document,
           "password": password,
-          // "device_token": deviceToken,
+          "device_token": deviceToken,
         },
       );
 
