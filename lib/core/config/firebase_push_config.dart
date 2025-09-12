@@ -11,6 +11,7 @@ class FirebasePushConfig {
   static late FirebaseMessaging messaging;
 
   static Future<void> init() async {
+    if (kIsWeb) return;
     messaging = FirebaseMessaging.instance;
 
     final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -47,16 +48,13 @@ class FirebasePushConfig {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
-    
-    
+
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       String? topic = message.from;
       Map? data = message.data;
       String? goTo = data['goTo'];
     });
 
-    
-    
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;

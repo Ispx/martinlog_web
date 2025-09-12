@@ -205,14 +205,17 @@ class _TopicSubscriberOperationNotificationWidgetState
             ),
           ),
         ),
-        Switch(
-          value: value,
-          onChanged: (e) {
-            value = e;
+        IgnorePointer(
+          ignoring: kIsWeb,
+          child: Switch(
+            value: value,
+            onChanged: (e) {
+              value = e;
 
-            widget.onSubscriber.call(e, widget.topic);
-            setState(() {});
-          },
+              widget.onSubscriber.call(e, widget.topic);
+              setState(() {});
+            },
+          ),
         )
       ],
     );
