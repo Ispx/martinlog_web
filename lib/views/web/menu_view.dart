@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:martinlog_web/core/config/env_confg.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
+import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
+import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
 import 'package:martinlog_web/state/menu_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
+import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/views/web/bind_branch_office_view.dart';
@@ -50,10 +53,14 @@ class _MenuViewState extends State<MenuView> {
   @override
   void initState() {
     menuViewModel = simple.get<MenuViewModel>();
+
     final uri = Uri.parse(
         '${EnvConfig.wsBase}/ws/branch-office/${simple.get<BranchOfficeViewModelImpl>().idBranchOfficeActivated}/operations');
     final socket = WebSocket(uri);
-    socket.send('connected');
+    if (simple.get<AuthViewModel>().authModel!.idProfile.getProfile() ==
+        ProfileTypeEnum.MASTER) {
+      socket.send('connected');
+    }
     socket.messages.listen((message) {
       showFloatingBanner(
         context,
