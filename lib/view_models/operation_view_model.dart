@@ -60,6 +60,9 @@ abstract interface class IOperationViewModel {
     required String operationKey,
   });
 
+  Future<OperationModel?> fetchOperationByKey({
+    required String operationKey,
+  });
   Future<void> downloadFile({
     DateTime? dateFrom,
     DateTime? dateUntil,
@@ -556,5 +559,13 @@ class OperationViewModel extends GetxController implements IOperationViewModel {
   void clear() {
     operations.clear();
     operationsFilted.clear();
+  }
+
+  @override
+  Future<OperationModel?> fetchOperationByKey(
+      {required String operationKey}) async {
+    try {
+      return await getOperationRepository(operationKey);
+    } catch (e) {}
   }
 }

@@ -73,6 +73,7 @@ class App extends StatelessWidget {
                       const PassswordRecoveryView(),
                   Routes.bindBranchOffice: (context) =>
                       const BindBranchOfficeView(),
+                  Routes.operationDetails: (context) => const OperationView(),
                 }
               : {
                   Routes.auth: (context) => const AuthViewMobile(),

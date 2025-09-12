@@ -22,6 +22,8 @@ import 'package:martinlog_web/repositories/get_companies_repository.dart';
 import 'package:martinlog_web/repositories/get_company_repositoy.dart';
 import 'package:martinlog_web/repositories/get_dock_type_repository.dart';
 import 'package:martinlog_web/repositories/get_docks_repository.dart';
+import 'package:martinlog_web/repositories/get_notification_repository.dart'
+    show GetNotificationRepositoryImp;
 import 'package:martinlog_web/repositories/get_operation_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_pending_repository.dart';
 import 'package:martinlog_web/repositories/get_operations_repository.dart';
@@ -34,6 +36,7 @@ import 'package:martinlog_web/repositories/start_password_recovery_repository.da
 import 'package:martinlog_web/repositories/unlink_company_to_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/update_operation_repository.dart';
 import 'package:martinlog_web/repositories/update_user_repository.dart';
+import 'package:martinlog_web/repositories/update_viewed_notification_repository.dart';
 import 'package:martinlog_web/repositories/upload_file_operation_repository.dart';
 import 'package:martinlog_web/repositories/upsert_dock_repositoy.dart';
 import 'package:martinlog_web/services/http/http.dart';
@@ -44,6 +47,7 @@ import 'package:martinlog_web/view_models/dashboard_view_model.dart';
 import 'package:martinlog_web/view_models/dock_type_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
+import 'package:martinlog_web/view_models/notification_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/view_models/password_recovery_view_model.dart';
 import 'package:martinlog_web/view_models/user_view_model.dart';
@@ -202,6 +206,20 @@ void main() async {
           urlBase: EnvConfig.urlBase,
         ),
       );
+
+      i.addFactory<GetNotificationRepositoryImp>(
+        () => GetNotificationRepositoryImp(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
+
+      i.addFactory<UpdateViewedNotificationRepositoryImp>(
+        () => UpdateViewedNotificationRepositoryImp(
+          http: i.get<Http>(),
+          urlBase: EnvConfig.urlBase,
+        ),
+      );
       i.addSingleton<CompanyViewModel>(
         () => CompanyViewModel(
           getCompaniesRepository: i.get<GetCompaniesRepository>(),
@@ -279,6 +297,14 @@ void main() async {
 
       i.addSingleton<MenuViewModel>(
         () => MenuViewModel(),
+      );
+
+      i.addSingleton<NotificationViewModel>(
+        () => NotificationViewModel(
+          getNotificationsRepository: i.get<GetNotificationRepositoryImp>(),
+          updateViewedNotificationRepository:
+              i.get<UpdateViewedNotificationRepositoryImp>(),
+        ),
       );
 
       return i;

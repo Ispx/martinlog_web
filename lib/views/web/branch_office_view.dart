@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
@@ -404,10 +403,10 @@ class _BranchOfficeWidgetState extends State<BranchOfficeWidget> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Form(
-                                      key: formState,
-                                      child: Expanded(
-                                        child: Material(
+                                    Expanded(
+                                      child: Material(
+                                        child: Form(
+                                          key: formState,
                                           child: TextFormFieldWidget<
                                               UnderlineInputBorder>(
                                             label: 'Nome da operação',
