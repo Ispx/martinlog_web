@@ -60,6 +60,7 @@ dependencies:
   flutter_secure_storage:
   firebase_messaging: ^16.0.0
   flutter_local_notifications: ^18.0.1
+  web_socket_client: ^0.2.1
 
 dev_dependencies:
   flutter_test:

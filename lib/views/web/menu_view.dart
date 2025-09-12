@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:martinlog_web/core/config/env_confg.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
 import 'package:martinlog_web/state/menu_state.dart';
+import 'package:martinlog_web/style/size/app_size.dart';
+import 'package:martinlog_web/style/text/app_text_style.dart';
+import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/views/web/bind_branch_office_view.dart';
 import 'package:martinlog_web/views/web/branch_office_view.dart';
@@ -15,6 +19,8 @@ import 'package:martinlog_web/views/web/settings_view.dart';
 import 'package:martinlog_web/views/web/users_view.dart';
 import 'package:martinlog_web/widgets/app_bar_widget.dart';
 import 'package:martinlog_web/widgets/drawer_menu_widget.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:web_socket_client/web_socket_client.dart';
 
 class MenuView extends StatefulWidget {
   const MenuView({super.key});
@@ -44,7 +50,78 @@ class _MenuViewState extends State<MenuView> {
   @override
   void initState() {
     menuViewModel = simple.get<MenuViewModel>();
+    final uri = Uri.parse(
+        '${EnvConfig.wsBase}/ws/branch-office/${simple.get<BranchOfficeViewModelImpl>().idBranchOfficeActivated}/operations');
+    final socket = WebSocket(uri);
+    socket.send('connected');
+    socket.messages.listen((message) {
+      showFloatingBanner(
+        context,
+        message,
+      );
+    });
     super.initState();
+  }
+
+  void showFloatingBanner(BuildContext context, String message,
+      {Duration duration = const Duration(seconds: 2)}) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry entry;
+
+    entry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: 25,
+        left: 30.w,
+        right: 30.w,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: context.appTheme.secondColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Nova atualização",
+                        style: AppTextStyle.displaySmall(context).copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(
+                        height: AppSize.padding / 2,
+                      ),
+                      Text(
+                        message,
+                        style: AppTextStyle.displayMedium(context).copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => entry.remove(),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay.insert(entry);
+
+    Future.delayed(duration, () {
+      entry.remove();
+    });
   }
 
   @override
