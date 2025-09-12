@@ -53,20 +53,21 @@ class _MenuViewState extends State<MenuView> {
   @override
   void initState() {
     menuViewModel = simple.get<MenuViewModel>();
-
-    final uri = Uri.parse(
-        '${EnvConfig.wsBase}/ws/branch-office/${simple.get<BranchOfficeViewModelImpl>().idBranchOfficeActivated}/operations');
-    final socket = WebSocket(uri);
-    if (simple.get<AuthViewModel>().authModel!.idProfile.getProfile() ==
-        ProfileTypeEnum.MASTER) {
-      socket.send('connected');
-    }
-    socket.messages.listen((message) {
-      showFloatingBanner(
-        context,
-        message,
-      );
-    });
+    try {
+      final uri = Uri.parse(
+          '${EnvConfig.wsBase}/ws/branch-office/${simple.get<BranchOfficeViewModelImpl>().idBranchOfficeActivated}/operations');
+      final socket = WebSocket(uri);
+      if (simple.get<AuthViewModel>().authModel!.idProfile.getProfile() ==
+          ProfileTypeEnum.MASTER) {
+        socket.send('connected');
+      }
+      socket.messages.listen((message) {
+        showFloatingBanner(
+          context,
+          message,
+        );
+      });
+    } catch (e) {}
     super.initState();
   }
 
