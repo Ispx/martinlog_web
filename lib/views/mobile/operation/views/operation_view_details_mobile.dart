@@ -74,6 +74,7 @@ class _OperationViewDetailsMobileState
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvoked: (didPop) async {
+        return;
         final updatedOperationFunction =
             (ModalRoute.of(context)?.settings.arguments as List<Object>?)?[1]
                 as Function;

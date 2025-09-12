@@ -29,7 +29,8 @@ class NotificationViewModel extends GetxController
   Future<void> getAll() async {
     try {
       changeState(AppStateLoading());
-      notifications.value = await getNotificationsRepository();
+      final values = await getNotificationsRepository();
+      notifications.value = values.where((e) => !e.viewed).toList();
       changeState(AppStateDone());
       _scheduleNexTask(getAll);
     } catch (e) {
@@ -45,16 +46,22 @@ class NotificationViewModel extends GetxController
   Future<void> updateViewed(NotificationModel notificationModel) async {
     try {
       changeState(AppStateLoading());
-      notifications.value = List.from(notifications)
-        ..replaceRange(notifications.indexOf(notificationModel),
-            notifications.indexOf(notificationModel) + 1, [
-          notificationModel.copyWith(
-            viewed: true,
-          )
-        ]);
+      final notificationFinder = notifications
+          .where((e) => e.idNotification == notificationModel.idNotification)
+          .firstOrNull;
+      if (notificationFinder != null) {
+        final index = notifications.indexOf(notificationFinder);
+
+        notifications.value = List.from(notifications)
+          ..replaceRange(index, index + 1, [
+            notificationModel.copyWith(
+              viewed: true,
+            )
+          ]);
+      }
+
       await updateViewedNotificationRepository(
           notificationModel.idNotification!);
-
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));

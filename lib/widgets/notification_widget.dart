@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:martinlog_web/core/consts/routes.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/extensions/date_time_extension.dart';
@@ -9,6 +11,8 @@ import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/view_models/notification_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
 import 'package:martinlog_web/views/web/operation_view.dart';
+
+import '../navigator/go_to.dart';
 
 class NotificationWidget extends StatefulWidget {
   final NotificationModel notificationModel;
@@ -47,7 +51,14 @@ class _NotificationWidgetState extends State<NotificationWidget> {
           .fetchOperationByKey(operationKey: operationKey);
 
       if (operationModel != null) {
-        showDialogDetailsOperation(context, operationModel);
+        GoTo.pop();
+        if (kIsWeb) {
+          showDialogDetailsOperation(context, operationModel);
+        } else {
+          GoTo.goTo(Routes.operationDetails, arguments: [
+            operationModel,
+          ]);
+        }
       }
     }
   }
@@ -57,8 +68,10 @@ class _NotificationWidgetState extends State<NotificationWidget> {
   }
 
   Color get backgroundColor =>
-      viewed ? Colors.white : context.appTheme.secondColor;
-
+      viewed ? Colors.white70 : context.appTheme.secondColor;
+  Widget get space => SizedBox(
+        height: kIsWeb ? AppSize.padding / 2 : AppSize.padding,
+      );
   Color get textColor => viewed ? Colors.black : Colors.white;
   @override
   Widget build(BuildContext context) {
@@ -73,7 +86,7 @@ class _NotificationWidgetState extends State<NotificationWidget> {
         ),
         padding: EdgeInsets.symmetric(
           vertical: AppSize.padding,
-          horizontal: AppSize.padding / 2,
+          horizontal: kIsWeb ? AppSize.padding / 2 : AppSize.padding,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,50 +94,63 @@ class _NotificationWidgetState extends State<NotificationWidget> {
             Row(
               children: [
                 SizedBox(
-                  width: AppSize.padding / 2,
+                  width: kIsWeb ? AppSize.padding / 2 : AppSize.padding,
                 ),
                 Icon(
                   Icons.notifications,
                   color: viewed ? Colors.black : Colors.white,
                 ),
                 SizedBox(
-                  width: AppSize.padding,
+                  width: kIsWeb ? AppSize.padding / 2 : AppSize.padding,
                 ),
                 Expanded(
                     child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    space,
                     Text(
-                      widget.notificationModel.createdAt!.ddMMyyyyHHmmss,
-                      style: AppTextStyle.displaySmall(context).copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
+                      widget.notificationModel.createdAt?.ddMMyyyyHHmmss ?? '',
+                      style: kIsWeb
+                          ? AppTextStyle.displaySmall(context).copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            )
+                          : AppTextStyle.mobileDisplaySmall(context).copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            ),
                     ),
-                    SizedBox(
-                      height: AppSize.padding / 2,
-                    ),
+                    space,
                     Text(
                       widget.notificationModel.title,
-                      style: AppTextStyle.displayMedium(context).copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
+                      style: kIsWeb
+                          ? AppTextStyle.displayMedium(context).copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            )
+                          : AppTextStyle.mobileDisplaySmall(context).copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(
-                      height: AppSize.padding / 2,
-                    ),
+                    space,
                     const Divider(),
-                    SizedBox(
-                      height: AppSize.padding / 2,
-                    ),
+                    space,
                     Text(
                       widget.notificationModel.body,
-                      style: AppTextStyle.displayMedium(context).copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
+                      style: kIsWeb
+                          ? AppTextStyle.displayMedium(context).copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            )
+                          : AppTextStyle.mobileDisplaySmall(context).copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            ),
                     ),
+                    space,
                   ],
                 )),
               ],

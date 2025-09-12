@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
 import 'package:martinlog_web/navigator/go_to.dart';
@@ -23,7 +24,7 @@ class _NotificationViewState extends State<NotificationView> {
         Positioned(
           right: 0,
           child: Container(
-            width: 25.w,
+            width: kIsWeb ? 25.w : 70.w,
             height: 100.h,
             color: notificationViewModel.notifications.isEmpty
                 ? Colors.white
@@ -39,15 +40,20 @@ class _NotificationViewState extends State<NotificationView> {
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 10.h,
+                      height: kIsWeb ? 10.h : 5.h,
                     ),
                     Visibility(
                       visible: notificationViewModel.notifications.isEmpty,
                       child: Text(
                         "Nenhuma notificação registrada",
-                        style: AppTextStyle.displayMedium(context).copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: kIsWeb
+                            ? AppTextStyle.displayMedium(context).copyWith(
+                                fontWeight: FontWeight.bold,
+                              )
+                            : AppTextStyle.mobileDisplayMedium(context)
+                                .copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                       ),
                     ),
                     ...notificationViewModel.notifications.map(
@@ -57,7 +63,7 @@ class _NotificationViewState extends State<NotificationView> {
                             vertical: AppSize.padding,
                           ),
                           child: NotificationWidget(
-                            key: ValueKey(notificationModel.idNotification),
+                            key: ValueKey(notificationModel.idNotification ?? DateTime.now().microsecondsSinceEpoch),
                             notificationModel: notificationModel,
                           ),
                         );

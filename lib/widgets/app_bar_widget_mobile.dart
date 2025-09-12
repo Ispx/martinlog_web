@@ -12,7 +12,9 @@ import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dashboard_view_model.dart';
 import 'package:martinlog_web/view_models/dock_view_model.dart';
+import 'package:martinlog_web/view_models/notification_view_model.dart';
 import 'package:martinlog_web/view_models/operation_view_model.dart';
+import 'package:martinlog_web/views/web/notification_view.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class AppBarWidgetMobile extends StatelessWidget
@@ -109,6 +111,34 @@ class AppBarWidgetMobile extends StatelessWidget
                     },
                   ),
                 ),
+                Obx(() {
+                  final notifications =
+                      simple.get<NotificationViewModel>().notifications.value;
+
+                  int totalNotViewed =
+                      simple.get<NotificationViewModel>().totalNotViewed;
+
+                  return IconButton(
+                    onPressed: () => {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const NotificationView();
+                        },
+                      ),
+                    },
+                    icon: Badge.count(
+                      count: totalNotViewed,
+                      isLabelVisible: totalNotViewed > 0,
+                      child: Icon(
+                        Icons.notifications,
+                        color: notifications.isEmpty
+                            ? null
+                            : context.appTheme.secondColor,
+                      ),
+                    ),
+                  );
+                }),
                 IconButton(
                   onPressed: () async =>
                       await simple.get<AuthViewModel>().loggout(),

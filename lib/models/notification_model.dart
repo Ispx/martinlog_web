@@ -39,8 +39,9 @@ class NotificationModel {
       targetIdBranchOffice: json['targetIdBranchOffice'] as int,
       idUser: json['idUser'] as int,
       viewed: json['viewed'] as bool,
-      createdAt:
-          json['createdAt'] != null ? DateTime.parse(json['createdAt']).toLocal() : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt']).toLocal()
+          : null,
     );
   }
 
@@ -67,6 +68,7 @@ class NotificationModel {
       targetIdBranchOffice: targetIdBranchOffice,
       idUser: idUser,
       viewed: viewed ?? this.viewed,
+      createdAt: createdAt,
     );
   }
 }
