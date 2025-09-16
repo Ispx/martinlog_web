@@ -9,6 +9,8 @@ import 'package:martinlog_web/style/text/app_text_style.dart';
 import 'package:martinlog_web/utils/utils.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/branch_office_view_model.dart';
+import 'package:martinlog_web/view_models/notification_view_model.dart';
+import 'package:martinlog_web/views/web/notification_view.dart';
 import 'package:martinlog_web/widgets/dropbox_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -90,15 +92,40 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Visibility(
-                          visible: false,
-                          child: SizedBox(
-                            width: 15.w,
-                            child: const BranchOfficeManagerWidget(),
-                          ),
-                        ),
+                        Obx(() {
+                          final notifications = simple
+                              .get<NotificationViewModel>()
+                              .notifications
+                              .value;
+
+                          int totalNotViewed = simple
+                              .get<NotificationViewModel>()
+                              .totalNotViewed;
+
+                          return IconButton(
+                            onPressed: () => {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const NotificationView();
+                                },
+                              ),
+                            },
+                            icon: Badge.count(
+                              count: totalNotViewed,
+                              isLabelVisible: totalNotViewed > 0,
+                              child: Icon(
+                                Icons.notifications,
+                                size: 2.w,
+                                color: notifications.isEmpty
+                                    ? null
+                                    : context.appTheme.secondColor,
+                              ),
+                            ),
+                          );
+                        }),
                         SizedBox(
-                          width: AppSize.padding * 4,
+                          width: AppSize.padding,
                         ),
                         CircleAvatar(
                           backgroundColor: context.appTheme.secondColor,
@@ -133,7 +160,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                                   .copyWith(),
                             )
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -146,7 +173,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                     icon: const Icon(
                       Icons.exit_to_app,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

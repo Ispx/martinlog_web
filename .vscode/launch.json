@@ -42,6 +42,7 @@
             "name": "[DEV WEB] martinlog_web",
             "request": "launch",
             "type": "dart",
+            "program": "lib/main_web.dart",
             "args": [
                 "--dart-define",
                 "PLATFORM=web",
@@ -63,13 +64,13 @@
                 "--dart-define",
                 "ENV=dev",
                 "--dart-define",
-                "URL_BASE=https://api.martinlog.com.br",
+                "URL_BASE=http://api.martinlog.com.br",
                 "--dart-define",
                 "APP_NAME=Plataforma Martin log",
             ],
         },
-               {
-            "name": "[PROD MOBILE] martinlog_web",
+        {
+            "name": "[DEV MOBILE] martinlog_web",
             "request": "launch",
             "type": "dart",
             "args": [
@@ -78,7 +79,7 @@
                 "--dart-define",
                 "ENV=dev",
                 "--dart-define",
-                "URL_BASE=https://api.martinlog.com.br",
+                "URL_BASE=http://192.168.100.96:8080",
                 "--dart-define",
                 "APP_NAME=Plataforma Martin log",
             ],

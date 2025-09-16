@@ -1,8 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:martinlog_web/core/config/firebase_push_config.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
 import 'package:martinlog_web/models/dashboard_model.dart';
 import 'package:martinlog_web/widgets/page_widget_mobile.dart';
@@ -28,7 +30,7 @@ class _DashboardViewMobileState extends State<DashboardViewMobile> {
   final DashboardViewModel controller = simple.get<DashboardViewModel>();
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       onRefresh();
     });
 

@@ -25,7 +25,7 @@ abstract interface class IUserViewModel {
 class UserViewModel implements IUserViewModel {
   final ICreateUserRepository createUserRepository;
   final IUpdateUserRepository updateUserRepository;
-
+  
   final IGetUsersRepository getUsersRepository;
   UserViewModel({
     required this.createUserRepository,
