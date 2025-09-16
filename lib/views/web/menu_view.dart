@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:martinlog_web/core/config/env_confg.dart';
 import 'package:martinlog_web/core/dependencie_injection_manager/simple.dart';
-import 'package:martinlog_web/enums/profile_type_enum.dart';
 import 'package:martinlog_web/extensions/build_context_extension.dart';
-import 'package:martinlog_web/extensions/int_extension.dart';
 import 'package:martinlog_web/extensions/menu_extention.dart';
+import 'package:martinlog_web/services/websocket/ws_service.dart';
 import 'package:martinlog_web/state/menu_state.dart';
 import 'package:martinlog_web/style/size/app_size.dart';
 import 'package:martinlog_web/style/text/app_text_style.dart';
-import 'package:martinlog_web/view_models/auth_view_model.dart';
-import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/menu_view_model.dart';
 import 'package:martinlog_web/views/web/bind_branch_office_view.dart';
 import 'package:martinlog_web/views/web/branch_office_view.dart';
@@ -23,7 +19,6 @@ import 'package:martinlog_web/views/web/users_view.dart';
 import 'package:martinlog_web/widgets/app_bar_widget.dart';
 import 'package:martinlog_web/widgets/drawer_menu_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:web_socket_client/web_socket_client.dart';
 
 class MenuView extends StatefulWidget {
   const MenuView({super.key});
@@ -54,14 +49,7 @@ class _MenuViewState extends State<MenuView> {
   void initState() {
     menuViewModel = simple.get<MenuViewModel>();
     try {
-      final uri = Uri.parse(
-          '${EnvConfig.wsBase}/ws/branch-office/${simple.get<BranchOfficeViewModelImpl>().idBranchOfficeActivated}/operations');
-      final socket = WebSocket(uri);
-      if (simple.get<AuthViewModel>().authModel!.idProfile.getProfile() ==
-          ProfileTypeEnum.MASTER) {
-        socket.send('connected');
-      }
-      socket.messages.listen((message) {
+      WsService().socket?.messages.listen((message) {
         showFloatingBanner(
           context,
           message,
