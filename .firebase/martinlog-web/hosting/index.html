@@ -33,7 +33,7 @@
   <title>Plataforma Martin log</title>
   <link rel="manifest" href="manifest.json">
 
-  
+
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter_bootstrap.js" async></script>
 </head>
@@ -54,6 +54,16 @@
       });
     });
   </script>
+  <!-- ...other html setup. -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/firebase-messaging-sw.js");
+      });
+    }
+  </script>
+  <!-- ...put the script at the bottom of the enclosing body tags. -->
+</body>
 </body>
 
 </html>

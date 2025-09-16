@@ -25,6 +25,8 @@ class Endpoints {
 
   static const branchOfficeCompanyLinked = '/branch-office/company/linked';
   static const dashboard = '/dashboard';
-    static const dockType = "/dock-type";
-
+  static const dockType = "/dock-type";
+  static const notificationAll = "/notification/all";
+  static const notificationViewedUpdate =
+      "/notification/<idNotification>/viewed";
 }

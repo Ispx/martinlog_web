@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:martinlog_web/core/consts/endpoints.dart';
 import 'package:martinlog_web/models/auth_model.dart';
 import 'package:martinlog_web/services/http/http.dart';
@@ -14,12 +16,15 @@ class AuthRepository implements IAuthRepository {
   @override
   Future<AuthModel> call(String document, String password) async {
     try {
+      final deviceToken =
+          kIsWeb ? null : await FirebaseMessaging.instance.getToken();
       final response = await http.request<Response>(
         url: urlBase + Endpoints.auth,
         method: HttpMethod.POST,
         body: {
           "document": document,
           "password": password,
+          "device_token": deviceToken,
         },
       );
 

@@ -9,6 +9,7 @@ import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/branch_office_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
 import 'package:martinlog_web/view_models/dock_type_view_model.dart';
+import 'package:martinlog_web/view_models/notification_view_model.dart';
 
 const passwordKey = 'passwordKey';
 const documentKey = 'documentKey';
@@ -52,6 +53,8 @@ class AuthViewModel implements IAuthViewModel {
       authModel = await authRepository(document, password);
       await companyViewModel.getCompany();
       await branchOfficeViewModel.getAll();
+      simple.get<NotificationViewModel>().getAll();
+
       final branchOffice =
           companyViewModel.companyModel!.branchOffices.firstOrNull;
       if (branchOffice != null) {
@@ -63,7 +66,6 @@ class AuthViewModel implements IAuthViewModel {
       _saveValueInLocalStorage(passwordKey, password);
 
       simple.update<AuthViewModel>(() => this);
-
       changeState(AppStateDone());
     } catch (e) {
       changeState(AppStateError(e.toString()));
@@ -97,6 +99,12 @@ class AuthViewModel implements IAuthViewModel {
 
   @override
   Future<void> init() async {
-    documentStored.value = (await _getValueInLocalStorage(documentKey)) ?? '';
+    final document = await _getValueInLocalStorage(documentKey);
+    final password = await _getValueInLocalStorage(passwordKey);
+    if (document != null && password != null) {
+      documentStored.value = document;
+      passwordStored.value = password;
+      await login(document, password);
+    }
   }
 }

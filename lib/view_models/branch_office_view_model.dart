@@ -9,6 +9,7 @@ import 'package:martinlog_web/repositories/get_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/get_company_repositoy.dart';
 import 'package:martinlog_web/repositories/link_company_to_branch_office_repository.dart';
 import 'package:martinlog_web/repositories/unlink_company_to_branch_office_repository.dart';
+import 'package:martinlog_web/services/websocket/ws_service.dart';
 import 'package:martinlog_web/state/app_state.dart';
 import 'package:martinlog_web/view_models/auth_view_model.dart';
 import 'package:martinlog_web/view_models/company_view_model.dart';
@@ -109,6 +110,8 @@ class BranchOfficeViewModelImpl extends GetxController
     if (model != null) {
       branchOfficeActivated.value = model;
     }
+    await WsService()
+        .connect(channel: "branch-office/${model?.idBranchOffice}/operations");
     simple.get<OperationViewModel>().operations.clear();
     simple.get<OperationViewModel>().operationsFilted.clear();
     simple.get<DashboardViewModel>().operations.clear();

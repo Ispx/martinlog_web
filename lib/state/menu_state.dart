@@ -7,7 +7,8 @@ enum MenuEnum {
   Company,
   Users,
   BranchOffice,
-  BindBranchOffice
+  BindBranchOffice,
+  Settings,
 }
 
 class MenuState {
